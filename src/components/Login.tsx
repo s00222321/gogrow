@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { MDBContainer, MDBInput, MDBBtn } from "mdb-react-ui-kit";
+import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
+import UserPool from "../Cognito";
 
 interface LoginData {
   email: string;
@@ -19,16 +21,30 @@ const Login: React.FC = () => {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log("Login data submitted:", loginData);
+
+    const user = new CognitoUser({
+      Username: loginData.email,
+      Pool: UserPool,
+    });
+
+    const authDetails = new AuthenticationDetails({
+      Username: loginData.email,
+      Password: loginData.password,
+    });
+
+    user.authenticateUser(authDetails, {
+      onSuccess: (session) => console.log("Authentication Successful", session),
+      onFailure: (err) => console.error("Authentication failed", err),
+      newPasswordRequired: (userAttributes, requiredAttributes) =>
+        console.log("Password change required"),
+    });
   };
 
   return (
     <MDBContainer
       fluid
       className="d-flex vh-100 justify-content-center align-items-center"
-      style={{
-        backgroundColor: "#E8F5E9",
-      }}
+      style={{ backgroundColor: "#E8F5E9" }}
     >
       <div className="p-5 border rounded shadow bg-white">
         <form onSubmit={handleSubmit}>
