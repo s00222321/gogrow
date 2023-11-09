@@ -34,7 +34,7 @@ function Navbar() {
           <MDBIcon fas icon="bars" />
         </MDBNavbarToggler>
 
-        <MDBCollapse navbar show={showNav} id="navbarContent">
+        <MDBCollapse navbar open={showNav} id="navbarContent">
           <MDBNavbarNav>
             <MDBNavbarItem>
               <MDBNavbarLink href="#">My Garden</MDBNavbarLink>
