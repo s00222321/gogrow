@@ -1,24 +1,14 @@
 import React, { useState, useEffect } from "react";
 import {
   MDBContainer,
-  MDBInput,
-  MDBCard,
   MDBCardBody,
   MDBCardTitle,
+  MDBCardImage,
+  MDBBtn,
 } from "mdb-react-ui-kit";
-import { useNavigate } from "react-router-dom"; // Import useNavigate
-
-interface ArticleData {
-  article_id: string;
-  title: string;
-  author: string;
-  publication_date: string;
-  content: string;
-}
 
 const Articles: React.FC = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
-  const [articles, setArticles] = useState<ArticleData[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
@@ -46,6 +36,12 @@ const Articles: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
+  const trimContent = (content: string, maxLength: number = 100) => {
+    return content.length > maxLength
+      ? content.substring(0, maxLength) + "..."
+      : content;
+  };
+
   const filteredArticles = articles.filter((article) =>
     article.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -53,45 +49,43 @@ const Articles: React.FC = () => {
   return (
     <MDBContainer
       fluid
-      className="d-flex vh-100 justify-content-center align-items-center"
+      className="d-flex flex-column justify-content-center align-items-center"
       style={{
-        backgroundColor: "#E8F5E9",
+        paddingTop: "10%",
+        paddingBottom: "10%",
       }}
     >
-      <div className="p-5 border rounded shadow bg-white">
+      <div className="w-75">
         <div className="text-center mb-4">
           <span className="h4">Articles</span>
         </div>
         <div className="mb-4">
-          <MDBInput
-            label="Search"
+          <input
+            className="form-control"
             type="text"
             id="search"
             name="search"
+            placeholder="Search"
             value={searchTerm}
             onChange={handleSearchChange}
           />
         </div>
         <div>
           {filteredArticles.map((article) => (
-            <MDBCard
-              className="mb-4"
-              key={article.article_id}
-              onClick={() => navigate(`/article/${article.article_id}`)} // Updated navigation logic
-            >
+            <div className="card mb-4" key={article.article_id}>
+              <MDBCardImage
+                src={article.image}
+                position="top"
+                alt={article.title}
+              />
               <MDBCardBody>
                 <MDBCardTitle>{article.title}</MDBCardTitle>
-                <p>
-                  <strong>Author:</strong> {article.author}
-                </p>
-                <p>
-                  <strong>Publication Date:</strong> {article.publication_date}
-                </p>
-                <p>
-                  <strong>Content:</strong> {article.content}
-                </p>
+                <p>{trimContent(article.content)}</p>
+                <MDBBtn href={`/article/${article.article_id}`}>
+                  Read More
+                </MDBBtn>
               </MDBCardBody>
-            </MDBCard>
+            </div>
           ))}
         </div>
       </div>

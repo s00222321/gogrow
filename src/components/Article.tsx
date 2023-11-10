@@ -40,9 +40,6 @@ const Article: React.FC = () => {
     <MDBContainer
       fluid
       className="d-flex vh-100 justify-content-center align-items-center"
-      style={{
-        backgroundColor: "#E8F5E9",
-      }}
     >
       <div className="p-5 border rounded shadow bg-white">
         {article ? (
