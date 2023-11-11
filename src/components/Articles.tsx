@@ -5,6 +5,8 @@ import {
   MDBCardTitle,
   MDBCardImage,
   MDBBtn,
+  MDBRow,
+  MDBCol,
 } from "mdb-react-ui-kit";
 
 const Articles: React.FC = () => {
@@ -70,24 +72,26 @@ const Articles: React.FC = () => {
             onChange={handleSearchChange}
           />
         </div>
-        <div>
+        <MDBRow>
           {filteredArticles.map((article) => (
-            <div className="card mb-4" key={article.article_id}>
-              <MDBCardImage
-                src={article.image}
-                position="top"
-                alt={article.title}
-              />
-              <MDBCardBody>
-                <MDBCardTitle>{article.title}</MDBCardTitle>
-                <p>{trimContent(article.content)}</p>
-                <MDBBtn href={`/article/${article.article_id}`}>
-                  Read More
-                </MDBBtn>
-              </MDBCardBody>
-            </div>
+            <MDBCol md="6" lg="4" key={article.article_id}>
+              <div className="card mb-4">
+                <MDBCardImage
+                  src={article.image}
+                  position="top"
+                  alt={article.title}
+                />
+                <MDBCardBody>
+                  <MDBCardTitle>{article.title}</MDBCardTitle>
+                  <p>{trimContent(article.content)}</p>
+                  <MDBBtn href={`/article/${article.article_id}`}>
+                    Read More
+                  </MDBBtn>
+                </MDBCardBody>
+              </div>
+            </MDBCol>
           ))}
-        </div>
+        </MDBRow>
       </div>
     </MDBContainer>
   );

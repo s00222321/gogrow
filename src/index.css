@@ -1,6 +1,7 @@
 body {
   font-family: Roboto, Helvetica, Arial, sans-serif;
-  background: url(leaves.png) repeat;
+  background: url(https://gogrowimages.s3.eu-west-1.amazonaws.com/websiteassets/leaves.png)
+    repeat !important;
 }
 .btn-primary {
   background-color: #43a047 !important;

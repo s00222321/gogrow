@@ -4,6 +4,10 @@ import {
   MDBCard,
   MDBCardBody,
   MDBCardTitle,
+  MDBCardText,
+  MDBRow,
+  MDBCol,
+  MDBCardImage,
 } from "mdb-react-ui-kit";
 import { useParams } from "react-router-dom";
 
@@ -13,6 +17,7 @@ interface ArticleData {
   author: string;
   publication_date: string;
   content: string;
+  image: string;
 }
 
 const Article: React.FC = () => {
@@ -37,33 +42,34 @@ const Article: React.FC = () => {
   }, [article_id]);
 
   return (
-    <MDBContainer
-      fluid
-      className="d-flex vh-100 justify-content-center align-items-center"
-    >
-      <div className="p-5 border rounded shadow bg-white">
-        {article ? (
-          <MDBCard>
-            <MDBCardBody>
-              <MDBCardTitle>{article.title}</MDBCardTitle>
-              <p>
-                <strong>Article ID:</strong> {article.article_id}
-              </p>
-              <p>
-                <strong>Publication Date:</strong> {article.publication_date}
-              </p>
-              <p>
-                <strong>Author:</strong> {article.author}
-              </p>
-              <p>
-                <strong>Content:</strong> {article.content}
-              </p>
-            </MDBCardBody>
-          </MDBCard>
-        ) : (
-          <p>Loading...</p>
-        )}
-      </div>
+    <MDBContainer className="py-5">
+      {article ? (
+        <MDBCard>
+          <MDBRow className="g-0">
+            <MDBCol
+              md="4"
+              className="overflow-hidden"
+              style={{ borderRadius: "0.5rem" }}
+            >
+              <MDBCardImage src={article.image} alt="Article Image" fluid />
+            </MDBCol>
+            <MDBCol md="8">
+              <MDBCardBody>
+                <MDBCardTitle>{article.title}</MDBCardTitle>
+                <MDBCardText>
+                  <strong>Publication Date:</strong> {article.publication_date}
+                </MDBCardText>
+                <MDBCardText>{article.content}</MDBCardText>
+                <MDBCardText>
+                  <strong>Author:</strong> {article.author}
+                </MDBCardText>
+              </MDBCardBody>
+            </MDBCol>
+          </MDBRow>
+        </MDBCard>
+      ) : (
+        <p>Loading...</p>
+      )}
     </MDBContainer>
   );
 };
