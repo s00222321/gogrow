@@ -5,6 +5,7 @@ import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import Articles from "./components/Articles";
 import Article from "./components/Article";
+import Forum from "./components/Forum";
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
           <Route path="article/:article_id" element={<Article />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
+          <Route path="forum" element={<Forum />} />
         </Routes>
       </div>
     </Router>
