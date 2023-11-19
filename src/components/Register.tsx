@@ -22,29 +22,35 @@ const Register: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = event.target;
+    console.log(`Name: ${name}, Value: ${value}`);  // Add this line for debugging
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
-
+  
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+  
+    console.log("County attribute:", formData.county); // Log the county attribute
+  
     const emailAttribute = new CognitoUserAttribute({
       Name: "email",
       Value: formData.email,
     });
-
+  
     UserPool.signUp(
       formData.username,
       formData.password,
       [emailAttribute],
       [],
       (err, data) => {
-        if (err) console.error(err);
-        else console.log(data);
+        if (err) {
+          console.error("Error during registration:", err);
+        } else {
+          console.log("Registration successful:", data);
+        }
       }
     );
   };
-
+  
   return (
     <MDBContainer
       fluid

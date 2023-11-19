@@ -4,13 +4,13 @@ import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
 import UserPool from "../Cognito";
 
 interface LoginData {
-  email: string;
+  username: string;
   password: string;
 }
 
 const Login: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginData>({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -23,12 +23,12 @@ const Login: React.FC = () => {
     event.preventDefault();
 
     const user = new CognitoUser({
-      Username: loginData.email,
+      Username: loginData.username,
       Pool: UserPool,
     });
 
     const authDetails = new AuthenticationDetails({
-      Username: loginData.email,
+      Username: loginData.username,
       Password: loginData.password,
     });
 
@@ -52,11 +52,11 @@ const Login: React.FC = () => {
           </div>
           <div className="mb-4">
             <MDBInput
-              label="Your email"
-              type="email"
-              id="email"
-              name="email"
-              value={loginData.email}
+              label="Your username"
+              type="username"
+              id="username"
+              name="username"
+              value={loginData.username}
               onChange={handleChange}
             />
           </div>
