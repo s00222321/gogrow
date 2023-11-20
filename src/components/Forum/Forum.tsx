@@ -1,7 +1,8 @@
 // Forum.tsx
 import React, { useEffect, useState } from 'react';
 import { formatDate } from '../../utils';
-import { MDBContainer, MDBCol, MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBBtn } from 'mdb-react-ui-kit';
+import { MDBContainer, MDBCol, MDBCard, MDBCardBody, MDBBtn, MDBCardText, MDBCardTitle } from 'mdb-react-ui-kit';
+import AddPostFormModal from './AddPostFormModal';
 
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
 
@@ -18,6 +19,7 @@ interface PostData {
 const Forum: React.FC = () => {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [showNewPostModal, setShowNewPostModal] = useState<boolean>(false);
 
   useEffect(() => {
     fetchData();
@@ -48,6 +50,41 @@ const Forum: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
+  const handleNewPostClick = () => {
+    setShowNewPostModal(true);
+  };
+
+  const handleNewPostClose = () => {
+    setShowNewPostModal(false);
+  };
+
+  const handleNewPostSubmit = async (postData: { title: string; content: string }) => {
+    // Perform the API call to submit the new post data
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      // Assuming the API returns the newly created post data
+      const newPost = await response.json();
+
+      // Update the posts state to include the new post
+      setPosts((prevPosts) => [...prevPosts, newPost]);
+
+      // Reset the new post modal state
+      setShowNewPostModal(false);
+    } catch (error) {
+      console.error('Error submitting new post:', (error as Error).message);
+    }
+  };
 
   return (
     <MDBContainer className="py-5">
@@ -66,9 +103,15 @@ const Forum: React.FC = () => {
         />
       </div>
       <MDBCol>
-        <MDBBtn className="mb-2">
+        <MDBBtn className="mb-2" onClick={handleNewPostClick}>
           <i className="fas fa-plus me-2"></i>New Post
         </MDBBtn>
+
+        <AddPostFormModal
+          onSubmit={handleNewPostSubmit}
+          onClose={handleNewPostClose}
+          showModal={showNewPostModal}
+        />
 
         {posts
           .filter((post) =>
@@ -105,7 +148,6 @@ const Forum: React.FC = () => {
             </div>
           ))}
       </MDBCol>
-
     </MDBContainer>
   );
 };
