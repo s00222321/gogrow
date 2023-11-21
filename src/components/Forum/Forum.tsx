@@ -1,9 +1,18 @@
 // Forum.tsx
 import React, { useEffect, useState } from 'react';
 import { formatDate } from '../../utils';
-import { MDBContainer, MDBCol, MDBCard, MDBCardBody, MDBBtn, MDBCardText, MDBCardTitle } from 'mdb-react-ui-kit';
+import { 
+  MDBContainer, 
+  MDBCol, 
+  MDBCard, 
+  MDBCardBody, 
+  MDBBtn, 
+  MDBCardText, 
+  MDBCardTitle 
+} from 'mdb-react-ui-kit';
 import AddPostFormModal from './AddPostFormModal';
 
+// put in .env?
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
 
 interface PostData {
@@ -58,45 +67,66 @@ const Forum: React.FC = () => {
     setShowNewPostModal(false);
   };
 
+  // TO DO : Get username from currently logged in user
   const handleNewPostSubmit = async (postData: { title: string; content: string; media: string | null; tags: string[] }) => {
-    // Set the username to "sean_oconnor"
+    // Set the username to "sean_oconnor" will have to be changed
     const updatedPostData = { ...postData, username: 'sean_oconnor' };
-
-    // Log the submitted data (for debugging)
     console.log('Submitted Data:', updatedPostData);
-
-    // Create FormData object
-    const formData = new FormData();
-    formData.append('title', updatedPostData.title);
-    formData.append('content', updatedPostData.content);
-    formData.append('media', updatedPostData.media || ''); // Ensure it's not null
-    formData.append('tags', JSON.stringify(updatedPostData.tags));
-
-    // Perform the API call to submit the new post data
+  
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
-        body: formData,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: updatedPostData.title,
+          content: updatedPostData.content,
+          username: updatedPostData.username,
+          tags: updatedPostData.tags,
+          media: updatedPostData.media,
+        }),
       });
-
+  
       if (!response.ok) {
         console.log(response.json());
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
-
-      // Assuming the API returns the newly created post data
+  
       const newPost = await response.json();
-
-      // Update the posts state to include the new post
       setPosts((prevPosts) => [...prevPosts, newPost]);
-
-      // Reset the new post modal state
       setShowNewPostModal(false);
     } catch (error) {
       console.error('Error submitting new post:', (error as Error).message);
     }
   };
+
+  // TO DO - only allow currently logged in user to delete their post unless they are admin
+  // TO DO - make confirmation window prettier
+  const handleDeletePost = async (postId: string) => {
+    const isConfirmed = window.confirm('Are you sure you want to delete this post?');
+  
+    if (!isConfirmed) { return;}
+  
+    try {
+      const response = await fetch(`${API_URL}/${postId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.ok) {
+        console.log(`Post with ID ${postId} deleted successfully.`);
+        setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId)); // update state
+      } else {
+        console.error(`Failed to delete post with ID ${postId}. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('An error occurred while deleting the post:', error);
+    }
+  };
+  
 
   return (
     <MDBContainer className="py-5">
@@ -157,6 +187,13 @@ const Forum: React.FC = () => {
                     Read More
                   </MDBBtn>
                 </MDBCardBody>
+                <MDBBtn
+                  color="danger"
+                  className="position-absolute top-0 end-0 m-2"
+                  onClick={() => handleDeletePost(post.postId)}
+                >
+                  <i className="fas fa-trash-alt"></i>
+                </MDBBtn>
               </MDBCard>
             </div>
           ))}

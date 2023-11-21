@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { formatDate } from '../../utils';
 import {
+  MDBBtn,
   MDBCard,
   MDBCardBody,
   MDBCardText
@@ -13,6 +14,8 @@ interface CommentData {
   postedAt: string;
 }
 
+const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
+
 const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
   const [comments, setComments] = useState<CommentData[]>([]);
 
@@ -20,7 +23,7 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
     const fetchComments = async () => {
       try {
         if (!post_id) return;
-        const response = await fetch(`https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts/${post_id}/comments`);
+        const response = await fetch(`${API_URL}/${post_id}/comments`);
         const commentsData = await response.json();
 
         const parsedComments = JSON.parse(commentsData.body).comments;
@@ -38,6 +41,32 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
     fetchComments();
   }, [post_id]);
 
+  // TO DO - only allow currently logged in user to delete their post unless they are admin
+  // TO DO - make confirmation window prettier
+  // const handleDeleteComment = async (comment_id: string) => {
+  //   const isConfirmed = window.confirm('Are you sure you want to delete this comment?');
+  
+  //   if (!isConfirmed) { return;}
+  
+  //   try {
+  //     const response = await fetch(`${API_URL}/${post_id}/comments/${comment_id}`, {
+  //       method: 'DELETE',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //     });
+  
+  //     if (response.ok) {
+  //       console.log(`Comment with ID ${comment_id} deleted successfully.`);
+  //       setComments((prevComments) => prevComments.filter((comment) => comment.commentId !== comment_id)); // update state
+  //     } else {
+  //       console.error(`Failed to delete comment with ID ${comment_id}. Status: ${response.status}`);
+  //     }
+  //   } catch (error) {
+  //     console.error('An error occurred while deleting the comment:', error);
+  //   }
+  // };
+
   return (
     <div>
       {comments.length > 0 ? (
@@ -51,6 +80,13 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
                 {formatDate(comment.postedAt)}
               </MDBCardText>
             </MDBCardBody>
+            {/* <MDBBtn
+                  color="danger"
+                  className="position-absolute top-0 end-0 m-2"
+                  onClick={() => handleDeleteComment(comment.commentId)}
+                >
+                  <i className="fas fa-trash-alt"></i>
+                </MDBBtn> */}
           </MDBCard>
         ))
       ) : (

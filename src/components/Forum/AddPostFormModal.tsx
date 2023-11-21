@@ -1,6 +1,14 @@
-// AddPostFormModal.tsx
 import React, { useState } from 'react';
-import { MDBBtn, MDBModal, MDBModalDialog, MDBModalContent, MDBModalHeader, MDBModalTitle, MDBModalBody, MDBModalFooter } from 'mdb-react-ui-kit';
+import { 
+  MDBBtn, 
+  MDBModal, 
+  MDBModalDialog, 
+  MDBModalContent, 
+  MDBModalHeader, 
+  MDBModalTitle, 
+  MDBModalBody, 
+  MDBModalFooter 
+} from 'mdb-react-ui-kit';
 
 interface AddPostFormModalProps {
   onSubmit: (postData: { title: string; content: string; media: string | null; tags: string[] }) => void;
@@ -47,8 +55,10 @@ const AddPostFormModal: React.FC<AddPostFormModalProps> = ({ onSubmit, onClose, 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   
-    // Set the username to "sean_oconnor" before calling the onSubmit function
-    const updatedPostData = { ...newPostData, username: 'sean_oconnor' };
+    // Set the username to "sean_oconnor" before calling the onSubmit function will have to be changed
+    // const updatedPostData = { ...newPostData, username: 'sean_oconnor' };
+
+    const updatedPostData = { ...newPostData };
   
     onSubmit(updatedPostData);
     setNewPostData({ title: '', content: '', media: null, tags: [] });
