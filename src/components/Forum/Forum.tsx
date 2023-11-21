@@ -58,20 +58,32 @@ const Forum: React.FC = () => {
     setShowNewPostModal(false);
   };
 
-  const handleNewPostSubmit = async (postData: { title: string; content: string }) => {
+  const handleNewPostSubmit = async (postData: { title: string; content: string; media: string | null; tags: string[] }) => {
+    // Set the username to "sean_oconnor"
+    const updatedPostData = { ...postData, username: 'sean_oconnor' };
+
+    // Log the submitted data (for debugging)
+    console.log('Submitted Data:', updatedPostData);
+
+    // Create FormData object
+    const formData = new FormData();
+    formData.append('title', updatedPostData.title);
+    formData.append('content', updatedPostData.content);
+    formData.append('media', updatedPostData.media || ''); // Ensure it's not null
+    formData.append('tags', JSON.stringify(updatedPostData.tags));
+
     // Perform the API call to submit the new post data
     try {
       const response = await fetch(API_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
+        body: formData,
       });
 
       if (!response.ok) {
+        console.log(response.json());
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
+
 
       // Assuming the API returns the newly created post data
       const newPost = await response.json();
@@ -111,6 +123,7 @@ const Forum: React.FC = () => {
           onSubmit={handleNewPostSubmit}
           onClose={handleNewPostClose}
           showModal={showNewPostModal}
+          
         />
 
         {posts

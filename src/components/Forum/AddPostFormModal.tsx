@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 import { MDBBtn, MDBModal, MDBModalDialog, MDBModalContent, MDBModalHeader, MDBModalTitle, MDBModalBody, MDBModalFooter } from 'mdb-react-ui-kit';
 
 interface AddPostFormModalProps {
-  onSubmit: (postData: { title: string; content: string; media: File | null; tags: string[] }) => void;
+  onSubmit: (postData: { title: string; content: string; media: string | null; tags: string[] }) => void;
   onClose: () => void;
   showModal: boolean;
 }
 
 const AddPostFormModal: React.FC<AddPostFormModalProps> = ({ onSubmit, onClose, showModal }) => {
-  const [newPostData, setNewPostData] = useState<{ title: string; content: string; media: File | null; tags: string[] }>({
+  const [newPostData, setNewPostData] = useState<{ title: string; content: string; media: string | null; tags: string[] }>({
     title: '',
     content: '',
     media: null,
@@ -21,10 +21,20 @@ const AddPostFormModal: React.FC<AddPostFormModalProps> = ({ onSubmit, onClose, 
     setNewPostData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleMediaChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const getBase64 = async (file: File) => {
+    return new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result?.toString().split(',')[1] || '');
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
+  const handleMediaChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      setNewPostData((prevData) => ({ ...prevData, media: files[0] }));
+      const base64Content = await getBase64(files[0]);
+      setNewPostData((prevData) => ({ ...prevData, media: base64Content }));
     }
   };
 
@@ -36,10 +46,10 @@ const AddPostFormModal: React.FC<AddPostFormModalProps> = ({ onSubmit, onClose, 
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
+  
     // Set the username to "sean_oconnor" before calling the onSubmit function
     const updatedPostData = { ...newPostData, username: 'sean_oconnor' };
-
+  
     onSubmit(updatedPostData);
     setNewPostData({ title: '', content: '', media: null, tags: [] });
     onClose();
