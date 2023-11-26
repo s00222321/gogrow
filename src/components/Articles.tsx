@@ -53,7 +53,7 @@ const Articles: React.FC = () => {
       fluid
       className="d-flex flex-column justify-content-center align-items-center"
       style={{
-        paddingTop: "10%",
+        paddingTop: "3%",
         paddingBottom: "10%",
       }}
     >

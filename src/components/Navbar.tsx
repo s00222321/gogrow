@@ -40,10 +40,10 @@ function Navbar() {
               <MDBNavbarLink href="#">My Garden</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="#">Articles</MDBNavbarLink>
+              <MDBNavbarLink href="articles">Articles</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="#">Forum</MDBNavbarLink>
+              <MDBNavbarLink href="forum">Forum</MDBNavbarLink>
             </MDBNavbarItem>
           </MDBNavbarNav>
         </MDBCollapse>
