@@ -16,7 +16,8 @@ const App: React.FC = () => {
       <div className="App">
         <Navbar />
         <Routes>
-          <Route index element={<Articles />} />
+          <Route index element={<Register />} />
+          <Route path="articles" element={<Articles />} />
           <Route path="article" element={<Article />} />
           <Route path="article/:article_id" element={<Articles />} />
           <Route path="register" element={<Register />} />
