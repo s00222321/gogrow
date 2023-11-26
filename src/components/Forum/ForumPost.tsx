@@ -14,6 +14,8 @@ import {
   MDBBtn
 } from "mdb-react-ui-kit";
 
+const MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/moderator';
+
 interface PostData {
   postId: string;
   title: string;
@@ -49,30 +51,73 @@ const ForumPost: React.FC = () => {
 
   const handleCommentSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+  
+    const postId = post_id;
+    const username = 'mairead_murphy'; // need to get dynamically
+  
     try {
-      const response = await fetch(
-        `https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts/${post_id}/comments`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            postId: post_id,
-            username: 'mairead_murphy', // Replace with the actual username or get it dynamically
-            content: comment,
-          }),
+      const toxicityScore = await performToxicityAnalysis(comment);
+  
+      console.log('Toxicity Score:', toxicityScore);
+  
+      if (toxicityScore < 0.5) {
+        const response = await fetch(
+          `https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts/${postId}/comments`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              postId: postId,
+              username: username,
+              content: comment,
+            }),
+          }
+        );
+  
+        if (!response.ok) {
+          console.error(`HTTP error! Status: ${response.status}`);
+        } else {
+          console.log('Comment submitted successfully!');
+          setComment('');
+          window.location.reload(); // need to change to only rerender component
         }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      } else {
+        alert('This comment contains inappropriate content. Please revise your comment.');
       }
-      console.log('Comment submitted successfully!');
-      setComment('');
-      window.location.reload(); // need to change to only rerender component
-    } catch (error: any) {
+    } catch (error:any) {
       console.error('Error submitting comment:', error.message);
+    }
+  };
+  
+
+  const performToxicityAnalysis = async (toCheck: string) => {
+    const payload = {
+        text: toCheck
+    };
+  
+    try {
+        const response = await fetch(MODERATOR_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ body: JSON.stringify(payload) }),
+        });
+  
+        if (!response.ok) {
+            throw new Error(`Toxicity analysis failed. Status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        const responseBody = JSON.parse(data.body);
+        const toxicityScore = parseFloat(responseBody.ToxicityScore);
+        return toxicityScore;
+        
+    } catch (error) {
+        console.error('Error performing toxicity analysis:', error);
+        throw error;
     }
   };
 

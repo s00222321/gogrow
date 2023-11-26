@@ -43,29 +43,29 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
 
   // TO DO - only allow currently logged in user to delete their post unless they are admin
   // TO DO - make confirmation window prettier
-  // const handleDeleteComment = async (comment_id: string) => {
-  //   const isConfirmed = window.confirm('Are you sure you want to delete this comment?');
+  const handleDeleteComment = async (comment_id: string) => {
+    const isConfirmed = window.confirm('Are you sure you want to delete this comment?');
   
-  //   if (!isConfirmed) { return;}
+    if (!isConfirmed) { return;}
   
-  //   try {
-  //     const response = await fetch(`${API_URL}/${post_id}/comments/${comment_id}`, {
-  //       method: 'DELETE',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //     });
+    try {
+      const response = await fetch(`${API_URL}/${post_id}/comments/${comment_id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
   
-  //     if (response.ok) {
-  //       console.log(`Comment with ID ${comment_id} deleted successfully.`);
-  //       setComments((prevComments) => prevComments.filter((comment) => comment.commentId !== comment_id)); // update state
-  //     } else {
-  //       console.error(`Failed to delete comment with ID ${comment_id}. Status: ${response.status}`);
-  //     }
-  //   } catch (error) {
-  //     console.error('An error occurred while deleting the comment:', error);
-  //   }
-  // };
+      if (response.ok) {
+        console.log(`Comment with ID ${comment_id} deleted successfully.`);
+        setComments((prevComments) => prevComments.filter((comment) => comment.commentId !== comment_id)); // update state
+      } else {
+        console.error(`Failed to delete comment with ID ${comment_id}. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('An error occurred while deleting the comment:', error);
+    }
+  };
 
   return (
     <div>
@@ -80,13 +80,13 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
                 {formatDate(comment.postedAt)}
               </MDBCardText>
             </MDBCardBody>
-            {/* <MDBBtn
+            <MDBBtn
                   color="danger"
                   className="position-absolute top-0 end-0 m-2"
                   onClick={() => handleDeleteComment(comment.commentId)}
                 >
                   <i className="fas fa-trash-alt"></i>
-                </MDBBtn> */}
+                </MDBBtn>
           </MDBCard>
         ))
       ) : (

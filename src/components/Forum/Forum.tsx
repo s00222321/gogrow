@@ -14,6 +14,7 @@ import AddPostFormModal from './AddPostFormModal';
 
 // put in .env?
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
+const MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/moderator';
 
 interface PostData {
   postId: string;
@@ -72,35 +73,76 @@ const Forum: React.FC = () => {
     // Set the username to "sean_oconnor" will have to be changed
     const updatedPostData = { ...postData, username: 'sean_oconnor' };
     console.log('Submitted Data:', updatedPostData);
-  
+
     try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title: updatedPostData.title,
-          content: updatedPostData.content,
-          username: updatedPostData.username,
-          tags: updatedPostData.tags,
-          media: updatedPostData.media,
-        }),
-      });
-  
-      if (!response.ok) {
-        console.log(response.json());
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-  
-      const newPost = await response.json();
-      setPosts((prevPosts) => [...prevPosts, newPost]);
-      setShowNewPostModal(false);
+        // Perform toxicity analysis
+        const toxicityScore = await performToxicityAnalysis(updatedPostData.title + ' ' + updatedPostData.content);
+
+        console.log('Toxicity Score:', toxicityScore);
+
+        // Check if the post is suitable based on toxicity score
+        if (toxicityScore < 0.5) {
+            // If the post is suitable, submit it
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: updatedPostData.title,
+                    content: updatedPostData.content,
+                    username: updatedPostData.username,
+                    tags: updatedPostData.tags,
+                    media: updatedPostData.media,
+                }),
+            });
+
+            if (!response.ok) {
+                console.log(response.json());
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const newPost = await response.json();
+            setPosts((prevPosts) => [...prevPosts, newPost]);
+            setShowNewPostModal(false);
+        } else {
+            // If the post is not suitable, inform the user
+            alert('This post contains inappropriate content. Please revise your post.');
+        }
     } catch (error) {
-      console.error('Error submitting new post:', (error as Error).message);
+        console.error('Error submitting new post:', (error as Error).message);
     }
+};
+
+// Function to perform toxicity analysis using the moderation API
+const performToxicityAnalysis = async (toCheck: string) => {
+  const payload = {
+      text: toCheck
   };
 
+  try {
+      const response = await fetch(MODERATOR_URL, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ body: JSON.stringify(payload) }),
+      });
+
+      if (!response.ok) {
+          throw new Error(`Toxicity analysis failed. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const responseBody = JSON.parse(data.body);
+      const toxicityScore = parseFloat(responseBody.ToxicityScore);
+      return toxicityScore;
+      
+  } catch (error) {
+      console.error('Error performing toxicity analysis:', error);
+      throw error;
+  }
+};
   // TO DO - only allow currently logged in user to delete their post unless they are admin
   // TO DO - make confirmation window prettier
   const handleDeletePost = async (postId: string) => {
