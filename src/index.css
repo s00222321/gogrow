@@ -24,4 +24,9 @@ body {
 #search {
   width: 30%;
   margin: 0 auto;
+  border-color: #1b5e20;
+}
+#search:focus {
+  outline: none;
+  box-shadow: 0 0 0.2rem rgba(67, 160, 71, 0.5);
 }
