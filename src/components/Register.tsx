@@ -18,39 +18,44 @@ const Register: React.FC = () => {
     county: "",
   });
 
-  const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = event.target;
-    console.log(`Name: ${name}, Value: ${value}`);  // Add this line for debugging
+    console.log(`Name: ${name}, Value: ${value}`);
     setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
-  
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  
-    console.log("County attribute:", formData.county); // Log the county attribute
-  
-    const emailAttribute = new CognitoUserAttribute({
+};
+
+const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
+
+  console.log("Form Data:", formData); // Log the form data before signup
+
+  const emailAttribute = new CognitoUserAttribute({
       Name: "email",
       Value: formData.email,
-    });
-  
-    UserPool.signUp(
+  });
+
+  // Include the county attribute in the user registration
+  const countyAttribute = new CognitoUserAttribute({
+      Name: "custom:county",  // Update this if your attribute is a custom attribute
+      Value: formData.county,
+  });
+
+  UserPool.signUp(
       formData.username,
       formData.password,
-      [emailAttribute],
+      [emailAttribute, countyAttribute],  // Include the countyAttribute in the array
       [],
       (err, data) => {
-        if (err) {
-          console.error("Error during registration:", err);
-        } else {
-          console.log("Registration successful:", data);
-        }
+          if (err) {
+              console.error("Error during registration:", err);
+          } else {
+              console.log("Registration successful:", data);
+          }
       }
-    );
-  };
-  
+  );
+};
+
+
   return (
     <MDBContainer
       fluid
