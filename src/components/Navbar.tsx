@@ -62,14 +62,14 @@ function Navbar() {
           </MDBDropdownMenu>
         </MDBDropdown>
 
-        <MDBDropdown className="me-3">
+        <MDBDropdown>
           <MDBDropdownToggle tag="a" href="#" role="button">
             <MDBIcon fas icon="user-circle" size="2x" className="me-2" />
           </MDBDropdownToggle>
           <MDBDropdownMenu>
-            <MDBDropdownItem href="#">My profile</MDBDropdownItem>
-            <MDBDropdownItem href="#">Settings</MDBDropdownItem>
-            <MDBDropdownItem href="#">Logout</MDBDropdownItem>
+            <MDBDropdownItem link>My profile</MDBDropdownItem>
+            <MDBDropdownItem link>Settings</MDBDropdownItem>
+            <MDBDropdownItem link>Logout</MDBDropdownItem>
           </MDBDropdownMenu>
         </MDBDropdown>
       </div>
