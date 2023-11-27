@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
 import {
   MDBNavbar,
   MDBNavbarBrand,
@@ -16,6 +17,10 @@ import {
 
 function Navbar() {
   const [showNav, setShowNav] = useState(false);
+
+  const toaster = () => {
+    toast("Hello world!");
+  };
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -49,7 +54,7 @@ function Navbar() {
         </MDBCollapse>
 
         <MDBDropdown className="me-3">
-          <MDBDropdownToggle tag="a" href="#" role="button">
+          <MDBDropdownToggle tag="a" href="#" role="button" onClick={toaster}>
             <MDBIcon fas icon="bell" className="me-2" />
             <span className="badge rounded-pill badge-notification bg-danger">
               1
@@ -61,7 +66,15 @@ function Navbar() {
             <MDBDropdownItem link>Something else here</MDBDropdownItem>
           </MDBDropdownMenu>
         </MDBDropdown>
-
+        <div>
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            containerStyle={{
+              top: 80,
+            }}
+          />
+        </div>
         <MDBDropdown className="me-3">
           <MDBDropdownToggle tag="a" href="#" role="button">
             <MDBIcon fas icon="user-circle" size="2x" className="me-2" />
