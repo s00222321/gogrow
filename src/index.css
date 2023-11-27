@@ -21,3 +21,7 @@ body {
 .dropdown-toggle {
   color: #307c34 !important;
 }
+#search {
+  width: 30%;
+  margin: 0 auto;
+}
