@@ -56,13 +56,13 @@ function Navbar() {
             </span>
           </MDBDropdownToggle>
           <MDBDropdownMenu>
-            <MDBDropdownItem href="#">Some news</MDBDropdownItem>
-            <MDBDropdownItem href="#">Another news</MDBDropdownItem>
-            <MDBDropdownItem href="#">Something else here</MDBDropdownItem>
+            <MDBDropdownItem link>Some news</MDBDropdownItem>
+            <MDBDropdownItem link>Another news</MDBDropdownItem>
+            <MDBDropdownItem link>Something else here</MDBDropdownItem>
           </MDBDropdownMenu>
         </MDBDropdown>
 
-        <MDBDropdown>
+        <MDBDropdown className="me-3">
           <MDBDropdownToggle tag="a" href="#" role="button">
             <MDBIcon fas icon="user-circle" size="2x" className="me-2" />
           </MDBDropdownToggle>
