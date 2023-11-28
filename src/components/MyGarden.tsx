@@ -23,57 +23,60 @@ const MyGarden: React.FC = () => {
 
   useEffect(() => {
     const fetchPlantsData = async () => {
-      try {
-        const response = await fetch(
-          "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
-        );
-        const jsonResponse = await response.json();
-        const plantsData = JSON.parse(jsonResponse.body);
-        return plantsData;
-      } catch (error) {
-        console.error(error);
-      }
+      const response = await fetch(
+        "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
+      );
+      const jsonResponse = await response.json();
+      return JSON.parse(jsonResponse.body);
     };
 
     const fetchGardenPlants = async () => {
-      try {
-        const response = await fetch(
-          "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/test"
-        );
-        const jsonResponse = await response.json();
+      const response = await fetch(
+        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/test"
+      );
+      const jsonResponse = await response.json();
 
-        if (
-          !jsonResponse.data ||
-          !Array.isArray(jsonResponse.data.currently_growing)
-        ) {
-          throw new Error("Currently growing data is not an array");
-        }
+      const currentlyGrowingIds = jsonResponse.data.currently_growing.map(
+        (id: string) => parseInt(id)
+      );
+      const plantsData = await fetchPlantsData();
 
-        const currentlyGrowingIds = jsonResponse.data.currently_growing.map(
-          (id: string) => parseInt(id)
-        );
-        const plantsData = await fetchPlantsData();
+      const gardenPlantsData = currentlyGrowingIds
+        .map((growingPlantId: any) =>
+          plantsData.find(
+            (plant: { plant_id: any }) => plant.plant_id === growingPlantId
+          )
+        )
+        .filter((plant: undefined) => plant !== undefined);
 
-        if (!Array.isArray(plantsData)) {
-          throw new Error("Plants data is not an array");
-        }
-
-        const gardenPlantsData = currentlyGrowingIds
-          .map((growingPlantId: any) => {
-            return plantsData.find(
-              (plant) => plant.plant_id === growingPlantId
-            );
-          })
-          .filter((plant: undefined) => plant !== undefined);
-
-        setGardenPlants(gardenPlantsData);
-      } catch (error) {
-        console.error(error);
-      }
+      setGardenPlants(gardenPlantsData);
     };
 
     fetchGardenPlants();
   }, []);
+
+  const handleDeleteFromGarden = async (plant_id: number) => {
+    try {
+      await fetch(
+        "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: "test", // Replace 'test' with the actual username, if dynamic
+            plant_id: plant_id,
+          }),
+        }
+      );
+      setGardenPlants(
+        gardenPlants.filter((plant) => plant.plant_id !== plant_id)
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <MDBContainer
@@ -110,11 +113,21 @@ const MyGarden: React.FC = () => {
                       <a
                         href={`/plant/${plant.plant_id}`}
                         role="button"
-                        style={{ color: "grey" }}
+                        style={{ color: "grey", marginRight: "10px" }}
                         data-mdb-toggle="tooltip"
                         title="More information"
                       >
                         <i className="fas fa-info-circle fa-lg"></i>
+                      </a>
+                      <a
+                        href="#!"
+                        role="button"
+                        style={{ color: "grey" }}
+                        data-mdb-toggle="tooltip"
+                        title="Remove from my garden"
+                        onClick={() => handleDeleteFromGarden(plant.plant_id)}
+                      >
+                        <i className="fas fa-trash-alt fa-lg"></i>
                       </a>
                     </div>
                   </div>
