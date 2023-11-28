@@ -32,8 +32,6 @@ const Plants: React.FC = () => {
         const data = JSON.parse(responseData.body);
         if (Array.isArray(data)) {
           setPlants(data);
-        } else {
-          console.error("No data available.");
         }
       } catch (error) {
         console.error(error);
@@ -45,6 +43,40 @@ const Plants: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleAddToFavorites = async (plant_id: number) => {
+    try {
+      await fetch(
+        "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/favourites",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username: "test", plant_id }),
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleAddToCurrentlyGrowing = async (plant_id: number) => {
+    try {
+      await fetch(
+        "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username: "test", plant_id }),
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const filteredPlants = plants.filter((plant) =>
@@ -109,6 +141,7 @@ const Plants: React.FC = () => {
                         style={{ color: "grey", marginRight: "10px" }}
                         data-mdb-toggle="tooltip"
                         title="Add to favourites"
+                        onClick={() => handleAddToFavorites(plant.plant_id)}
                       >
                         <i className="fas fa-star fa-lg"></i>
                       </a>
@@ -118,6 +151,9 @@ const Plants: React.FC = () => {
                         style={{ color: "grey" }}
                         data-mdb-toggle="tooltip"
                         title="Add to my garden"
+                        onClick={() =>
+                          handleAddToCurrentlyGrowing(plant.plant_id)
+                        }
                       >
                         <i className="fas fa-plus fa-lg"></i>
                       </a>

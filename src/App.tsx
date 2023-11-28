@@ -9,6 +9,7 @@ import Plants from "./components/Plants";
 import Plant from "./components/Plant"; // Import the Plant component
 import Forum from "./components/Forum/Forum";
 import ForumPost from "./components/Forum/ForumPost";
+import MyGarden from "./components/MyGarden";
 
 const App: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const App: React.FC = () => {
           <Route path="article/:article_id" element={<Article />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
+          <Route path="mygarden" element={<MyGarden />} />
           <Route path="plants" element={<Plants />} />
           <Route path="plant/:plant_id" element={<Plant />} />
           <Route path="forum" element={<Forum />} />
