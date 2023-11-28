@@ -133,7 +133,7 @@ const Plants: React.FC = () => {
                         data-mdb-toggle="tooltip"
                         title="More information"
                       >
-                        <i className="fas fa-info-circle fa-lg"></i>
+                        <i className="fas fa-info-circle fa-2x"></i>
                       </a>
                       <a
                         href="#!"
@@ -143,7 +143,7 @@ const Plants: React.FC = () => {
                         title="Add to favourites"
                         onClick={() => handleAddToFavorites(plant.plant_id)}
                       >
-                        <i className="fas fa-star fa-lg"></i>
+                        <i className="fas fa-star fa-2x"></i>
                       </a>
                       <a
                         href="#!"
@@ -155,7 +155,7 @@ const Plants: React.FC = () => {
                           handleAddToCurrentlyGrowing(plant.plant_id)
                         }
                       >
-                        <i className="fas fa-plus fa-lg"></i>
+                        <i className="fas fa-plus fa-2x"></i>
                       </a>
                     </div>
                   </div>

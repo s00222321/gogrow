@@ -117,17 +117,16 @@ const MyGarden: React.FC = () => {
                         data-mdb-toggle="tooltip"
                         title="More information"
                       >
-                        <i className="fas fa-info-circle fa-lg"></i>
+                        <i className="fas fa-info-circle fa-2x"></i>
                       </a>
                       <a
-                        href="#!"
                         role="button"
                         style={{ color: "grey" }}
                         data-mdb-toggle="tooltip"
                         title="Remove from my garden"
                         onClick={() => handleDeleteFromGarden(plant.plant_id)}
                       >
-                        <i className="fas fa-trash-alt fa-lg"></i>
+                        <i className="fas fa-trash-alt fa-2x"></i>
                       </a>
                     </div>
                   </div>
