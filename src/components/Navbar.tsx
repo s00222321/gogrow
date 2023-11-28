@@ -45,6 +45,9 @@ function Navbar() {
               <MDBNavbarLink href="mygarden">My Garden</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
+              <MDBNavbarLink href="plants">Plants</MDBNavbarLink>
+            </MDBNavbarItem>
+            <MDBNavbarItem>
               <MDBNavbarLink href="articles">Articles</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
