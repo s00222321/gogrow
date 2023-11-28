@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import {
   MDBRow,
   MDBCol,
@@ -64,7 +65,7 @@ const Plants: React.FC = () => {
 
   const handleAddToCurrentlyGrowing = async (plant_id: number) => {
     try {
-      await fetch(
+      const response = await fetch(
         "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
         {
           method: "POST",
@@ -74,8 +75,21 @@ const Plants: React.FC = () => {
           body: JSON.stringify({ username: "test", plant_id }),
         }
       );
+
+      if (response.ok) {
+        const plant = plants.find((p) => p.plant_id === plant_id);
+        toast(`Added ${plant?.name} to My Garden`, {
+          position: "bottom-center",
+        });
+      } else {
+        // Handle non-ok response here
+        toast.error("Failed to add plant to garden", {
+          position: "bottom-center",
+        });
+      }
     } catch (error) {
       console.error(error);
+      toast.error("An error occurred", { position: "bottom-center" });
     }
   };
 
