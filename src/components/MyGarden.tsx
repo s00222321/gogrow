@@ -6,6 +6,7 @@ import {
   MDBCard,
   MDBCardBody,
   MDBContainer,
+  MDBBtn,
 } from "mdb-react-ui-kit";
 
 interface Plant {
@@ -57,6 +58,15 @@ const MyGarden: React.FC = () => {
   }, []);
 
   const handleDeleteFromGarden = async (plant_id: number) => {
+    const plantToDelete = gardenPlants.find(
+      (plant) => plant.plant_id === plant_id
+    );
+
+    if (!plantToDelete) {
+      toast.error("Plant not found", { position: "bottom-center" });
+      return;
+    }
+
     try {
       const response = await fetch(
         "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
@@ -65,10 +75,7 @@ const MyGarden: React.FC = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            username: "test", // Replace 'test' with the actual username, if dynamic
-            plant_id: plant_id,
-          }),
+          body: JSON.stringify({ username: "test", plant_id }),
         }
       );
 
@@ -76,18 +83,25 @@ const MyGarden: React.FC = () => {
         setGardenPlants(
           gardenPlants.filter((plant) => plant.plant_id !== plant_id)
         );
-        toast.success(`Plant removed from My Garden`, {
+        toast.success(`${plantToDelete.name} removed from My Garden`, {
           position: "bottom-center",
         });
       } else {
-        toast.error("Failed to remove plant from garden", {
+        toast.error(`Failed to remove ${plantToDelete.name} from garden`, {
           position: "bottom-center",
         });
       }
     } catch (error) {
       console.error(error);
-      toast.error("An error occurred", { position: "bottom-center" });
+      toast.error(`An error occurred removing ${plantToDelete.name}`, {
+        position: "bottom-center",
+      });
     }
+  };
+
+  const navigateToPlantsPage = () => {
+    // Replace with your navigation logic, e.g., React Router's useHistory or window.location
+    window.location.href = "/plants";
   };
 
   return (
@@ -126,7 +140,6 @@ const MyGarden: React.FC = () => {
                         href={`/plant/${plant.plant_id}`}
                         role="button"
                         style={{ color: "grey", marginRight: "10px" }}
-                        data-mdb-toggle="tooltip"
                         title="More information"
                       >
                         <i className="fas fa-info-circle fa-2x"></i>
@@ -134,7 +147,6 @@ const MyGarden: React.FC = () => {
                       <a
                         role="button"
                         style={{ color: "grey" }}
-                        data-mdb-toggle="tooltip"
                         title="Remove from my garden"
                         onClick={() => handleDeleteFromGarden(plant.plant_id)}
                       >
@@ -147,6 +159,11 @@ const MyGarden: React.FC = () => {
             </MDBCol>
           ))}
         </MDBRow>
+        <div className="mt-4">
+          <MDBBtn color="primary" onClick={navigateToPlantsPage}>
+            Add more plants
+          </MDBBtn>
+        </div>
       </div>
     </MDBContainer>
   );
