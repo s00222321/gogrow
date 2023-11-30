@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import {
   MDBRow,
   MDBCol,
@@ -57,7 +58,7 @@ const MyGarden: React.FC = () => {
 
   const handleDeleteFromGarden = async (plant_id: number) => {
     try {
-      await fetch(
+      const response = await fetch(
         "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
         {
           method: "DELETE",
@@ -70,11 +71,22 @@ const MyGarden: React.FC = () => {
           }),
         }
       );
-      setGardenPlants(
-        gardenPlants.filter((plant) => plant.plant_id !== plant_id)
-      );
+
+      if (response.ok) {
+        setGardenPlants(
+          gardenPlants.filter((plant) => plant.plant_id !== plant_id)
+        );
+        toast.success(`Plant removed from My Garden`, {
+          position: "bottom-center",
+        });
+      } else {
+        toast.error("Failed to remove plant from garden", {
+          position: "bottom-center",
+        });
+      }
     } catch (error) {
       console.error(error);
+      toast.error("An error occurred", { position: "bottom-center" });
     }
   };
 

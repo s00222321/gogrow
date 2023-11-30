@@ -80,7 +80,7 @@ const Plants: React.FC = () => {
       if (response.ok) {
         setCurrentlyGrowing([...currentlyGrowing, plant_id.toString()]);
         const plant = plants.find((p) => p.plant_id === plant_id);
-        toast(`Added ${plant?.name} to My Garden`, {
+        toast.success(`Added ${plant?.name} to My Garden`, {
           position: "bottom-center",
         });
       } else {
