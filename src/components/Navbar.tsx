@@ -42,16 +42,16 @@ function Navbar() {
         <MDBCollapse navbar open={showNav} id="navbarContent">
           <MDBNavbarNav>
             <MDBNavbarItem>
-              <MDBNavbarLink href="mygarden">My Garden</MDBNavbarLink>
+              <MDBNavbarLink href="/mygarden">My Garden</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="plants">Plants</MDBNavbarLink>
+              <MDBNavbarLink href="/plants">Plants</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="articles">Articles</MDBNavbarLink>
+              <MDBNavbarLink href="/articles">Articles</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="forum">Forum</MDBNavbarLink>
+              <MDBNavbarLink href="/forum">Forum</MDBNavbarLink>
             </MDBNavbarItem>
           </MDBNavbarNav>
         </MDBCollapse>
