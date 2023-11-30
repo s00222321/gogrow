@@ -164,6 +164,8 @@ const Plants: React.FC = () => {
                         <i
                           className="fas fa-check fa-2x"
                           style={{ color: "grey" }}
+                          data-mdb-toggle="tooltip"
+                          title="Already in my garden"
                         ></i>
                       ) : (
                         <a
