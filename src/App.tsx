@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar";
 import Articles from "./components/Articles";
 import Article from "./components/Article";
 import Plants from "./components/Plants";
-import Plant from "./components/Plant"; // Import the Plant component
+import Plant from "./components/Plant";
 import Forum from "./components/Forum/Forum";
 import ForumPost from "./components/Forum/ForumPost";
 import MyGarden from "./components/MyGarden";
@@ -29,6 +29,19 @@ const App: React.FC = () => {
           <Route path="forum" element={<Forum />} />
           <Route path="forum/:post_id" element={<ForumPost />} />
         </Routes>
+      </div>
+
+      <div className="snowflakes" aria-hidden="true">
+        <div className="snowflake">❅</div>
+        <div className="snowflake">❅</div>
+        <div className="snowflake">❆</div>
+        <div className="snowflake">❄</div>
+        <div className="snowflake">❅</div>
+        <div className="snowflake">❆</div>
+        <div className="snowflake">❄</div>
+        <div className="snowflake">❅</div>
+        <div className="snowflake">❆</div>
+        <div className="snowflake">❄</div>
       </div>
     </Router>
   );
