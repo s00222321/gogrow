@@ -16,9 +16,7 @@ interface UserData {
   email: string;
   DateJoined: string;
   County: string;
-  FavoritedPlants: string[];
   SustainabilityScore: number;
-  PlantsCurrentlyGrowing: Record<string, string>;
   Achievements: Record<string, { DateEarned: string; Description: string }>;
 }
 
@@ -67,79 +65,71 @@ const UserDetails: React.FC = () => {
     console.log("Editing email...");
 
     try {
-        const apiUrl =
-            "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly";
-        console.log("API URL:", apiUrl);
+      const apiUrl =
+        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly";
+      console.log("API URL:", apiUrl);
 
-        const response = await fetch(apiUrl, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ email: newEmail }),
-        });
+      const response = await fetch(apiUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: newEmail }),
+      });
 
-        console.log("Response:", response);
+      console.log("Response:", response);
 
-        if (!response.ok) {
-            throw new Error("Failed to update email");
-        }
+      if (!response.ok) {
+        throw new Error("Failed to update email");
+      }
 
-        // Show success message
-        setUpdateSuccess(true);
-        setIsEditingEmail(false); // Exit edit mode
+      // Show success message
+      setUpdateSuccess(true);
+      setIsEditingEmail(false); // Exit edit mode
 
-        // Log the current state before the update
-        console.log("Before state update:", userData);
+      // Synchronously update the state using the functional form
+      setUserData((prevUserData) => {
+        if (!prevUserData) return null;
 
-        // Synchronously update the state using the functional form
-        setUserData((prevUserData) => {
-            if (!prevUserData) return null;
+        const {
+          email,
+          ProfilePic,
+          Username,
+          DateJoined,
+          County,
+          SustainabilityScore,
+          Achievements,
+        } = prevUserData;
 
-            const {
-                email,
-                ProfilePic,
-                Username,
-                DateJoined,
-                County,
-                FavoritedPlants,
-                SustainabilityScore,
-                PlantsCurrentlyGrowing,
-                Achievements,
-            } = prevUserData;
+        console.log("prevUserData.email:", prevUserData.email);
+        console.log("newEmail:", newEmail);
 
-            console.log("prevUserData.email:", prevUserData.email);
-            console.log("newEmail:", newEmail);
+        return {
+          email: newEmail,
+          ProfilePic: ProfilePic || "",
+          Username: Username || "",
+          DateJoined: DateJoined || "",
+          County: County || "",
+          SustainabilityScore: SustainabilityScore || 0,
+          Achievements: Achievements || {},
+        };
+      });
 
-            return {
-                email: newEmail,
-                ProfilePic: ProfilePic || "",
-                Username: Username || "",
-                DateJoined: DateJoined || "",
-                County: County || "",
-                FavoritedPlants: FavoritedPlants || [],
-                SustainabilityScore: SustainabilityScore || 0,
-                PlantsCurrentlyGrowing: PlantsCurrentlyGrowing || {},
-                Achievements: Achievements || {},
-            };
-        });
+      // Log the current state after the update
+      console.log("After state update:", userData);
 
-        // Log the current state after the update
-        console.log("After state update:", userData);
+      // Reset new email
+      setNewEmail("");
 
-        // Reset new email
-        setNewEmail("");
-
-        console.log("Update successful");
+      console.log("Update successful");
     } catch (error) {
-        console.error("Error updating email:", error);
+      console.error("Error updating email:", error);
     } finally {
-        // Always exit edit mode
-        setIsEditingEmail(false);
+      // Always exit edit mode
+      setIsEditingEmail(false);
     }
-};
+  };
 
-  
   const handleEditSaveCounty = async () => {
     console.log("Editing County...");
     try {
@@ -154,17 +144,17 @@ const UserDetails: React.FC = () => {
           County: newCounty, // Include County in the payload
         }),
       });
-  
+
       console.log("Response:", response);
-  
+
       if (!response.ok) {
         throw new Error("Failed to update County");
       }
-  
+
       // Show success message
       setUpdateSuccess(true);
       setIsEditingCounty(false); // Exit edit mode
-  
+
       // Synchronously update the state
       setUserData((prevUserData) =>
         prevUserData
@@ -174,19 +164,18 @@ const UserDetails: React.FC = () => {
             }
           : null
       );
-  
+
       // Reset new County
       setNewCounty("");
-  
+
       console.log("Update successful");
     } catch (error) {
       console.error("Error updating County:", error);
     } finally {
       // Always exit edit mode
       setIsEditingCounty(false);
-    };
+    }
   };
-  
 
   console.log("userData.email:", userData?.email);
   console.log("userData.County:", userData?.County);
@@ -284,32 +273,17 @@ const UserDetails: React.FC = () => {
                   )}
                 </MDBCardText>
                 <MDBCardText>
-                  <strong>Favorited Plants:</strong>{" "}
-                  {userData.FavoritedPlants.join(", ")}
-                </MDBCardText>
-                <MDBCardText>
                   <strong>Sustainability Score:</strong>{" "}
                   {userData.SustainabilityScore}
                 </MDBCardText>
               </MDBCol>
             </MDBRow>
             <hr />
+            {updateSuccess && (
+              <p className="text-success">Update successful!</p>
+            )}
             <MDBRow>
-              <MDBCol md="6">
-                {userData.PlantsCurrentlyGrowing && (
-                  <>
-                    <h5>Plants Currently Growing</h5>
-                    {Object.entries(userData.PlantsCurrentlyGrowing).map(
-                      ([plantName, growthStatus]) => (
-                        <p key={plantName}>
-                          <strong>{plantName}:</strong> {growthStatus}
-                        </p>
-                      )
-                    )}
-                  </>
-                )}
-              </MDBCol>
-              <MDBCol md="6">
+              <MDBCol md="12">
                 {userData.Achievements && (
                   <>
                     <h5>Achievements</h5>
@@ -332,9 +306,6 @@ const UserDetails: React.FC = () => {
                 )}
               </MDBCol>
             </MDBRow>
-            {updateSuccess && (
-              <p className="text-success">Update successful!</p>
-            )}
           </MDBCardBody>
         </MDBCard>
       ) : (
