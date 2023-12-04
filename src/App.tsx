@@ -7,6 +7,7 @@ import Articles from "./components/Articles";
 import Article from "./components/Article";
 import Plants from "./components/Plants";
 import Plant from "./components/Plant"; // Import the Plant component
+import HomePage from "./components/HomePage";
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
           <Route path="login" element={<Login />} />
           <Route path="plants" element={<Plants />} />
           <Route path="plant/:plant_id" element={<Plant />} />
+          <Route path="HomePage" element={<HomePage />} />
         </Routes>
       </div>
     </Router>
