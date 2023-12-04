@@ -13,8 +13,8 @@ export default function App() {
       >
         <div className="text-center p-3">
           &copy; {new Date().getFullYear()} Copyright:{" "}
-          <a className="text-dark" href="gogrow">
-            MDBootstrap.com
+          <a className="text-dark" href="#">
+            GoGrow.com
           </a>
         </div>
       </MDBFooter>
