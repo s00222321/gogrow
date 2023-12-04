@@ -1,16 +1,17 @@
 // Forum.tsx
 import React, { useEffect, useState } from 'react';
 import { formatDate } from '../../utils';
-import { 
-  MDBContainer, 
-  MDBCol, 
-  MDBCard, 
-  MDBCardBody, 
-  MDBBtn, 
-  MDBCardText, 
-  MDBCardTitle 
+import {
+  MDBContainer,
+  MDBCol,
+  MDBCard,
+  MDBCardBody,
+  MDBBtn,
+  MDBCardText,
+  MDBCardTitle,
 } from 'mdb-react-ui-kit';
 import AddPostFormModal from './AddPostFormModal';
+import ConfirmDialog from '../Shared/ConfirmDialog'; 
 
 // put in .env?
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
@@ -30,6 +31,8 @@ const Forum: React.FC = () => {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [showNewPostModal, setShowNewPostModal] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false); // State for the delete confirmation dialog
+  const [postToDelete, setPostToDelete] = useState<string>(''); // State to track the post to be deleted
 
   useEffect(() => {
     fetchData();
@@ -68,21 +71,13 @@ const Forum: React.FC = () => {
     setShowNewPostModal(false);
   };
 
-  // TO DO : Get username from currently logged in user
   const handleNewPostSubmit = async (postData: { title: string; content: string; media: string | null; tags: string[] }) => {
-    // Set the username to "sean_oconnor" will have to be changed
     const updatedPostData = { ...postData, username: 'sean_oconnor' };
-    console.log('Submitted Data:', updatedPostData);
 
     try {
-        // Perform toxicity analysis
         const toxicityScore = await performToxicityAnalysis(updatedPostData.title + ' ' + updatedPostData.content);
 
-        console.log('Toxicity Score:', toxicityScore);
-
-        // Check if the post is suitable based on toxicity score
         if (toxicityScore < 0.5) {
-            // If the post is suitable, submit it
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: {
@@ -106,69 +101,68 @@ const Forum: React.FC = () => {
             setPosts((prevPosts) => [...prevPosts, newPost]);
             setShowNewPostModal(false);
         } else {
-            // If the post is not suitable, inform the user
             alert('This post contains inappropriate content. Please revise your post.');
         }
     } catch (error) {
         console.error('Error submitting new post:', (error as Error).message);
     }
-};
-
-// Function to perform toxicity analysis using the moderation API
-const performToxicityAnalysis = async (toCheck: string) => {
-  const payload = {
-      text: toCheck
   };
 
-  try {
-      const response = await fetch(MODERATOR_URL, {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ body: JSON.stringify(payload) }),
-      });
+  const performToxicityAnalysis = async (toCheck: string) => {
+    const payload = {
+        text: toCheck
+    };
 
-      if (!response.ok) {
-          throw new Error(`Toxicity analysis failed. Status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      const responseBody = JSON.parse(data.body);
-      const toxicityScore = parseFloat(responseBody.ToxicityScore);
-      return toxicityScore;
-      
-  } catch (error) {
-      console.error('Error performing toxicity analysis:', error);
-      throw error;
-  }
-};
-  // TO DO - only allow currently logged in user to delete their post unless they are admin
-  // TO DO - make confirmation window prettier
-  const handleDeletePost = async (postId: string) => {
-    const isConfirmed = window.confirm('Are you sure you want to delete this post?');
-  
-    if (!isConfirmed) { return;}
-  
     try {
-      const response = await fetch(`${API_URL}/${postId}`, {
+        const response = await fetch(MODERATOR_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ body: JSON.stringify(payload) }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`Toxicity analysis failed. Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const responseBody = JSON.parse(data.body);
+        const toxicityScore = parseFloat(responseBody.ToxicityScore);
+        return toxicityScore;
+        
+    } catch (error) {
+        console.error('Error performing toxicity analysis:', error);
+        throw error;
+    }
+  };
+
+  const handleDeletePost = (postId: string) => {
+    setPostToDelete(postId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`${API_URL}/${postToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
-        console.log(`Post with ID ${postId} deleted successfully.`);
-        setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postId)); // update state
+        console.log(`Post with ID ${postToDelete} deleted successfully.`);
+        setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postToDelete)); // update state
       } else {
-        console.error(`Failed to delete post with ID ${postId}. Status: ${response.status}`);
+        console.error(`Failed to delete post with ID ${postToDelete}. Status: ${response.status}`);
       }
     } catch (error) {
       console.error('An error occurred while deleting the post:', error);
+    } finally {
+      setShowDeleteConfirm(false);
     }
   };
-  
 
   return (
     <MDBContainer className="py-5">
@@ -195,7 +189,6 @@ const performToxicityAnalysis = async (toCheck: string) => {
           onSubmit={handleNewPostSubmit}
           onClose={handleNewPostClose}
           showModal={showNewPostModal}
-          
         />
 
         {posts
@@ -240,6 +233,15 @@ const performToxicityAnalysis = async (toCheck: string) => {
             </div>
           ))}
       </MDBCol>
+
+      {/* Add the ConfirmDialog for post deletion */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        message="Are you sure you want to delete this post?"
+        title="Delete Post?"
+      />
     </MDBContainer>
   );
 };
