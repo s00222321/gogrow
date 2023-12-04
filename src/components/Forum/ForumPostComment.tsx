@@ -6,6 +6,7 @@ import {
   MDBCardBody,
   MDBCardText
 } from "mdb-react-ui-kit";
+import ConfirmDialog from '../Shared/ConfirmDialog';
 
 interface CommentData {
   commentId: string;
@@ -19,6 +20,8 @@ const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts
 
 const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
   const [comments, setComments] = useState<CommentData[]>([]);
+  const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState<string>('');
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -42,30 +45,36 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
     fetchComments();
   }, [post_id]);
 
-  // TO DO - only allow currently logged in user to delete their post unless they are admin
-  // TO DO - make confirmation window prettier
-  const handleDeleteComment = async (comment_id: string) => {
-    const isConfirmed = window.confirm('Are you sure you want to delete this comment?');
-  
-    if (!isConfirmed) { return;}
-  
+  const handleDeleteComment = (comment_id: string) => {
+    setCommentToDelete(comment_id);
+    setIsConfirmationDialogOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setIsConfirmationDialogOpen(false);
+
     try {
-      const response = await fetch(`${API_URL}/${post_id}/comments/${comment_id}`, {
+      const response = await fetch(`${API_URL}/${post_id}/comments/${commentToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.ok) {
-        console.log(`Comment with ID ${comment_id} deleted successfully.`);
-        setComments((prevComments) => prevComments.filter((comment) => comment.commentId !== comment_id)); // update state
+        console.log(`Comment with ID ${commentToDelete} deleted successfully.`);
+        setComments((prevComments) => prevComments.filter((comment) => comment.commentId !== commentToDelete));
       } else {
-        console.error(`Failed to delete comment with ID ${comment_id}. Status: ${response.status}`);
+        console.error(`Failed to delete comment with ID ${commentToDelete}. Status: ${response.status}`);
       }
     } catch (error) {
       console.error('An error occurred while deleting the comment:', error);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setIsConfirmationDialogOpen(false);
+    setCommentToDelete('');
   };
 
   return (
@@ -74,7 +83,7 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
         comments.map((comment) => (
           <MDBCard key={comment.commentId} className="my-3">
             <MDBCardBody>
-            <MDBCardText>
+              <MDBCardText>
                 {comment.userProfilePic && (
                   <img
                     src={comment.userProfilePic}
@@ -85,7 +94,6 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
                 )}
                 {comment.username}
               </MDBCardText>
-              <MDBCardText>{comment.username}</MDBCardText>
               <MDBCardText>{comment.content}</MDBCardText>
               <MDBCardText>
                 <strong>Comment Date:</strong>{" "}
@@ -93,17 +101,25 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
               </MDBCardText>
             </MDBCardBody>
             <MDBBtn
-                  color="danger"
-                  className="position-absolute top-0 end-0 m-2"
-                  onClick={() => handleDeleteComment(comment.commentId)}
-                >
-                  <i className="fas fa-trash-alt"></i>
-                </MDBBtn>
+              color="danger"
+              className="position-absolute top-0 end-0 m-2"
+              onClick={() => handleDeleteComment(comment.commentId)}
+            >
+              <i className="fas fa-trash-alt"></i>
+            </MDBBtn>
           </MDBCard>
         ))
       ) : (
         <p>No comments available</p>
       )}
+
+      <ConfirmDialog
+        isOpen={isConfirmationDialogOpen}
+        onClose={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        message="Are you sure you want to delete this comment?"
+        title="Delete comment?"
+      />
     </div>
   );
 };
