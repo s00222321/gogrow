@@ -23,6 +23,7 @@ interface VegetableData {
 const HomePage: React.FC = () => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [vegetableData, setVegetableData] = useState<VegetableData | null>(null);
+  
 
   useEffect(() => {
     // Fetch weather data
@@ -39,8 +40,10 @@ const HomePage: React.FC = () => {
 
     // Fetch vegetable data
     const fetchVegetableData = async () => {
+        const randomNumber = Math.floor(Math.random() * 25) + 1;
+const endpoint = `https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1/${randomNumber}`;
         try {
-          const response = await fetch('https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1/4');
+          const response = await fetch(endpoint);
           const data = await response.json();
           const parsedData = JSON.parse(data.body);
           setVegetableData(parsedData);
@@ -56,8 +59,8 @@ const HomePage: React.FC = () => {
   }, []);
 
   return (
-    <div>
-      <MDBContainer className="py-5 d-flex justify-content-center align-items-center">
+    <div className="d-flex flex-column align-items-center">
+      <MDBContainer className="py-0">
         {weatherData && (
           <MDBCard style={{ width: '20rem', margin: '1rem' }}>
             <MDBCardBody>
@@ -81,7 +84,7 @@ const HomePage: React.FC = () => {
       </MDBContainer>
 
       {/* Vegetable Card */}
-      
+      <MDBContainer className="py-0"></MDBContainer>
       {vegetableData && (
         <MDBCard style={{ width: '20rem', margin: '1rem' }}>
           <MDBCardBody>
@@ -94,7 +97,9 @@ const HomePage: React.FC = () => {
             
           </MDBCardBody>
         </MDBCard>
+        
       )}
+      
     </div>
   );
 };
