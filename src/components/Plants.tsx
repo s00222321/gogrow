@@ -60,9 +60,8 @@ const Plants: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleAddToFavorites = async (plant_id: number) => {
-    // Existing logic for adding to favorites
-  };
+  //const handleAddToFavorites = async (plant_id: number) => {
+  //};
 
   const handleAddToCurrentlyGrowing = async (plant_id: number) => {
     try {
@@ -150,6 +149,7 @@ const Plants: React.FC = () => {
                       >
                         <i className="fas fa-info-circle fa-2x"></i>
                       </a>
+                      {/* Favorites button commented out
                       <a
                         href="#!"
                         role="button"
@@ -160,6 +160,7 @@ const Plants: React.FC = () => {
                       >
                         <i className="fas fa-star fa-2x"></i>
                       </a>
+                      */}
                       {currentlyGrowing.includes(plant.plant_id.toString()) ? (
                         <i
                           className="fas fa-check fa-2x"
