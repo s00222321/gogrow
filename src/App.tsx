@@ -12,6 +12,7 @@ import ForumPost from "./components/Forum/ForumPost";
 import MyGarden from "./components/MyGarden";
 import Home from "./components/Home";
 import Footer from "./components/Footer";
+import SensorDisplay from "./components/SensorsDisplay";
 
 const App: React.FC = () => {
   return (
@@ -31,6 +32,7 @@ const App: React.FC = () => {
           <Route path="plant/:plant_id" element={<Plant />} />
           <Route path="forum" element={<Forum />} />
           <Route path="forum/:post_id" element={<ForumPost />} />
+          <Route path="sensors" element={<SensorDisplay/>}/>
         </Routes>
       </div>
       <Footer />

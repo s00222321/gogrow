@@ -12,6 +12,7 @@ interface CommentData {
   content: string;
   username: string;
   postedAt: string;
+  userProfilePic: string;
 }
 
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
@@ -73,6 +74,17 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
         comments.map((comment) => (
           <MDBCard key={comment.commentId} className="my-3">
             <MDBCardBody>
+            <MDBCardText>
+                {comment.userProfilePic && (
+                  <img
+                    src={comment.userProfilePic}
+                    alt={`${comment.username}'s Avatar`}
+                    className="rounded-circle me-2"
+                    style={{ width: '30px', height: '30px' }}
+                  />
+                )}
+                {comment.username}
+              </MDBCardText>
               <MDBCardText>{comment.username}</MDBCardText>
               <MDBCardText>{comment.content}</MDBCardText>
               <MDBCardText>
