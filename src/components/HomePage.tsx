@@ -10,12 +10,14 @@ interface WeatherData {
   // Add other fields if needed
 }
 interface VegetableData {
+    plant_id: number;
     name: string;
-    image: string;
+    latin_name: string;
     description: string;
-    growTime: string;
     season: string;
-    // Add other fields if needed
+    plants: string;
+    planticons: string;
+    growtime: string;
   }
 
 const HomePage: React.FC = () => {
@@ -37,24 +39,17 @@ const HomePage: React.FC = () => {
 
     // Fetch vegetable data
     const fetchVegetableData = async () => {
-      try {
-        // Fetch vegetable data from your API or source
-        // Example: const response = await fetch('https://your-vegetable-api.com');
-        // const data = await response.json();
-        // setVegetableData(data);
-
+        try {
+          const response = await fetch('https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1/4');
+          const data = await response.json();
+          const parsedData = JSON.parse(data.body);
+          setVegetableData(parsedData);
+        } catch (error) {
+          console.error('Error fetching vegetable data:', error);
+        }
+      };
         // For now, setting dummy vegetable data
-        setVegetableData({
-          name: 'Tomato',
-          image: 'tomato.jpg',
-          description: 'A red fruit that is used in many culinary dishes.',
-          growTime: '80 days',
-          season: 'Winter'
-        });
-      } catch (error) {
-        console.error('Error fetching vegetable data:', error);
-      }
-    };
+        
 
     fetchWeatherData();
     fetchVegetableData();
@@ -85,18 +80,20 @@ const HomePage: React.FC = () => {
         )}
       </MDBContainer>
 
+      {/* Vegetable Card */}
+      
       {vegetableData && (
-        <MDBContainer className="py-5 d-flex justify-content-center align-items-center">
-          <MDBCard style={{ width: '20rem', margin: '1rem' }}>
-            <MDBCardBody>
-            <MDBCardTitle>Suggested Vegetable in {vegetableData.season}</MDBCardTitle>
-              <MDBCardTitle>{vegetableData.name}</MDBCardTitle>
-              <MDBCardText>{vegetableData.description}</MDBCardText>
-              <MDBCardText>Grow Time: {vegetableData.growTime}</MDBCardText>
-              {/* Render the image here */}
-            </MDBCardBody>
-          </MDBCard>
-        </MDBContainer>
+        <MDBCard style={{ width: '20rem', margin: '1rem' }}>
+          <MDBCardBody>
+            <MDBCardTitle>{vegetableData.name}</MDBCardTitle>
+            <img src={vegetableData.plants} alt={vegetableData.name} style={{ width: '100%' }} />
+            <MDBCardText>{vegetableData.description}</MDBCardText>
+            <MDBCardText>Season: {vegetableData.season}</MDBCardText>
+            <MDBCardText>Grow Time: {vegetableData.growtime}</MDBCardText>
+            {/* Add image display here */}
+            
+          </MDBCardBody>
+        </MDBCard>
       )}
     </div>
   );
