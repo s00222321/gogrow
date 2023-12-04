@@ -19,37 +19,36 @@ interface Plant {
   growtime: string;
 }
 
+interface CurrentlyGrowingPlant {
+  plant_id: string;
+  date_added: string;
+}
+
 const Plants: React.FC = () => {
   const [plants, setPlants] = useState<Plant[]>([]);
-  const [currentlyGrowing, setCurrentlyGrowing] = useState<string[]>([]);
+  const [currentlyGrowing, setCurrentlyGrowing] = useState<
+    CurrentlyGrowingPlant[]
+  >([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     const fetchPlants = async () => {
-      try {
-        const response = await fetch(
-          "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
-        );
-        const responseData = await response.json();
-        const data = JSON.parse(responseData.body);
-        if (Array.isArray(data)) {
-          setPlants(data);
-        }
-      } catch (error) {
-        console.error(error);
+      const response = await fetch(
+        "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
+      );
+      const responseData = await response.json();
+      const data = JSON.parse(responseData.body);
+      if (Array.isArray(data)) {
+        setPlants(data);
       }
     };
 
     const fetchCurrentlyGrowing = async () => {
-      try {
-        const response = await fetch(
-          "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/test"
-        );
-        const userData = await response.json();
-        setCurrentlyGrowing(userData.data.currently_growing);
-      } catch (error) {
-        console.error(error);
-      }
+      const response = await fetch(
+        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/test"
+      );
+      const userData = await response.json();
+      setCurrentlyGrowing(userData.data.currently_growing);
     };
 
     fetchPlants();
@@ -60,36 +59,29 @@ const Plants: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
-  //const handleAddToFavorites = async (plant_id: number) => {
-  //};
-
   const handleAddToCurrentlyGrowing = async (plant_id: number) => {
-    try {
-      const response = await fetch(
-        "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username: "test", plant_id }),
-        }
-      );
-
-      if (response.ok) {
-        setCurrentlyGrowing([...currentlyGrowing, plant_id.toString()]);
-        const plant = plants.find((p) => p.plant_id === plant_id);
-        toast.success(`Added ${plant?.name} to My Garden`, {
-          position: "bottom-center",
-        });
-      } else {
-        toast.error("Failed to add plant to garden", {
-          position: "bottom-center",
-        });
+    const response = await fetch(
+      "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: "test", plant_id }),
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("An error occurred", { position: "bottom-center" });
+    );
+
+    if (response.ok) {
+      setCurrentlyGrowing([
+        ...currentlyGrowing,
+        { plant_id: plant_id.toString(), date_added: new Date().toISOString() },
+      ]);
+      const plant = plants.find((p) => p.plant_id === plant_id);
+      toast.success(`Added ${plant?.name} to My Garden`, {
+        position: "bottom-center",
+      });
+    } else {
+      toast.error("Failed to add plant to garden", {
+        position: "bottom-center",
+      });
     }
   };
 
@@ -144,28 +136,17 @@ const Plants: React.FC = () => {
                         href={`/plant/${plant.plant_id}`}
                         role="button"
                         style={{ color: "grey", marginRight: "10px" }}
-                        data-mdb-toggle="tooltip"
                         title="More information"
                       >
                         <i className="fas fa-info-circle fa-2x"></i>
                       </a>
-                      {/* Favorites button commented out
-                      <a
-                        href="#!"
-                        role="button"
-                        style={{ color: "grey", marginRight: "10px" }}
-                        data-mdb-toggle="tooltip"
-                        title="Add to favourites"
-                        onClick={() => handleAddToFavorites(plant.plant_id)}
-                      >
-                        <i className="fas fa-star fa-2x"></i>
-                      </a>
-                      */}
-                      {currentlyGrowing.includes(plant.plant_id.toString()) ? (
+                      {currentlyGrowing.some(
+                        (growing) =>
+                          growing.plant_id === plant.plant_id.toString()
+                      ) ? (
                         <i
                           className="fas fa-check fa-2x"
                           style={{ color: "grey" }}
-                          data-mdb-toggle="tooltip"
                           title="Already in my garden"
                         ></i>
                       ) : (
@@ -173,7 +154,6 @@ const Plants: React.FC = () => {
                           href="#!"
                           role="button"
                           style={{ color: "grey" }}
-                          data-mdb-toggle="tooltip"
                           title="Add to my garden"
                           onClick={() =>
                             handleAddToCurrentlyGrowing(plant.plant_id)

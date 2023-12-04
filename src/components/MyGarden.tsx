@@ -14,7 +14,7 @@ interface Plant {
   name: string;
   latin_name: string;
   description: string;
-  season: string;
+  growingTime: string;
   plants: string;
   planticons: string;
   growtime: string;
@@ -37,21 +37,41 @@ const MyGarden: React.FC = () => {
         "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/test"
       );
       const jsonResponse = await response.json();
-
-      const currentlyGrowingIds = jsonResponse.data.currently_growing.map(
-        (id: string) => parseInt(id)
-      );
+      const currentlyGrowing = jsonResponse.data.currently_growing;
       const plantsData = await fetchPlantsData();
 
-      const gardenPlantsData = currentlyGrowingIds
-        .map((growingPlantId: any) =>
-          plantsData.find(
-            (plant: { plant_id: any }) => plant.plant_id === growingPlantId
-          )
+      const gardenPlantsData = currentlyGrowing
+        .map(
+          (growingPlant: {
+            plant_id: string;
+            date_added: string | number | Date;
+          }) => {
+            const plantData = plantsData.find(
+              (plant: { plant_id: number }) =>
+                plant.plant_id === parseInt(growingPlant.plant_id)
+            );
+            if (plantData) {
+              return {
+                ...plantData,
+                growingTime: calculateGrowingTime(growingPlant.date_added),
+              };
+            }
+            return null;
+          }
         )
-        .filter((plant: undefined) => plant !== undefined);
+        .filter((plant: null) => plant !== null);
 
       setGardenPlants(gardenPlantsData);
+    };
+
+    const calculateGrowingTime = (dateAdded: string | number | Date) => {
+      const dateAddedTime = new Date(dateAdded);
+      const currentTime = new Date();
+      const differenceInTime = currentTime.getTime() - dateAddedTime.getTime();
+      const differenceInHours = differenceInTime / (1000 * 3600);
+      return differenceInHours < 24
+        ? `${differenceInHours.toFixed(0)} Hours growing`
+        : `${(differenceInHours / 24).toFixed(0)} Days growing`;
     };
 
     fetchGardenPlants();
@@ -61,7 +81,6 @@ const MyGarden: React.FC = () => {
     const plantToDelete = gardenPlants.find(
       (plant) => plant.plant_id === plant_id
     );
-
     if (!plantToDelete) {
       toast.error("Plant not found", { position: "bottom-center" });
       return;
@@ -72,9 +91,7 @@ const MyGarden: React.FC = () => {
         "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
         {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ username: "test", plant_id }),
         }
       );
@@ -100,7 +117,6 @@ const MyGarden: React.FC = () => {
   };
 
   const navigateToPlantsPage = () => {
-    // Replace with your navigation logic, e.g., React Router's useHistory or window.location
     window.location.href = "/plants";
   };
 
@@ -132,7 +148,7 @@ const MyGarden: React.FC = () => {
                       />
                       <div>
                         <p className="fw-bold mb-1">{plant.name}</p>
-                        <p className="text-muted mb-0">{plant.season}</p>
+                        <p className="text-muted mb-0">{plant.growingTime}</p>
                       </div>
                     </div>
                     <div>
