@@ -11,6 +11,7 @@ import Forum from "./components/Forum/Forum";
 import ForumPost from "./components/Forum/ForumPost";
 import MyGarden from "./components/MyGarden";
 import Home from "./components/Home";
+import Footer from "./components/Footer";
 
 const App: React.FC = () => {
   return (
@@ -32,7 +33,7 @@ const App: React.FC = () => {
           <Route path="forum/:post_id" element={<ForumPost />} />
         </Routes>
       </div>
-
+      <Footer />
       <div className="snowflakes" aria-hidden="true">
         <div className="snowflake">❅</div>
         <div className="snowflake">❅</div>
