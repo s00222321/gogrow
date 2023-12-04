@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
 import {
   MDBNavbar,
   MDBNavbarBrand,
@@ -17,10 +18,14 @@ import {
 function Navbar() {
   const [showNav, setShowNav] = useState(false);
 
+  const toaster = () => {
+    toast("Hello world!");
+  };
+
   return (
     <MDBNavbar expand="lg" light bgColor="light">
       <div className="container-fluid d-flex align-items-center">
-        <MDBNavbarBrand href="#" className="me-3">
+        <MDBNavbarBrand href="/home" className="me-3">
           <img src="/gogrow.svg" height="32" alt="GoGrow Logo" />
         </MDBNavbarBrand>
 
@@ -37,39 +42,50 @@ function Navbar() {
         <MDBCollapse navbar open={showNav} id="navbarContent">
           <MDBNavbarNav>
             <MDBNavbarItem>
-              <MDBNavbarLink href="#">My Garden</MDBNavbarLink>
+              <MDBNavbarLink href="/mygarden">My Garden</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="#">Articles</MDBNavbarLink>
+              <MDBNavbarLink href="/plants">Plants</MDBNavbarLink>
             </MDBNavbarItem>
             <MDBNavbarItem>
-              <MDBNavbarLink href="#">Forum</MDBNavbarLink>
+              <MDBNavbarLink href="/articles">Articles</MDBNavbarLink>
+            </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/forum">Forum</MDBNavbarLink>
             </MDBNavbarItem>
           </MDBNavbarNav>
         </MDBCollapse>
 
         <MDBDropdown className="me-3">
-          <MDBDropdownToggle tag="a" href="#" role="button">
+          <MDBDropdownToggle tag="a" href="#" role="button" onClick={toaster}>
             <MDBIcon fas icon="bell" className="me-2" />
             <span className="badge rounded-pill badge-notification bg-danger">
               1
             </span>
           </MDBDropdownToggle>
           <MDBDropdownMenu>
-            <MDBDropdownItem href="#">Some news</MDBDropdownItem>
-            <MDBDropdownItem href="#">Another news</MDBDropdownItem>
-            <MDBDropdownItem href="#">Something else here</MDBDropdownItem>
+            <MDBDropdownItem link>Some news</MDBDropdownItem>
+            <MDBDropdownItem link>Another news</MDBDropdownItem>
+            <MDBDropdownItem link>Something else here</MDBDropdownItem>
           </MDBDropdownMenu>
         </MDBDropdown>
-
+        <div>
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            containerStyle={{
+              top: 80,
+            }}
+          />
+        </div>
         <MDBDropdown className="me-3">
           <MDBDropdownToggle tag="a" href="#" role="button">
             <MDBIcon fas icon="user-circle" size="2x" className="me-2" />
           </MDBDropdownToggle>
           <MDBDropdownMenu>
-            <MDBDropdownItem href="#">My profile</MDBDropdownItem>
-            <MDBDropdownItem href="#">Settings</MDBDropdownItem>
-            <MDBDropdownItem href="#">Logout</MDBDropdownItem>
+            <MDBDropdownItem link>My profile</MDBDropdownItem>
+            <MDBDropdownItem link>Settings</MDBDropdownItem>
+            <MDBDropdownItem link>Logout</MDBDropdownItem>
           </MDBDropdownMenu>
         </MDBDropdown>
       </div>
