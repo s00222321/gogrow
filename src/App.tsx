@@ -9,6 +9,7 @@ import Plants from "./components/Plants";
 import Plant from "./components/Plant"; // Import the Plant component
 import Forum from "./components/Forum/Forum";
 import ForumPost from "./components/Forum/ForumPost";
+import SensorDisplay from "./components/SensorsDisplay";
 
 const App: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ const App: React.FC = () => {
           <Route path="plant/:plant_id" element={<Plant />} />
           <Route path="forum" element={<Forum />} />
           <Route path="forum/:post_id" element={<ForumPost />} />
+          <Route path="sensors" element={<SensorDisplay/>}/>
         </Routes>
       </div>
     </Router>
