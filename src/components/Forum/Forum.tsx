@@ -8,14 +8,15 @@ import {
   MDBCardBody,
   MDBBtn,
   MDBCardText,
-  MDBCardTitle,
+  MDBCardTitle
 } from 'mdb-react-ui-kit';
 import AddPostFormModal from './AddPostFormModal';
-import ConfirmDialog from '../Shared/ConfirmDialog'; 
+import ConfirmDialog from '../Shared/ConfirmDialog';
 
 // put in .env?
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
 const MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/moderator';
+const IMAGE_MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/imagemoderation';
 
 interface PostData {
   postId: string;
@@ -31,8 +32,17 @@ const Forum: React.FC = () => {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [showNewPostModal, setShowNewPostModal] = useState<boolean>(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false); // State for the delete confirmation dialog
-  const [postToDelete, setPostToDelete] = useState<string>(''); // State to track the post to be deleted
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+  const [postToDelete, setPostToDelete] = useState<string>('');
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+
+  const alertStyles = {
+    position: 'fixed',
+    top: '10px',
+    right: '10px',
+    maxWidth: '700px',
+    zIndex: 9999,
+  };
 
   useEffect(() => {
     fetchData();
@@ -75,65 +85,103 @@ const Forum: React.FC = () => {
     const updatedPostData = { ...postData, username: 'sean_oconnor' };
 
     try {
-        const toxicityScore = await performToxicityAnalysis(updatedPostData.title + ' ' + updatedPostData.content);
+      const toxicityScore = await performToxicityAnalysis(updatedPostData.title + ' ' + updatedPostData.content);
+      let imageModerationStatus = 'Approved';
 
-        if (toxicityScore < 0.5) {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    title: updatedPostData.title,
-                    content: updatedPostData.content,
-                    username: updatedPostData.username,
-                    tags: updatedPostData.tags,
-                    media: updatedPostData.media,
-                }),
-            });
+      if (updatedPostData.media) {
+        imageModerationStatus = await performImageModerationAnalysis(updatedPostData.media);
+      }
 
-            if (!response.ok) {
-                console.log(response.json());
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const newPost = await response.json();
-            setPosts((prevPosts) => [...prevPosts, newPost]);
-            setShowNewPostModal(false);
-        } else {
-            alert('This post contains inappropriate content. Please revise your post.');
-        }
-    } catch (error) {
-        console.error('Error submitting new post:', (error as Error).message);
-    }
-  };
-
-  const performToxicityAnalysis = async (toCheck: string) => {
-    const payload = {
-        text: toCheck
-    };
-
-    try {
-        const response = await fetch(MODERATOR_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ body: JSON.stringify(payload) }),
+      if (toxicityScore < 0.4 && imageModerationStatus === 'Approved') {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            title: updatedPostData.title,
+            content: updatedPostData.content,
+            username: updatedPostData.username,
+            tags: updatedPostData.tags,
+            media: updatedPostData.media,
+          }),
         });
 
         if (!response.ok) {
-            throw new Error(`Toxicity analysis failed. Status: ${response.status}`);
+          console.log(response.json());
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
-        const data = await response.json();
-        const responseBody = JSON.parse(data.body);
-        const toxicityScore = parseFloat(responseBody.ToxicityScore);
-        return toxicityScore;
-        
+        const newPost = await response.json();
+        setPosts((prevPosts) => [...prevPosts, newPost]);
+        setShowNewPostModal(false);
+      } else {
+        setShowAlert(true);
+      }
     } catch (error) {
-        console.error('Error performing toxicity analysis:', error);
-        throw error;
+      console.error('Error submitting new post:', (error as Error).message);
+    }
+  };
+
+
+  const performToxicityAnalysis = async (toCheck: string) => {
+    const payload = {
+      text: toCheck
+    };
+
+    try {
+      const response = await fetch(MODERATOR_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ body: JSON.stringify(payload) }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Toxicity analysis failed. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const responseBody = JSON.parse(data.body);
+      const toxicityScore = parseFloat(responseBody.ToxicityScore);
+      console.log("Toxicity Score: " + toxicityScore);
+      return toxicityScore;
+
+    } catch (error) {
+      console.error('Error performing toxicity analysis:', error);
+      throw error;
+    }
+  };
+
+  const performImageModerationAnalysis = async (media: string): Promise<string> => {
+    const payload = {
+      imageBase64: media,
+    };
+
+    try {
+      const response = await fetch(IMAGE_MODERATOR_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ body: JSON.stringify(payload) }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Image moderation analysis failed. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const responseBody = JSON.parse(data.body);
+      const moderationStatus = responseBody.ModerationStatus;
+
+      console.log("Media inappropriate " + responseBody.Confidence);
+
+      return moderationStatus;
+    } catch (error) {
+      console.error('Error performing image moderation analysis:', error);
+      throw error;
     }
   };
 
@@ -242,6 +290,16 @@ const Forum: React.FC = () => {
         message="Are you sure you want to delete this post?"
         title="Delete Post?"
       />
+      {showAlert && (
+        <div
+          className="custom-alert alert alert-danger alert-dismissible fade show"
+          role="alert"
+          style={alertStyles as any}
+        >
+          This post contains inappropriate content. Please revise your post.
+          <button type="button" className="btn-close" onClick={() => setShowAlert(false)}></button>
+        </div>
+      )}
     </MDBContainer>
   );
 };
