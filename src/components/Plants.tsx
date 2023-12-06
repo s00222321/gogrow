@@ -45,10 +45,18 @@ const Plants: React.FC = () => {
 
     const fetchCurrentlyGrowing = async () => {
       const response = await fetch(
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/test"
+        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
       );
       const userData = await response.json();
-      setCurrentlyGrowing(userData.data.currently_growing);
+      if (
+        userData &&
+        userData.data &&
+        Array.isArray(userData.data.currently_growing)
+      ) {
+        setCurrentlyGrowing(userData.data.currently_growing);
+      } else {
+        setCurrentlyGrowing([]);
+      }
     };
 
     fetchPlants();
@@ -65,13 +73,13 @@ const Plants: React.FC = () => {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "test", plant_id }),
+        body: JSON.stringify({ username: "siobhan_donnelly", plant_id }),
       }
     );
 
     if (response.ok) {
-      setCurrentlyGrowing([
-        ...currentlyGrowing,
+      setCurrentlyGrowing((prev) => [
+        ...prev,
         { plant_id: plant_id.toString(), date_added: new Date().toISOString() },
       ]);
       const plant = plants.find((p) => p.plant_id === plant_id);
@@ -140,7 +148,8 @@ const Plants: React.FC = () => {
                       >
                         <i className="fas fa-info-circle fa-2x"></i>
                       </a>
-                      {currentlyGrowing.some(
+                      {currentlyGrowing &&
+                      currentlyGrowing.some(
                         (growing) =>
                           growing.plant_id === plant.plant_id.toString()
                       ) ? (
