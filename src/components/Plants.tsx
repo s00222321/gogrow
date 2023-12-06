@@ -20,7 +20,7 @@ interface Plant {
 }
 
 interface CurrentlyGrowingPlant {
-  plant_id: string;
+  plant_id: number;
   date_added: string;
 }
 
@@ -53,7 +53,12 @@ const Plants: React.FC = () => {
         userData.data &&
         Array.isArray(userData.data.currently_growing)
       ) {
-        setCurrentlyGrowing(userData.data.currently_growing);
+        setCurrentlyGrowing(
+          userData.data.currently_growing.map((item: { plant_id: string }) => ({
+            ...item,
+            plant_id: parseInt(item.plant_id),
+          }))
+        );
       } else {
         setCurrentlyGrowing([]);
       }
@@ -80,7 +85,7 @@ const Plants: React.FC = () => {
     if (response.ok) {
       setCurrentlyGrowing((prev) => [
         ...prev,
-        { plant_id: plant_id.toString(), date_added: new Date().toISOString() },
+        { plant_id, date_added: new Date().toISOString() },
       ]);
       const plant = plants.find((p) => p.plant_id === plant_id);
       toast.success(`Added ${plant?.name} to My Garden`, {
@@ -148,10 +153,8 @@ const Plants: React.FC = () => {
                       >
                         <i className="fas fa-info-circle fa-2x"></i>
                       </a>
-                      {currentlyGrowing &&
-                      currentlyGrowing.some(
-                        (growing) =>
-                          growing.plant_id === plant.plant_id.toString()
+                      {currentlyGrowing.some(
+                        (growing) => growing.plant_id === plant.plant_id
                       ) ? (
                         <i
                           className="fas fa-check fa-2x"
