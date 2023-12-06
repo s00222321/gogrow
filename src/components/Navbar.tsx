@@ -53,6 +53,9 @@ function Navbar() {
             <MDBNavbarItem>
               <MDBNavbarLink href="/forum">Forum</MDBNavbarLink>
             </MDBNavbarItem>
+            <MDBNavbarItem>
+              <MDBNavbarLink href="/sensors">Sensors</MDBNavbarLink>
+            </MDBNavbarItem>
           </MDBNavbarNav>
         </MDBCollapse>
 

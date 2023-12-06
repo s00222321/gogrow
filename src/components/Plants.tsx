@@ -20,7 +20,7 @@ interface Plant {
 }
 
 interface CurrentlyGrowingPlant {
-  plant_id: string;
+  plant_id: number;
   date_added: string;
 }
 
@@ -45,10 +45,23 @@ const Plants: React.FC = () => {
 
     const fetchCurrentlyGrowing = async () => {
       const response = await fetch(
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/test"
+        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
       );
       const userData = await response.json();
-      setCurrentlyGrowing(userData.data.currently_growing);
+      if (
+        userData &&
+        userData.data &&
+        Array.isArray(userData.data.currently_growing)
+      ) {
+        setCurrentlyGrowing(
+          userData.data.currently_growing.map((item: { plant_id: string }) => ({
+            ...item,
+            plant_id: parseInt(item.plant_id),
+          }))
+        );
+      } else {
+        setCurrentlyGrowing([]);
+      }
     };
 
     fetchPlants();
@@ -65,14 +78,14 @@ const Plants: React.FC = () => {
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "test", plant_id }),
+        body: JSON.stringify({ username: "siobhan_donnelly", plant_id }),
       }
     );
 
     if (response.ok) {
-      setCurrentlyGrowing([
-        ...currentlyGrowing,
-        { plant_id: plant_id.toString(), date_added: new Date().toISOString() },
+      setCurrentlyGrowing((prev) => [
+        ...prev,
+        { plant_id, date_added: new Date().toISOString() },
       ]);
       const plant = plants.find((p) => p.plant_id === plant_id);
       toast.success(`Added ${plant?.name} to My Garden`, {
@@ -141,8 +154,7 @@ const Plants: React.FC = () => {
                         <i className="fas fa-info-circle fa-2x"></i>
                       </a>
                       {currentlyGrowing.some(
-                        (growing) =>
-                          growing.plant_id === plant.plant_id.toString()
+                        (growing) => growing.plant_id === plant.plant_id
                       ) ? (
                         <i
                           className="fas fa-check fa-2x"

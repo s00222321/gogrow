@@ -34,32 +34,32 @@ const MyGarden: React.FC = () => {
 
     const fetchGardenPlants = async () => {
       const response = await fetch(
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/test"
+        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
       );
       const jsonResponse = await response.json();
-      const currentlyGrowing = jsonResponse.data.currently_growing;
+      const currentlyGrowing = jsonResponse.data?.currently_growing;
+
+      if (!Array.isArray(currentlyGrowing)) {
+        setGardenPlants([]);
+        return;
+      }
+
       const plantsData = await fetchPlantsData();
 
       const gardenPlantsData = currentlyGrowing
-        .map(
-          (growingPlant: {
-            plant_id: string;
-            date_added: string | number | Date;
-          }) => {
-            const plantData = plantsData.find(
-              (plant: { plant_id: number }) =>
-                plant.plant_id === parseInt(growingPlant.plant_id)
-            );
-            if (plantData) {
-              return {
+        .map((growingPlant) => {
+          const plantData = plantsData.find(
+            (plant: { plant_id: number }) =>
+              plant.plant_id === parseInt(growingPlant.plant_id)
+          );
+          return plantData
+            ? {
                 ...plantData,
                 growingTime: calculateGrowingTime(growingPlant.date_added),
-              };
-            }
-            return null;
-          }
-        )
-        .filter((plant: null) => plant !== null);
+              }
+            : null;
+        })
+        .filter((plant) => plant !== null);
 
       setGardenPlants(gardenPlantsData);
     };
