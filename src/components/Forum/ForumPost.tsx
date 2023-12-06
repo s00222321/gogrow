@@ -31,6 +31,16 @@ const ForumPost: React.FC = () => {
   const { post_id } = useParams<{ post_id: string }>();
   const [post, setPost] = useState<PostData | null>(null);
   const [comment, setComment] = useState<string>('');
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [reloadComments, setReloadComments] = useState<boolean>(false);
+
+  const alertStyles = {
+    position: 'fixed',
+    top: '10px',
+    right: '10px',
+    maxWidth: '700px',
+    zIndex: 9999,
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -47,7 +57,8 @@ const ForumPost: React.FC = () => {
     };
 
     fetchPost();
-  }, [post_id]);
+    setReloadComments(false);
+  }, [post_id, reloadComments]);
 
   const handleCommentSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -81,16 +92,16 @@ const ForumPost: React.FC = () => {
         } else {
           console.log('Comment submitted successfully!');
           setComment('');
-          window.location.reload(); // need to change to only rerender component
+          setReloadComments(true);
         }
       } else {
-        alert('This comment contains inappropriate content. Please revise your comment.');
+        setShowAlert(true);
+        setComment('');
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error('Error submitting comment:', error.message);
     }
   };
-  
 
   const performToxicityAnalysis = async (toCheck: string) => {
     const payload = {
@@ -152,7 +163,7 @@ const ForumPost: React.FC = () => {
               </MDBCardText>
               <MDBCardText>{post.content}</MDBCardText>
             </div>
-            <ForumPostComment post_id={post_id!} />
+            <ForumPostComment post_id={post_id!} reloadComments={reloadComments} />
           </MDBCardBody>
 
           <MDBCardFooter className="text-muted">
@@ -173,6 +184,20 @@ const ForumPost: React.FC = () => {
               </MDBInputGroup>
             </form>
           </MDBCardFooter>
+          {showAlert && (
+            <div
+              className="custom-alert alert alert-danger alert-dismissible fade show"
+              role="alert"
+              style={alertStyles as any}
+            >
+              This post contains inappropriate content. Please revise your post.
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setShowAlert(false)}
+              ></button>
+            </div>
+          )}
         </MDBCard>
       ) : (
         <p>Loading...</p>

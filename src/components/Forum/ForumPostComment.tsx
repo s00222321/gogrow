@@ -18,7 +18,12 @@ interface CommentData {
 
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
 
-const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
+interface ForumPostCommentProps {
+  post_id: string;
+  reloadComments: boolean;
+}
+
+const ForumPostComment: React.FC<ForumPostCommentProps> = ({ post_id, reloadComments }) => {
   const [comments, setComments] = useState<CommentData[]>([]);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<string>('');
@@ -43,7 +48,7 @@ const ForumPostComment: React.FC<{ post_id: string }> = ({ post_id }) => {
     };
 
     fetchComments();
-  }, [post_id]);
+  }, [post_id, reloadComments]); // Include reloadComments in the dependency array
 
   const handleDeleteComment = (comment_id: string) => {
     setCommentToDelete(comment_id);
