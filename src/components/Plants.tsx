@@ -140,7 +140,8 @@ const Plants: React.FC = () => {
                       >
                         <i className="fas fa-info-circle fa-2x"></i>
                       </a>
-                      {currentlyGrowing.some(
+                      {currentlyGrowing &&
+                      currentlyGrowing.some(
                         (growing) =>
                           growing.plant_id === plant.plant_id.toString()
                       ) ? (
