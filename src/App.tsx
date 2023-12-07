@@ -14,6 +14,7 @@ import Home from "./components/Home";
 import Footer from "./components/Footer";
 import SensorDisplay from "./components/SensorsDisplay";
 import UserDetails from "./components/UserDetails";
+import { Toaster } from "react-hot-toast";
 
 const App: React.FC = () => {
   return (
@@ -33,11 +34,12 @@ const App: React.FC = () => {
           <Route path="plant/:plant_id" element={<Plant />} />
           <Route path="forum" element={<Forum />} />
           <Route path="forum/:post_id" element={<ForumPost />} />
-          <Route path="sensors" element={<SensorDisplay/>}/>
+          <Route path="sensors" element={<SensorDisplay />} />
           {/* Add the UserDetails route */}
           <Route path="userdetails" element={<UserDetails />} />
         </Routes>
       </div>
+      <Toaster position="bottom-center" />
       <Footer />
       <div className="snowflakes" aria-hidden="true">
         <div className="snowflake">❅</div>
