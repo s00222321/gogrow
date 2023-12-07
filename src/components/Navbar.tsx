@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { Toaster, toast } from "react-hot-toast";
+import React, { useState, useEffect } from "react";
 import {
   MDBNavbar,
   MDBNavbarBrand,
@@ -14,9 +13,25 @@ import {
   MDBDropdownMenu,
   MDBDropdownItem,
 } from "mdb-react-ui-kit";
+import { Toaster, toast } from "react-hot-toast";
 
 function Navbar() {
   const [showNav, setShowNav] = useState(false);
+  const [userProfilePic, setUserProfilePic] = useState("/gogrow.svg"); // Default profile picture
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const response = await fetch(
+        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
+      );
+      const data = await response.json();
+      if (data && data.data && data.data.ProfilePic) {
+        setUserProfilePic(data.data.ProfilePic);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const toaster = () => {
     toast("Hello world!");
@@ -83,7 +98,12 @@ function Navbar() {
         </div>
         <MDBDropdown className="me-3">
           <MDBDropdownToggle tag="a" href="#" role="button">
-            <MDBIcon fas icon="user-circle" size="2x" className="me-2" />
+            <img
+              src={userProfilePic}
+              alt="User"
+              style={{ borderRadius: "50%", width: "32px", height: "32px" }}
+              className="me-2"
+            />
           </MDBDropdownToggle>
           <MDBDropdownMenu>
             <MDBDropdownItem link>My profile</MDBDropdownItem>
