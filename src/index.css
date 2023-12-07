@@ -2,7 +2,6 @@ body {
   font-family: Roboto, Helvetica, Arial, sans-serif;
   background: url(https://gogrowimages.s3.eu-west-1.amazonaws.com/websiteassets/leaves.png)
     repeat !important;
-  margin-top: 5% !important;
 }
 .btn-primary {
   background-color: #43a047 !important;
@@ -46,8 +45,13 @@ body {
   }
 }
 
-.dropdown-item {
+.dropdownlink {
+  padding: 10% 11% !important;
   font-size: larger !important;
+}
+
+.dropdown-item {
+  padding: 0px !important;
 }
 
 .hamburger {

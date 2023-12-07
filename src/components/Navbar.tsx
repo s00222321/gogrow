@@ -59,19 +59,29 @@ function Navbar() {
             </MDBDropdownToggle>
             <MDBDropdownMenu>
               <MDBDropdownItem link>
-                <MDBNavbarLink href="/mygarden">My Garden</MDBNavbarLink>
+                <MDBNavbarLink className="dropdownlink" href="/mygarden">
+                  My Garden
+                </MDBNavbarLink>
               </MDBDropdownItem>
               <MDBDropdownItem link>
-                <MDBNavbarLink href="/plants">Plants</MDBNavbarLink>
+                <MDBNavbarLink className="dropdownlink" href="/plants">
+                  Plants
+                </MDBNavbarLink>
               </MDBDropdownItem>
               <MDBDropdownItem link>
-                <MDBNavbarLink href="/articles">Articles</MDBNavbarLink>
+                <MDBNavbarLink className="dropdownlink" href="/articles">
+                  Articles
+                </MDBNavbarLink>
               </MDBDropdownItem>
               <MDBDropdownItem link>
-                <MDBNavbarLink href="/forum">Forum</MDBNavbarLink>
+                <MDBNavbarLink className="dropdownlink" href="/forum">
+                  Forum
+                </MDBNavbarLink>
               </MDBDropdownItem>
               <MDBDropdownItem link>
-                <MDBNavbarLink href="/sensors">Sensors</MDBNavbarLink>
+                <MDBNavbarLink className="dropdownlink" href="/sensors">
+                  Sensors
+                </MDBNavbarLink>
               </MDBDropdownItem>
             </MDBDropdownMenu>
           </MDBDropdown>
@@ -102,11 +112,7 @@ function Navbar() {
               1
             </span>
           </MDBDropdownToggle>
-          <MDBDropdownMenu>
-            <MDBDropdownItem link>Some news</MDBDropdownItem>
-            <MDBDropdownItem link>Another news</MDBDropdownItem>
-            <MDBDropdownItem link>Something else here</MDBDropdownItem>
-          </MDBDropdownMenu>
+          <MDBDropdownMenu></MDBDropdownMenu>
         </MDBDropdown>
 
         <MDBDropdown className="me-3">
@@ -120,10 +126,20 @@ function Navbar() {
           </MDBDropdownToggle>
           <MDBDropdownMenu>
             <MDBDropdownItem link>
-              <MDBNavbarLink href="/userdetails">My profile</MDBNavbarLink>
+              <MDBNavbarLink className="dropdownlink" href="/userdetails">
+                My profile
+              </MDBNavbarLink>
             </MDBDropdownItem>
-            <MDBDropdownItem link>Settings</MDBDropdownItem>
-            <MDBDropdownItem link>Logout</MDBDropdownItem>
+            <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/userdetails">
+                Settings
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/userdetails">
+                Logout
+              </MDBNavbarLink>
+            </MDBDropdownItem>
           </MDBDropdownMenu>
         </MDBDropdown>
       </div>
