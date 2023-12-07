@@ -45,7 +45,7 @@ const Login: React.FC = () => {
       fluid
       className="d-flex vh-100 justify-content-center align-items-center"
     >
-      <div className="p-5 border rounded shadow bg-white">
+      <div className="p-5 border rounded shadow bg-white login-form-container">
         <form onSubmit={handleSubmit}>
           <div className="text-center mb-4">
             <span className="h4">Log in</span>

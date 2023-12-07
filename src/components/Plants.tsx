@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
+import { toast } from "react-hot-toast";
 import {
   MDBRow,
   MDBCol,
   MDBCard,
   MDBCardBody,
-  MDBContainer
-} from 'mdb-react-ui-kit';
+  MDBContainer,
+} from "mdb-react-ui-kit";
 
 interface Plant {
   plant_id: number;
@@ -18,39 +19,95 @@ interface Plant {
   growtime: string;
 }
 
+interface CurrentlyGrowingPlant {
+  plant_id: number;
+  date_added: string;
+}
+
 const Plants: React.FC = () => {
   const [plants, setPlants] = useState<Plant[]>([]);
+  const [currentlyGrowing, setCurrentlyGrowing] = useState<
+    CurrentlyGrowingPlant[]
+  >([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
 
   useEffect(() => {
     const fetchPlants = async () => {
-      try {
-        const response = await fetch('https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1');
-        const responseData = await response.json();
-        const data = JSON.parse(responseData.body);
-        if (Array.isArray(data)) {
-          setPlants(data);
-        } else {
-          console.error('No data available.');
-        }
-      } catch (error) {
-        console.error(error);
+      const response = await fetch(
+        "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
+      );
+      const responseData = await response.json();
+      const data = JSON.parse(responseData.body);
+      if (Array.isArray(data)) {
+        setPlants(data);
+      }
+    };
+
+    const fetchCurrentlyGrowing = async () => {
+      const response = await fetch(
+        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
+      );
+      const userData = await response.json();
+      if (
+        userData &&
+        userData.data &&
+        Array.isArray(userData.data.currently_growing)
+      ) {
+        setCurrentlyGrowing(
+          userData.data.currently_growing.map((item: { plant_id: string }) => ({
+            ...item,
+            plant_id: parseInt(item.plant_id),
+          }))
+        );
+      } else {
+        setCurrentlyGrowing([]);
       }
     };
 
     fetchPlants();
+    fetchCurrentlyGrowing();
   }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredPlants = plants.filter(plant =>
+  const handleAddToCurrentlyGrowing = async (plant_id: number) => {
+    const response = await fetch(
+      "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: "siobhan_donnelly", plant_id }),
+      }
+    );
+
+    if (response.ok) {
+      setCurrentlyGrowing((prev) => [
+        ...prev,
+        { plant_id, date_added: new Date().toISOString() },
+      ]);
+      const plant = plants.find((p) => p.plant_id === plant_id);
+      toast.success(`Added ${plant?.name} to My Garden`, {
+        position: "bottom-center",
+      });
+    } else {
+      toast.error("Failed to add plant to garden", {
+        position: "bottom-center",
+      });
+    }
+  };
+
+  const filteredPlants = plants.filter((plant) =>
     plant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <MDBContainer fluid className="d-flex flex-column justify-content-center align-items-center" style={{ paddingTop: '10%', paddingBottom: '10%' }}>
+    <MDBContainer
+      fluid
+      className="d-flex flex-column justify-content-center align-items-center"
+      style={{ paddingTop: "4%", paddingBottom: "10%" }}
+    >
       <div className="w-75">
         <div className="text-center mb-4">
           <span className="h4">Plants</span>
@@ -76,7 +133,11 @@ const Plants: React.FC = () => {
                       <img
                         src={plant.planticons}
                         alt={plant.name}
-                        style={{ width: '60px', height: '60px', marginRight: '15px' }}
+                        style={{
+                          width: "60px",
+                          height: "60px",
+                          marginRight: "15px",
+                        }}
                       />
                       <div>
                         <p className="fw-bold mb-1">{plant.name}</p>
@@ -84,15 +145,35 @@ const Plants: React.FC = () => {
                       </div>
                     </div>
                     <div>
-                      <a href={`/plant/${plant.plant_id}`} role="button" style={{ color: 'grey', marginRight: '10px' }} data-mdb-toggle="tooltip" title="More information">
-                        <i className="fas fa-info-circle fa-lg"></i>
+                      <a
+                        href={`/plant/${plant.plant_id}`}
+                        role="button"
+                        style={{ color: "grey", marginRight: "10px" }}
+                        title="More information"
+                      >
+                        <i className="fas fa-info-circle fa-2x"></i>
                       </a>
-                      <a href="#!" role="button" style={{ color: 'grey', marginRight: '10px' }} data-mdb-toggle="tooltip" title="Add to favourites">
-                        <i className="fas fa-star fa-lg"></i>
-                      </a>
-                      <a href="#!" role="button" style={{ color: 'grey' }} data-mdb-toggle="tooltip" title="Add to my garden">
-                        <i className="fas fa-plus fa-lg"></i>
-                      </a>
+                      {currentlyGrowing.some(
+                        (growing) => growing.plant_id === plant.plant_id
+                      ) ? (
+                        <i
+                          className="fas fa-check fa-2x"
+                          style={{ color: "grey" }}
+                          title="Already in my garden"
+                        ></i>
+                      ) : (
+                        <a
+                          href="#!"
+                          role="button"
+                          style={{ color: "grey" }}
+                          title="Add to my garden"
+                          onClick={() =>
+                            handleAddToCurrentlyGrowing(plant.plant_id)
+                          }
+                        >
+                          <i className="fas fa-plus fa-2x"></i>
+                        </a>
+                      )}
                     </div>
                   </div>
                 </MDBCardBody>
