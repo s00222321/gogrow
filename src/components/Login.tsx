@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { MDBContainer, MDBInput, MDBBtn } from "mdb-react-ui-kit";
 import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
 import UserPool from "../Cognito";
+import { useNavigate } from "react-router-dom";
 
 interface LoginData {
   username: string;
@@ -13,6 +14,8 @@ const Login: React.FC = () => {
     username: "",
     password: "",
   });
+
+  const navigate = useNavigate();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -33,10 +36,16 @@ const Login: React.FC = () => {
     });
 
     user.authenticateUser(authDetails, {
-      onSuccess: (session) => console.log("Authentication Successful", session),
-      onFailure: (err) => console.error("Authentication failed", err),
-      newPasswordRequired: (userAttributes, requiredAttributes) =>
-        console.log("Password change required"),
+      onSuccess: (session) => {
+        console.log("Authentication Successful", session);
+        navigate("/home");
+      },
+      onFailure: (err) => {
+        console.error("Authentication failed", err);
+      },
+      newPasswordRequired: (userAttributes, requiredAttributes) => {
+        console.log("Password change required");
+      },
     });
   };
 
