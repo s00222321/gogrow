@@ -59,7 +59,7 @@ const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
   return (
     <MDBContainer
       fluid
-      className="d-flex vh-100 justify-content-center align-items-center"
+      className="d-flex vh-100 justify-content-center align-items-center register-form-container"
     >
       <div className="p-5 border rounded shadow bg-white">
         <form onSubmit={handleSubmit}>
