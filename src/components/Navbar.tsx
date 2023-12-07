@@ -51,7 +51,7 @@ function Navbar() {
           <MDBDropdown className="me-auto">
             <MDBDropdownToggle
               tag="a"
-              href="#"
+              href="#!"
               role="button"
               className="hamburger"
             >
@@ -96,7 +96,7 @@ function Navbar() {
         )}
 
         <MDBDropdown className="me-3">
-          <MDBDropdownToggle tag="a" href="#" role="button">
+          <MDBDropdownToggle tag="a" href="#!" role="button">
             <MDBIcon fas icon="bell" className="me-2" />
             <span className="badge rounded-pill badge-notification bg-danger">
               1
@@ -110,7 +110,7 @@ function Navbar() {
         </MDBDropdown>
 
         <MDBDropdown className="me-3">
-          <MDBDropdownToggle tag="a" href="#" role="button">
+          <MDBDropdownToggle tag="a" href="#!" role="button">
             <img
               src={userProfilePic}
               alt="User"
@@ -119,7 +119,9 @@ function Navbar() {
             />
           </MDBDropdownToggle>
           <MDBDropdownMenu>
-            <MDBDropdownItem link>My profile</MDBDropdownItem>
+            <MDBDropdownItem link>
+              <MDBNavbarLink href="/userdetails">My profile</MDBNavbarLink>
+            </MDBDropdownItem>
             <MDBDropdownItem link>Settings</MDBDropdownItem>
             <MDBDropdownItem link>Logout</MDBDropdownItem>
           </MDBDropdownMenu>
