@@ -5,19 +5,27 @@ import {
   MDBNavbarNav,
   MDBNavbarItem,
   MDBNavbarLink,
-  MDBNavbarToggler,
-  MDBCollapse,
   MDBIcon,
   MDBDropdown,
   MDBDropdownToggle,
   MDBDropdownMenu,
   MDBDropdownItem,
 } from "mdb-react-ui-kit";
-import { Toaster, toast } from "react-hot-toast";
 
 function Navbar() {
-  const [showNav, setShowNav] = useState(false);
-  const [userProfilePic, setUserProfilePic] = useState("/gogrow.svg"); // Default profile picture
+  const [userProfilePic, setUserProfilePic] = useState("/gogrow.svg");
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 992);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -29,33 +37,46 @@ function Navbar() {
         setUserProfilePic(data.data.ProfilePic);
       }
     };
-
     fetchUserData();
   }, []);
 
-  const toaster = () => {
-    toast("Hello world!");
-  };
-
   return (
-    <MDBNavbar expand="lg" light bgColor="light">
+    <MDBNavbar expand="lg" light bgColor="light" fixed="top">
       <div className="container-fluid d-flex align-items-center">
         <MDBNavbarBrand href="/home" className="me-3">
           <img src="/gogrow.svg" height="32" alt="GoGrow Logo" />
         </MDBNavbarBrand>
 
-        <MDBNavbarToggler
-          aria-controls="navbarContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-          onClick={() => setShowNav(!showNav)}
-          className="me-auto"
-        >
-          <MDBIcon fas icon="bars" />
-        </MDBNavbarToggler>
-
-        <MDBCollapse navbar open={showNav} id="navbarContent">
-          <MDBNavbarNav>
+        {isMobile ? (
+          <MDBDropdown className="me-auto">
+            <MDBDropdownToggle
+              tag="a"
+              href="#"
+              role="button"
+              className="hamburger"
+            >
+              <MDBIcon fas icon="bars" className="hamburger" />
+            </MDBDropdownToggle>
+            <MDBDropdownMenu>
+              <MDBDropdownItem link>
+                <MDBNavbarLink href="/mygarden">My Garden</MDBNavbarLink>
+              </MDBDropdownItem>
+              <MDBDropdownItem link>
+                <MDBNavbarLink href="/plants">Plants</MDBNavbarLink>
+              </MDBDropdownItem>
+              <MDBDropdownItem link>
+                <MDBNavbarLink href="/articles">Articles</MDBNavbarLink>
+              </MDBDropdownItem>
+              <MDBDropdownItem link>
+                <MDBNavbarLink href="/forum">Forum</MDBNavbarLink>
+              </MDBDropdownItem>
+              <MDBDropdownItem link>
+                <MDBNavbarLink href="/sensors">Sensors</MDBNavbarLink>
+              </MDBDropdownItem>
+            </MDBDropdownMenu>
+          </MDBDropdown>
+        ) : (
+          <MDBNavbarNav className="me-auto">
             <MDBNavbarItem>
               <MDBNavbarLink href="/mygarden">My Garden</MDBNavbarLink>
             </MDBNavbarItem>
@@ -72,10 +93,10 @@ function Navbar() {
               <MDBNavbarLink href="/sensors">Sensors</MDBNavbarLink>
             </MDBNavbarItem>
           </MDBNavbarNav>
-        </MDBCollapse>
+        )}
 
         <MDBDropdown className="me-3">
-          <MDBDropdownToggle tag="a" href="#" role="button" onClick={toaster}>
+          <MDBDropdownToggle tag="a" href="#" role="button">
             <MDBIcon fas icon="bell" className="me-2" />
             <span className="badge rounded-pill badge-notification bg-danger">
               1
@@ -87,15 +108,7 @@ function Navbar() {
             <MDBDropdownItem link>Something else here</MDBDropdownItem>
           </MDBDropdownMenu>
         </MDBDropdown>
-        <div>
-          <Toaster
-            position="top-right"
-            reverseOrder={false}
-            containerStyle={{
-              top: 80,
-            }}
-          />
-        </div>
+
         <MDBDropdown className="me-3">
           <MDBDropdownToggle tag="a" href="#" role="button">
             <img

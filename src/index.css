@@ -45,6 +45,16 @@ body {
   }
 }
 
+.dropdown-item {
+  padding: 8% 11% !important;
+  font-size: larger !important;
+}
+
+.hamburger {
+  margin-top: 22% !important;
+  font-size: 1.3rem;
+}
+
 /* Merry Christmas */
 
 /* customizable snowflake styling */
