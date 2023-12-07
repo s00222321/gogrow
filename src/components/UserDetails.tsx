@@ -8,6 +8,8 @@ import {
   MDBCardImage,
   MDBCardText,
   MDBBtn,
+  MDBCardTitle,
+  MDBCardSubTitle,
 } from "mdb-react-ui-kit";
 
 interface UserData {
@@ -20,10 +22,44 @@ interface UserData {
   Achievements: Record<string, { DateEarned: string; Description: string }>;
 }
 
+const counties = [
+  "Antrim",
+  "Armagh",
+  "Carlow",
+  "Cavan",
+  "Clare",
+  "Cork",
+  "Derry",
+  "Donegal",
+  "Down",
+  "Dublin",
+  "Fermanagh",
+  "Galway",
+  "Kerry",
+  "Kildare",
+  "Kilkenny",
+  "Laois",
+  "Leitrim",
+  "Limerick",
+  "Longford",
+  "Louth",
+  "Mayo",
+  "Meath",
+  "Monaghan",
+  "Offaly",
+  "Roscommon",
+  "Sligo",
+  "Tipperary",
+  "Tyrone",
+  "Waterford",
+  "Westmeath",
+  "Wexford",
+  "Wicklow",
+];
+
 const UserDetails: React.FC = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
-  const [isEditingCounty, setIsEditingCounty] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [newEmail, setNewEmail] = useState("");
   const [newCounty, setNewCounty] = useState("");
   const [updateSuccess, setUpdateSuccess] = useState(false);
@@ -61,77 +97,9 @@ const UserDetails: React.FC = () => {
     return new Date(date).toLocaleDateString(undefined, options);
   };
 
-  const handleEditSaveEmail = async () => {
-    console.log("Editing email...");
+  const handleEditSave = async () => {
+    console.log("Saving changes...");
 
-    try {
-      const apiUrl =
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly";
-      console.log("API URL:", apiUrl);
-
-      const response = await fetch(apiUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: newEmail }),
-      });
-
-      console.log("Response:", response);
-
-      if (!response.ok) {
-        throw new Error("Failed to update email");
-      }
-
-      // Show success message
-      setUpdateSuccess(true);
-      setIsEditingEmail(false); // Exit edit mode
-
-      // Synchronously update the state using the functional form
-      setUserData((prevUserData) => {
-        if (!prevUserData) return null;
-
-        const {
-          email,
-          ProfilePic,
-          Username,
-          DateJoined,
-          County,
-          SustainabilityScore,
-          Achievements,
-        } = prevUserData;
-
-        console.log("prevUserData.email:", prevUserData.email);
-        console.log("newEmail:", newEmail);
-
-        return {
-          email: newEmail,
-          ProfilePic: ProfilePic || "",
-          Username: Username || "",
-          DateJoined: DateJoined || "",
-          County: County || "",
-          SustainabilityScore: SustainabilityScore || 0,
-          Achievements: Achievements || {},
-        };
-      });
-
-      // Log the current state after the update
-      console.log("After state update:", userData);
-
-      // Reset new email
-      setNewEmail("");
-
-      console.log("Update successful");
-    } catch (error) {
-      console.error("Error updating email:", error);
-    } finally {
-      // Always exit edit mode
-      setIsEditingEmail(false);
-    }
-  };
-
-  const handleEditSaveCounty = async () => {
-    console.log("Editing County...");
     try {
       const apiUrl =
         "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly";
@@ -141,44 +109,51 @@ const UserDetails: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          County: newCounty, // Include County in the payload
+          email: newEmail,
+          County: newCounty,
         }),
       });
 
       console.log("Response:", response);
 
       if (!response.ok) {
-        throw new Error("Failed to update County");
+        throw new Error("Failed to update data");
       }
+
+      // Fetch updated user data after a successful update
+      const updatedUserData = await fetch(apiUrl).then((res) => res.json());
+
+      console.log("Updated User Data:", updatedUserData);
 
       // Show success message
       setUpdateSuccess(true);
-      setIsEditingCounty(false); // Exit edit mode
+      setIsEditing(false); // Exit edit mode
 
-      // Synchronously update the state
-      setUserData((prevUserData) =>
-        prevUserData
-          ? {
-              ...prevUserData,
-              County: newCounty,
-            }
-          : null
-      );
+      // Update state with the new data
+      setUserData(updatedUserData.data);
 
-      // Reset new County
+      // Log current state after update
+      console.log("After state update:", userData);
+
+      // Reset new values
+      setNewEmail("");
       setNewCounty("");
 
       console.log("Update successful");
     } catch (error) {
-      console.error("Error updating County:", error);
+      console.error("Error updating data:", error);
     } finally {
       // Always exit edit mode
-      setIsEditingCounty(false);
+      setIsEditing(false);
     }
   };
 
-  console.log("userData.email:", userData?.email);
-  console.log("userData.County:", userData?.County);
+  const enterEditMode = () => {
+    setIsEditing(true);
+    // Prefill the email and county fields with existing data
+    setNewEmail(userData?.email || "");
+    setNewCounty(userData?.County || "");
+  };
 
   return (
     <MDBContainer className="py-5">
@@ -203,76 +178,76 @@ const UserDetails: React.FC = () => {
                 </p>
               </MDBCol>
               <MDBCol md="9">
-                <MDBCardText>
+                <MDBCardText className="mb-2" style={{ width: "100%" }}>
                   <strong>Email:</strong>{" "}
-                  {isEditingEmail ? (
+                  {isEditing ? (
                     <>
                       <input
                         type="text"
                         value={newEmail}
                         onChange={(e) => setNewEmail(e.target.value)}
+                        className="form-control"
                       />
-                      <MDBBtn
-                        color="success"
-                        size="sm"
-                        onClick={handleEditSaveEmail}
-                        style={{ marginLeft: "5px" }}
-                      >
-                        Save
-                      </MDBBtn>
                     </>
                   ) : (
                     <>
                       {userData.email}
-                      <MDBBtn
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => setIsEditingEmail(true)}
-                        style={{ marginLeft: "5px" }}
-                      >
-                        Edit
-                      </MDBBtn>
                     </>
                   )}
+                  {isEditing && (
+                    <MDBBtn
+                      color="success"
+                      size="sm"
+                      onClick={handleEditSave}
+                      className="mx-2 mt-2"
+                    >
+                      Save
+                    </MDBBtn>
+                  )}
+                  <MDBBtn
+                    color="primary"
+                    size="sm"
+                    onClick={isEditing ? () => setIsEditing(false) : enterEditMode}
+                    className="mx-2 mt-2"
+                  >
+                    {isEditing ? "Cancel" : "Edit"}
+                  </MDBBtn>
                 </MDBCardText>
-                <MDBCardText>
-                  <strong>Date Joined:</strong> {userData.DateJoined}
-                </MDBCardText>
-                <MDBCardText>
+                <MDBCardText className="mb-2">
                   <strong>County:</strong>{" "}
-                  {isEditingCounty ? (
+                  {isEditing ? (
                     <>
-                      <input
-                        type="text"
+                      <select
                         value={newCounty}
                         onChange={(e) => setNewCounty(e.target.value)}
-                      />
-                      <MDBBtn
-                        color="success"
-                        size="sm"
-                        onClick={handleEditSaveCounty}
-                        style={{ marginLeft: "5px" }}
+                        className="form-select"
+                        style={{ width: "40%" }}
                       >
-                        Save
-                      </MDBBtn>
+                        <option value="" disabled>
+                          Select County
+                        </option>
+                        {counties.map((county) => (
+                          <option key={county} value={county}>
+                            {county}
+                          </option>
+                        ))}
+                      </select>
                     </>
                   ) : (
                     <>
                       {userData.County}
-                      <MDBBtn
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => setIsEditingCounty(true)}
-                        style={{ marginLeft: "5px" }}
-                      >
-                        Edit
-                      </MDBBtn>
                     </>
                   )}
                 </MDBCardText>
-                <MDBCardText>
+                <MDBCardText className="mb-2">
+                <strong>Date Joined:</strong>{" "}
+                {userData.DateJoined &&
+                  new Date(userData.DateJoined).toLocaleDateString("en-US", {
+                    month: "long",
+                    year: "numeric",
+                  })}
+              </MDBCardText>
+                <MDBCardText className="mb-2">
                   <strong>Sustainability Score:</strong>{" "}
                   {userData.SustainabilityScore}
                 </MDBCardText>
@@ -289,17 +264,20 @@ const UserDetails: React.FC = () => {
                     <h5>Achievements</h5>
                     {Object.entries(userData.Achievements).map(
                       ([achievementName, achievementDetails]) => (
-                        <div key={achievementName}>
-                          <p>
-                            <strong>{achievementName}:</strong> Date Earned:{" "}
-                            {formatAchievementDate(
-                              achievementDetails.DateEarned
-                            )}
-                          </p>
-                          <p>
-                            Description: {achievementDetails.Description}
-                          </p>
-                        </div>
+                        <MDBCard key={achievementName} className="mb-3">
+                          <MDBCardBody>
+                            <MDBCardTitle>{achievementName}</MDBCardTitle>
+                            <MDBCardSubTitle>
+                              Date Earned:{" "}
+                              {formatAchievementDate(
+                                achievementDetails.DateEarned
+                              )}
+                            </MDBCardSubTitle>
+                            <MDBCardText>
+                              Description: {achievementDetails.Description}
+                            </MDBCardText>
+                          </MDBCardBody>
+                        </MDBCard>
                       )
                     )}
                   </>
