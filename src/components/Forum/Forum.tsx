@@ -12,6 +12,8 @@ import {
 } from 'mdb-react-ui-kit';
 import AddPostFormModal from './AddPostFormModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 // put in .env?
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
@@ -212,6 +214,12 @@ const Forum: React.FC = () => {
     }
   };
 
+  const handleEditPost = (postId: string) => {
+    // Add your logic to handle the edit action
+    // You may want to navigate to a separate edit page or open a modal for editing
+    console.log(`Edit post with ID ${postId}`);
+  };
+
   return (
     <MDBContainer className="py-5">
       <div className="text-center mb-4">
@@ -232,13 +240,13 @@ const Forum: React.FC = () => {
         <MDBBtn className="mb-2" onClick={handleNewPostClick}>
           <i className="fas fa-plus me-2"></i>New Post
         </MDBBtn>
-
+  
         <AddPostFormModal
           onSubmit={handleNewPostSubmit}
           onClose={handleNewPostClose}
           showModal={showNewPostModal}
         />
-
+  
         {posts
           .filter((post) =>
             post.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -266,23 +274,32 @@ const Forum: React.FC = () => {
                   <MDBCardText>
                     <strong>Posted: </strong> {formatDate(post.createdAt)}
                   </MDBCardText>
-                  <MDBBtn href={`/forum/${post.postId}`}>
-                    Read More
-                  </MDBBtn>
+                  <div className="d-flex justify-content-between align-items-center mt-3">
+                    {/* Read More Button */}
+                    <MDBBtn href={`/forum/${post.postId}`} className="me-2">
+                      Read More
+                    </MDBBtn>
+                    <div className="d-flex">
+                      <MDBBtn
+                        color="warning"
+                        className="me-2"
+                        onClick={() => handleEditPost(post.postId)}
+                      >
+                        <FontAwesomeIcon icon={faEdit} />
+                      </MDBBtn>
+                      <MDBBtn
+                        color="danger"
+                        onClick={() => handleDeletePost(post.postId)}
+                      >
+                        <i className="fas fa-trash-alt"></i>
+                      </MDBBtn>
+                    </div>
+                  </div>
                 </MDBCardBody>
-                <MDBBtn
-                  color="danger"
-                  className="position-absolute top-0 end-0 m-2"
-                  onClick={() => handleDeletePost(post.postId)}
-                >
-                  <i className="fas fa-trash-alt"></i>
-                </MDBBtn>
               </MDBCard>
             </div>
           ))}
       </MDBCol>
-
-      {/* Add the ConfirmDialog for post deletion */}
       <ConfirmDialog
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
@@ -302,6 +319,6 @@ const Forum: React.FC = () => {
       )}
     </MDBContainer>
   );
-};
+}
 
 export default Forum;
