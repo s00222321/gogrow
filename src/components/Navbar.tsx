@@ -41,7 +41,7 @@ function Navbar() {
   }, []);
 
   return (
-    <MDBNavbar expand="lg" light bgColor="light" fixed="top">
+    <MDBNavbar expand="lg" light bgColor="light">
       <div className="container-fluid d-flex align-items-center">
         <MDBNavbarBrand href="/home" className="me-3">
           <img src="/gogrow.svg" height="32" alt="GoGrow Logo" />
@@ -112,7 +112,6 @@ function Navbar() {
               1
             </span>
           </MDBDropdownToggle>
-          <MDBDropdownMenu></MDBDropdownMenu>
         </MDBDropdown>
 
         <MDBDropdown className="me-3">
