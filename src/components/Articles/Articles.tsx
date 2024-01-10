@@ -8,10 +8,12 @@ import {
   MDBRow,
   MDBCol,
 } from "mdb-react-ui-kit";
+import AddArticleModal from './AddArticleModal'; // Import the AddArticleModal component
 
 const Articles: React.FC = () => {
   const [articles, setArticles] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // State to track whether the modal is open
 
   useEffect(() => {
     const fetchArticles = async () => {
@@ -48,6 +50,10 @@ const Articles: React.FC = () => {
     article.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
   return (
     <MDBContainer
       fluid
@@ -72,6 +78,9 @@ const Articles: React.FC = () => {
             onChange={handleSearchChange}
           />
         </div>
+        <div className="mb-4">
+          <MDBBtn onClick={openModal}>Add Article - Admin</MDBBtn>
+        </div>
         <MDBRow>
           {filteredArticles.map((article) => (
             <MDBCol md="6" lg="4" key={article.article_id}>
@@ -93,6 +102,14 @@ const Articles: React.FC = () => {
           ))}
         </MDBRow>
       </div>
+      <AddArticleModal 
+        onSubmit={(articleData) => {
+          // Handle the submission of the new article data here
+          console.log("New article data:", articleData);
+        }}
+        onClose={() => setIsModalOpen(false)}
+        showModal={isModalOpen}
+      />
     </MDBContainer>
   );
 };
