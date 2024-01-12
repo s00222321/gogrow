@@ -127,9 +127,6 @@ const AddArticleModal: React.FC<AddArticleModalProps> = ({ onSubmit, onClose, sh
                   required
                 />
               </div>
-              {/* ... Add other input fields as needed */}
-
-              {/* ... */}
               <div className="mb-3">
                 <label htmlFor="newArticleImage" className="form-label">Upload Image</label>
                 <input
