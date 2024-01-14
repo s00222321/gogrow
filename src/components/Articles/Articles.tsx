@@ -85,9 +85,7 @@ const Articles: React.FC = () => {
   
       const responseBody = await response.json();
   
-      // Check if the response body contains the new article
       if (responseBody && responseBody.article_id) {
-        // Update the state with the new article
         setArticles((prevArticles) => [...prevArticles, responseBody]);
       } else {
         console.error("Invalid response format:", responseBody);
