@@ -223,7 +223,7 @@ const Forum: React.FC = () => {
   return (
     <MDBContainer className="py-5">
       <div className="text-center mb-4">
-        <span className="h4">Forum</span>
+        <span className="h3">Forum</span>
       </div>
       <div className="mb-4">
         <input

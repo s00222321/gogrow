@@ -52,14 +52,11 @@ const Articles: React.FC = () => {
     <MDBContainer
       fluid
       className="d-flex flex-column justify-content-center align-items-center"
-      style={{
-        paddingTop: "3%",
-        paddingBottom: "10%",
-      }}
+      style={{ paddingTop: "4%", paddingBottom: "10%" }}
     >
       <div className="w-75">
         <div className="text-center mb-4">
-          <span className="h4">Articles</span>
+          <span className="h3">Articles</span>
         </div>
         <div className="mb-4">
           <input
