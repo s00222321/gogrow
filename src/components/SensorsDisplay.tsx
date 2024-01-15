@@ -93,7 +93,7 @@ export default function SensorDisplay() {
   return (
     <MDBContainer className="py-5">
       <div className="text-center mb-4">
-        <span className="h4">Sensor Readings</span>
+        <span className="h3">Sensor Readings</span>
       </div>
       <MDBCard className="mb-4">
         <MDBCardBody>
