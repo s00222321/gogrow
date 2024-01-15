@@ -41,6 +41,7 @@ const App: React.FC = () => {
       </div>
       <Toaster position="bottom-center" />
       <Footer />
+      {/* Commented out the snowflakes
       <div className="snowflakes" aria-hidden="true">
         <div className="snowflake">❅</div>
         <div className="snowflake">❅</div>
@@ -53,6 +54,7 @@ const App: React.FC = () => {
         <div className="snowflake">❆</div>
         <div className="snowflake">❄</div>
       </div>
+      */}
     </Router>
   );
 };
