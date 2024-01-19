@@ -9,11 +9,14 @@ import {
   MDBCol,
 } from 'mdb-react-ui-kit';
 import AddArticleModal from './AddArticleModal';
+import ConfirmDialog from '../Shared/ConfirmDialog';
 
 const Articles: React.FC = () => {
   const [articles, setArticles] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
+  const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchArticles();
@@ -57,7 +60,6 @@ const Articles: React.FC = () => {
     author: string;
     image: string | null;
   }) => {
-    console.log(articleData.title)
     try {
       const response = await fetch(
         "https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1",
@@ -76,29 +78,54 @@ const Articles: React.FC = () => {
         }
       );
 
-      console.log(response)
-  
       if (!response.ok) {
         console.error(`HTTP error! Status: ${response.status}`);
         return;
       }
-  
+
       const responseBody = await response.json();
-  
+
       if (responseBody && responseBody.article_id) {
-        setArticles((prevArticles) => [...prevArticles, responseBody]);
+        fetchArticles();
+        setIsModalOpen(false);
+        console.log("Article successfully added")
       } else {
         console.error("Invalid response format:", responseBody);
       }
-  
-      // Close the modal
-      setIsModalOpen(false);
     } catch (error) {
       console.error('Error submitting new article:', error);
     }
   };
 
-  
+  const handleDeleteArticle = (articleId: string) => {
+    setArticleToDelete(articleId);
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(
+        `https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1/${articleToDelete}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.ok) {
+        console.log(`Article with ID ${articleToDelete} deleted successfully.`);
+        setArticles((prevArticles) => prevArticles.filter((article) => article.article_id !== articleToDelete));
+      } else {
+        console.error(`Failed to delete article with ID ${articleToDelete}. Status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('An error occurred while deleting the article:', error);
+    } finally {
+      setShowDeleteConfirm(false);
+    }
+  };
 
   return (
     <MDBContainer
@@ -141,12 +168,20 @@ const Articles: React.FC = () => {
                     position="top"
                     alt={article.title}
                   />
-                  <MDBCardBody>
+                  <MDBCardBody className="d-flex flex-column">
                     <MDBCardTitle>{article.title}</MDBCardTitle>
                     <p>{trimContent(article.content)}</p>
-                    <MDBBtn href={`/article/${article.article_id}`}>
-                      Read More
-                    </MDBBtn>
+                    <div className="d-flex justify-content-between align-items-center mt-3">
+                      <MDBBtn href={`/article/${article.article_id}`} className="me-2">
+                        Read More
+                      </MDBBtn>
+                      <MDBBtn
+                        color="danger"
+                        onClick={() => handleDeleteArticle(article.article_id)}
+                      >
+                        <i className="fas fa-trash-alt"></i>
+                      </MDBBtn>
+                    </div>
                   </MDBCardBody>
                 </div>
               </MDBCol>
@@ -157,6 +192,13 @@ const Articles: React.FC = () => {
         onSubmit={handleAddArticle}
         onClose={() => setIsModalOpen(false)}
         showModal={isModalOpen}
+      />
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        message="Are you sure you want to delete this article?"
+        title="Delete Article?"
       />
     </MDBContainer>
   );
