@@ -14,6 +14,7 @@ import AddPostFormModal from './AddPostFormModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import EditPostFormModal from './EditPostForumModal';
 
 // put in .env?
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
@@ -28,6 +29,8 @@ interface PostData {
   createdAt: string;
   lastUpdated: string;
   userProfilePic: string;
+  media: string | null;
+  tags: string[];
 }
 
 const Forum: React.FC = () => {
@@ -37,6 +40,10 @@ const Forum: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [postToDelete, setPostToDelete] = useState<string>('');
   const [showAlert, setShowAlert] = useState<boolean>(false);
+
+  const [editPostData, setEditPostData] = useState<PostData | null>(null);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false); // New state for edit modal
+
 
   const alertStyles = {
     position: 'fixed',
@@ -215,9 +222,59 @@ const Forum: React.FC = () => {
   };
 
   const handleEditPost = (postId: string) => {
-    // Add your logic to handle the edit action
-    // You may want to navigate to a separate edit page or open a modal for editing
-    console.log(`Edit post with ID ${postId}`);
+    const postToEdit = posts.find((post) => post.postId === postId);
+    setEditPostData(postToEdit || null);
+    setShowEditModal(true); // Open the edit modal
+  };
+
+  const handleEditPostSubmit = async (updatedData: {
+    postId: string;
+    title: string;
+    content: string;
+    media: string | null;
+    tags: string[];
+  }) => {
+    try {
+      const toxicityScore = await performToxicityAnalysis(updatedData.title + ' ' + updatedData.content);
+      let imageModerationStatus = 'Approved';
+
+      if (updatedData.media) {
+        imageModerationStatus = await performImageModerationAnalysis(updatedData.media);
+      }
+
+      if (toxicityScore < 0.4 && imageModerationStatus === 'Approved') {
+        const response = await fetch(`${API_URL}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updatedData),
+        });
+
+        if (response.ok) {
+          // Update the local state with the edited post
+          setPosts((prevPosts) =>
+            prevPosts.map((post) =>
+              post.postId === editPostData?.postId
+                ? { ...post, ...updatedData }
+                : post
+            )
+          );
+  
+          console.log('Post updated successfully:', updatedData);
+        } else {
+          console.error(
+            `Failed to update post with ID ${editPostData?.postId}. Status: ${response.status}`
+          );
+        }
+      } else {
+        setShowAlert(true);
+      }
+    } catch (error) {
+      console.error('An error occurred while updating the post:', error);
+    } finally {
+      setShowEditModal(false);
+    }
   };
 
   return (
@@ -240,13 +297,13 @@ const Forum: React.FC = () => {
         <MDBBtn className="mb-2" onClick={handleNewPostClick}>
           <i className="fas fa-plus me-2"></i>New Post
         </MDBBtn>
-  
+
         <AddPostFormModal
           onSubmit={handleNewPostSubmit}
           onClose={handleNewPostClose}
           showModal={showNewPostModal}
         />
-  
+
         {posts
           .filter((post) =>
             post.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -317,6 +374,16 @@ const Forum: React.FC = () => {
           <button type="button" className="btn-close" onClick={() => setShowAlert(false)}></button>
         </div>
       )}
+      {editPostData && (
+      <EditPostFormModal
+        post={editPostData}
+        onClose={() => {
+          setEditPostData(null);
+        }}
+        onSubmit={handleEditPostSubmit}
+        showModal={showEditModal}
+      />
+    )}
     </MDBContainer>
   );
 }
