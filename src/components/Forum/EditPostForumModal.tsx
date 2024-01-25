@@ -55,8 +55,8 @@ const EditPostFormModal: React.FC<EditPostFormModalProps> = ({ post, onSubmit, o
   const handleMediaChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-        const base64Content = await getBase64(files[0]);
-        setEditedPostData((prevData) => ({ ...prevData, media: base64Content }));
+      const base64Content = await getBase64(files[0]);
+      setEditedPostData((prevData) => ({ ...prevData, media: base64Content }));
     }
   };
 
@@ -78,7 +78,7 @@ const EditPostFormModal: React.FC<EditPostFormModalProps> = ({ post, onSubmit, o
     event.preventDefault();
 
     const updatedPostData = {
-      postId: post.postId, // Include post ID in the updated data
+      postId: post.postId,
       title: editedPostData.title,
       content: editedPostData.content,
       media: editedPostData.media,
@@ -127,19 +127,6 @@ const EditPostFormModal: React.FC<EditPostFormModalProps> = ({ post, onSubmit, o
                   value={editedPostData.content}
                   onChange={handleInputChange}
                   required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="editedPostMedia" className="form-label">
-                  Upload Media
-                </label>
-                <input
-                  type="file"
-                  className="form-control"
-                  id="editedPostMedia"
-                  name="media"
-                  accept="image/*,video/*"
-                  onChange={handleMediaChange}
                 />
               </div>
               <div className="mb-3">

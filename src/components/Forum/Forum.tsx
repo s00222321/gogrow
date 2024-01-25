@@ -252,7 +252,6 @@ const Forum: React.FC = () => {
         });
 
         if (response.ok) {
-          // Update the local state with the edited post
           setPosts((prevPosts) =>
             prevPosts.map((post) =>
               post.postId === editPostData?.postId
@@ -260,7 +259,7 @@ const Forum: React.FC = () => {
                 : post
             )
           );
-  
+
           console.log('Post updated successfully:', updatedData);
         } else {
           console.error(
@@ -375,15 +374,15 @@ const Forum: React.FC = () => {
         </div>
       )}
       {editPostData && (
-      <EditPostFormModal
-        post={editPostData}
-        onClose={() => {
-          setEditPostData(null);
-        }}
-        onSubmit={handleEditPostSubmit}
-        showModal={showEditModal}
-      />
-    )}
+        <EditPostFormModal
+          post={editPostData}
+          onClose={() => {
+            setEditPostData(null);
+          }}
+          onSubmit={handleEditPostSubmit}
+          showModal={showEditModal}
+        />
+      )}
     </MDBContainer>
   );
 }

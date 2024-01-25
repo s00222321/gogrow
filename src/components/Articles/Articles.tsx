@@ -10,6 +10,11 @@ import {
 } from 'mdb-react-ui-kit';
 import AddArticleModal from './AddArticleModal';
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import EditArticleModal from './EditArticleModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEdit } from '@fortawesome/free-solid-svg-icons';
+
+const API_URL = "https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1"
 
 const Articles: React.FC = () => {
   const [articles, setArticles] = useState<any[]>([]);
@@ -17,6 +22,8 @@ const Articles: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
+  const [editArticleData, setEditArticleData] = useState<any | null>(null);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
 
   useEffect(() => {
     fetchArticles();
@@ -24,9 +31,7 @@ const Articles: React.FC = () => {
 
   const fetchArticles = async () => {
     try {
-      const response = await fetch(
-        "https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1"
-      );
+      const response = await fetch(API_URL);
       const responseData = await response.json();
       const data = JSON.parse(responseData.body);
       if (Array.isArray(data)) {
@@ -62,7 +67,7 @@ const Articles: React.FC = () => {
   }) => {
     try {
       const response = await fetch(
-        "https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1",
+        API_URL,
         {
           method: "POST",
           headers: {
@@ -105,7 +110,7 @@ const Articles: React.FC = () => {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1/${articleToDelete}`,
+        `${API_URL}/${articleToDelete}`,
         {
           method: 'DELETE',
           headers: {
@@ -124,6 +129,52 @@ const Articles: React.FC = () => {
       console.error('An error occurred while deleting the article:', error);
     } finally {
       setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleEditArticle = (articleId: string) => {
+    const articleToEdit = articles.find((article) => article.article_id === articleId);
+    setEditArticleData(articleToEdit || null);
+    setShowEditModal(true);
+  };
+
+  const handleEditArticleSubmit = async (updatedData: {
+    article_id: string;
+    title: string;
+    content: string;
+    publication_date: string;
+    author: string;
+    image: string | null;
+  }) => {
+    try {
+      console.log(JSON.stringify(updatedData))
+      const response = await fetch(API_URL, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        setArticles((prevArticles) =>
+          prevArticles.map((article) =>
+            article.article_id === editArticleData?.article_id
+              ? { ...article, ...updatedData }
+              : article
+          )
+        );
+
+        console.log('Article updated successfully:', updatedData);
+      } else {
+        console.error(
+          `Failed to update article with ID ${editArticleData?.article_id}. Status: ${response.status}`
+        );
+      }
+    } catch (error) {
+      console.error('An error occurred while updating the article:', error);
+    } finally {
+      setShowEditModal(false);
     }
   };
 
@@ -175,12 +226,21 @@ const Articles: React.FC = () => {
                       <MDBBtn href={`/article/${article.article_id}`} className="me-2">
                         Read More
                       </MDBBtn>
-                      <MDBBtn
-                        color="danger"
-                        onClick={() => handleDeleteArticle(article.article_id)}
-                      >
-                        <i className="fas fa-trash-alt"></i>
-                      </MDBBtn>
+                      <div className="d-flex">
+                        <MDBBtn
+                          color="warning"
+                          className="me-2"
+                          onClick={() => handleEditArticle(article.article_id)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
+                        </MDBBtn>
+                        <MDBBtn
+                          color="danger"
+                          onClick={() => handleDeleteArticle(article.article_id)}
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </MDBBtn>
+                      </div>
                     </div>
                   </MDBCardBody>
                 </div>
@@ -192,6 +252,14 @@ const Articles: React.FC = () => {
         onSubmit={handleAddArticle}
         onClose={() => setIsModalOpen(false)}
         showModal={isModalOpen}
+      />
+      <EditArticleModal
+        article={editArticleData}
+        onClose={() => {
+          setEditArticleData(null);
+        }}
+        onSubmit={handleEditArticleSubmit}
+        showModal={showEditModal}
       />
       <ConfirmDialog
         isOpen={showDeleteConfirm}
