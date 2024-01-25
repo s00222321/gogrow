@@ -52,23 +52,6 @@ const EditPostFormModal: React.FC<EditPostFormModalProps> = ({ post, onSubmit, o
     setEditedPostData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  const handleMediaChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      const base64Content = await getBase64(files[0]);
-      setEditedPostData((prevData) => ({ ...prevData, media: base64Content }));
-    }
-  };
-
-  const getBase64 = async (file: File) => {
-    return new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => resolve(reader.result?.toString().split(',')[1] || '');
-      reader.onerror = (error) => reject(error);
-    });
-  };
-
   const handleTagsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const tags = event.target.value;
     setEditedPostData((prevData) => ({ ...prevData, tags }));

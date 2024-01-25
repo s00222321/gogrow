@@ -59,23 +59,6 @@ const EditArticleModal: React.FC<EditArticleModalProps> = ({ article, onSubmit, 
         setEditedArticleData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleImageChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-        const files = event.target.files;
-        if (files && files.length > 0) {
-            const base64Content = await getBase64(files[0]);
-            setEditedArticleData((prevData) => ({ ...prevData, image: base64Content }));
-        }
-    };
-
-    const getBase64 = async (file: File) => {
-        return new Promise<string>((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result?.toString().split(',')[1] || '');
-            reader.onerror = (error) => reject(error);
-        });
-    };
-
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
