@@ -2,13 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText } from 'mdb-react-ui-kit';
 
 interface WeatherData {
-  '@name': string;
-  temp: { '#text': string; '@unit': string };
-  rain: { '#text': string; '@unit': string };
-  wind: { '#text': string; '@units': string };
-  soil: { '#text': string; '@units': string };
-  // Add other fields if needed
+  county_name: string;
+  forecast: {
+    day_num: string;
+    date: string;
+    min_temp: string;
+    max_temp: string;
+    weather: string;
+    wind_speed: {
+      value: string;
+      units: string;
+    };
+    wind_dir: string;
+    wind_deg: string;
+    rainfall_6_18: string;
+    rainfall_18_6: string;
+  }[];
 }
+
+
+
+
 
 interface VegetableData {
   plant_id: number;
@@ -23,6 +37,7 @@ interface VegetableData {
 
 const HomePage: React.FC = () => {
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  //const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
   const [selectedVegetable, setSelectedVegetable] = useState<VegetableData | null>(null);
   const [sensorData, setSensorData] = useState<any[] | null>(null);
 
@@ -30,10 +45,16 @@ const HomePage: React.FC = () => {
     const fetchData = async () => {
       try {
         // Fetch weather data
-        const weatherResponse = await fetch('https://prodapi.metweb.ie/agriculture/report');
+        const weatherResponse = await fetch('https://2vbpsc6e1k.execute-api.eu-west-1.amazonaws.com/production/getWeatherData');
         const weatherData = await weatherResponse.json();
-        const station = weatherData.report.station.find((station: WeatherData) => station['@name'] === 'Knock Airport');
-        setWeatherData(station);
+        // For demonstration purposes, you might want to set a default selected county
+        //setSelectedCounty(weatherData[0]['@name']);
+
+        // Set weather data for the selected county
+        setWeatherData(weatherData.find((county) => county.county_name === "SLIGO"));
+      
+    
+        
 
         // Determine current season
         const date = new Date();
@@ -102,29 +123,26 @@ const HomePage: React.FC = () => {
     <div className="d-flex flex-column align-items-center" style={{ minHeight: '100vh' }}>
       <h1 className="mt-3 mb-4">Welcome Siobhan 🌱</h1>
 
-      {weatherData && (
-        <MDBCard className="mb-3" style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}>
-          <MDBCardBody>
-            <MDBCardTitle className="mb-3">Weather at {weatherData['@name']}</MDBCardTitle>
-            <div className="d-flex justify-content-between mb-2">
-              <div>Temperature:</div>
-              <div>{weatherData.temp['#text']}°{weatherData.temp['@unit']}</div>
-            </div>
-            <div className="d-flex justify-content-between mb-2">
-              <div>Rainfall:</div>
-              <div>{weatherData.rain['#text']} {weatherData.rain['@unit']}</div>
-            </div>
-            <div className="d-flex justify-content-between mb-2">
-              <div>Wind:</div>
-              <div>{weatherData.wind['#text']} {weatherData.wind['@units']}</div>
-            </div>
-            <div className="d-flex justify-content-between">
-              <div>Soil Temp:</div>
-              <div>{weatherData.soil['#text']} {weatherData.soil['@units']}</div>
-            </div>
-          </MDBCardBody>
-        </MDBCard>
-      )}
+     {weatherData && (
+  <MDBCard
+    key={weatherData.county_name}
+    className="mb-3"
+    style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+  >
+    <MDBCardBody>
+      <MDBCardTitle className="mb-3">Weather at {weatherData.county_name}</MDBCardTitle>
+      {weatherData.forecast.map((day) => (
+        <div key={day.day_num}>
+          {/* Render your weather details here for each day */}
+          <div>Date: {day.date}</div>
+          <div>Min Temp: {day.min_temp}</div>
+          <div>Max Temp: {day.max_temp}</div>
+          {/* Add other weather details as needed */}
+        </div>
+      ))}
+    </MDBCardBody>
+  </MDBCard>
+)}
 
       {selectedVegetable && (
         <MDBCard className="mb-3" style={{ width: '20rem' }}>
