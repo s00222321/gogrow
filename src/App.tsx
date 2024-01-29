@@ -15,6 +15,7 @@ import Footer from "./components/Footer";
 import SensorDisplay from "./components/SensorsDisplay";
 import UserDetails from "./components/UserDetails";
 import { Toaster } from "react-hot-toast";
+import Leaderboard from "./components/Leaderboard";
 
 const App: React.FC = () => {
   return (
@@ -35,8 +36,8 @@ const App: React.FC = () => {
           <Route path="forum" element={<Forum />} />
           <Route path="forum/:post_id" element={<ForumPost />} />
           <Route path="sensors" element={<SensorDisplay />} />
-          {/* Add the UserDetails route */}
           <Route path="userdetails" element={<UserDetails />} />
+          <Route path="leaderboard" element={<Leaderboard />} />
         </Routes>
       </div>
       <Toaster position="bottom-center" />
