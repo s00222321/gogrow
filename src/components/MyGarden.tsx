@@ -128,7 +128,7 @@ const MyGarden: React.FC = () => {
     >
       <div className="w-75">
         <div className="text-center mb-4">
-          <span className="h4">My Garden</span>
+          <span className="h3">My Garden</span>
         </div>
         <MDBRow className="g-4">
           {gardenPlants.map((plant) => (

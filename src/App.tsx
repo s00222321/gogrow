@@ -3,8 +3,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
-import Articles from "./components/Articles";
-import Article from "./components/Article";
+import Articles from "./components/Articles/Articles";
+import Article from "./components/Articles/Article";
 import Plants from "./components/Plants";
 import Plant from "./components/Plant";
 import Forum from "./components/Forum/Forum";
@@ -41,6 +41,7 @@ const App: React.FC = () => {
       </div>
       <Toaster position="bottom-center" />
       <Footer />
+      {/* Commented out the snowflakes
       <div className="snowflakes" aria-hidden="true">
         <div className="snowflake">❅</div>
         <div className="snowflake">❅</div>
@@ -53,6 +54,7 @@ const App: React.FC = () => {
         <div className="snowflake">❆</div>
         <div className="snowflake">❄</div>
       </div>
+      */}
     </Router>
   );
 };
