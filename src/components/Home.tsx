@@ -21,7 +21,7 @@ interface WeatherData {
 }
 
 
-
+const selectedCounty = "MAYO";
 
 
 interface VegetableData {
@@ -51,7 +51,7 @@ const HomePage: React.FC = () => {
         //setSelectedCounty(weatherData[0]['@name']);
 
         // Set weather data for the selected county
-        setWeatherData(weatherData.find((county) => county.county_name === "SLIGO"));
+        setWeatherData(weatherData.find((county) => county.county_name === selectedCounty));
       
     
         
@@ -130,7 +130,7 @@ const HomePage: React.FC = () => {
     style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
   >
     <MDBCardBody>
-      <MDBCardTitle className="mb-3">Weather at {weatherData.county_name}</MDBCardTitle>
+      <MDBCardTitle className="mb-3">Weather in County {weatherData.county_name}</MDBCardTitle>
       {weatherData.forecast.map((day) => (
         <div key={day.day_num}>
           {/* Render your weather details here for each day */}
