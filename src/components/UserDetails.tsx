@@ -68,7 +68,7 @@ const UserDetails: React.FC = () => {
     const fetchUserProfile = async () => {
       try {
         const apiUrl =
-          "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly";
+          "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/siobhan_donnelly";
         const response = await fetch(apiUrl);
 
         if (!response.ok) {
@@ -102,7 +102,7 @@ const UserDetails: React.FC = () => {
 
     try {
       const apiUrl =
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly";
+        "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/siobhan_donnelly";
       const response = await fetch(apiUrl, {
         method: "PUT",
         headers: {
