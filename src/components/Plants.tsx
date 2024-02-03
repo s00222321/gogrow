@@ -45,7 +45,7 @@ const Plants: React.FC = () => {
 
     const fetchCurrentlyGrowing = async () => {
       const response = await fetch(
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
+        "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/siobhan_donnelly"
       );
       const userData = await response.json();
       if (
@@ -110,7 +110,7 @@ const Plants: React.FC = () => {
     >
       <div className="w-75">
         <div className="text-center mb-4">
-          <span className="h4">Plants</span>
+          <span className="h3">Plants</span>
         </div>
         <div className="mb-4">
           <input

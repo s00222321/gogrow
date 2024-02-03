@@ -34,7 +34,7 @@ const MyGarden: React.FC = () => {
 
     const fetchGardenPlants = async () => {
       const response = await fetch(
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
+        "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/siobhan_donnelly"
       );
       const jsonResponse = await response.json();
       const currentlyGrowing = jsonResponse.data?.currently_growing;
@@ -128,7 +128,7 @@ const MyGarden: React.FC = () => {
     >
       <div className="w-75">
         <div className="text-center mb-4">
-          <span className="h4">My Garden</span>
+          <span className="h3">My Garden</span>
         </div>
         <MDBRow className="g-4">
           {gardenPlants.map((plant) => (
