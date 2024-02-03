@@ -45,7 +45,7 @@ const Plants: React.FC = () => {
 
     const fetchCurrentlyGrowing = async () => {
       const response = await fetch(
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
+        "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/siobhan_donnelly"
       );
       const userData = await response.json();
       if (

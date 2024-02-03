@@ -30,7 +30,7 @@ function Navbar() {
   useEffect(() => {
     const fetchUserData = async () => {
       const response = await fetch(
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
+        "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/siobhan_donnelly"
       );
       const data = await response.json();
       if (data && data.data && data.data.ProfilePic) {
