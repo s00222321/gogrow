@@ -79,6 +79,7 @@ const UserDetails: React.FC = () => {
         setUserData(jsonData.data);
 
         // Log user data
+        console.log(response)
         console.log("Fetched user data:", jsonData.data);
       } catch (error) {
         console.error("Error fetching user profile:", error);

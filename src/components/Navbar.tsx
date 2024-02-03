@@ -130,6 +130,11 @@ function Navbar() {
               </MDBNavbarLink>
             </MDBDropdownItem>
             <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/leaderboard">
+                Leaderboard
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
               <MDBNavbarLink className="dropdownlink" href="/userdetails">
                 Settings
               </MDBNavbarLink>
