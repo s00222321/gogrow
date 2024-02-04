@@ -142,7 +142,7 @@ const Register: React.FC = () => {
               <option value="Wicklow">Wicklow</option>
             </select>
           </div>
-          <div className="text-center mt-4">
+          <div className="text-center mt-4 d-flex justify-content-between">
             <MDBBtn color="primary" type="submit">
               Register
             </MDBBtn>
