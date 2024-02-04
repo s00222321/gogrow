@@ -13,6 +13,7 @@ import {
   MDBInputGroup,
   MDBBtn
 } from "mdb-react-ui-kit";
+import { useAuth } from '../AuthContext';
 
 const MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/moderator';
 
@@ -33,6 +34,7 @@ const ForumPost: React.FC = () => {
   const [comment, setComment] = useState<string>('');
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [reloadComments, setReloadComments] = useState<boolean>(false);
+  const { loginData } = useAuth();
 
   const alertStyles = {
     position: 'fixed',
@@ -64,7 +66,7 @@ const ForumPost: React.FC = () => {
     event.preventDefault();
   
     const postId = post_id;
-    const username = 'mairead_murphy'; // need to get dynamically
+    const username = loginData?.username;
   
     try {
       const toxicityScore = await performToxicityAnalysis(comment);

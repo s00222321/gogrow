@@ -7,6 +7,7 @@ import {
   MDBCardText
 } from "mdb-react-ui-kit";
 import ConfirmDialog from '../Shared/ConfirmDialog';
+import { useAuth } from '../AuthContext';
 
 interface CommentData {
   commentId: string;
@@ -27,6 +28,7 @@ const ForumPostComment: React.FC<ForumPostCommentProps> = ({ post_id, reloadComm
   const [comments, setComments] = useState<CommentData[]>([]);
   const [isConfirmationDialogOpen, setIsConfirmationDialogOpen] = useState(false);
   const [commentToDelete, setCommentToDelete] = useState<string>('');
+  const { loginData } = useAuth();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -48,7 +50,7 @@ const ForumPostComment: React.FC<ForumPostCommentProps> = ({ post_id, reloadComm
     };
 
     fetchComments();
-  }, [post_id, reloadComments]); // Include reloadComments in the dependency array
+  }, [post_id, reloadComments]);
 
   const handleDeleteComment = (comment_id: string) => {
     setCommentToDelete(comment_id);
@@ -105,19 +107,21 @@ const ForumPostComment: React.FC<ForumPostCommentProps> = ({ post_id, reloadComm
                 {formatDate(comment.postedAt)}
               </MDBCardText>
             </MDBCardBody>
-            <MDBBtn
-              color="danger"
-              className="position-absolute top-0 end-0 m-2"
-              onClick={() => handleDeleteComment(comment.commentId)}
-            >
-              <i className="fas fa-trash-alt"></i>
-            </MDBBtn>
+            {loginData?.username === comment.username || loginData?.username === 'admin' ? (
+              <MDBBtn
+                color="danger"
+                className="position-absolute top-0 end-0 m-2"
+                onClick={() => handleDeleteComment(comment.commentId)}
+              >
+                <i className="fas fa-trash-alt"></i>
+              </MDBBtn>
+            ) : null}
           </MDBCard>
         ))
       ) : (
         <p>No comments available</p>
       )}
-
+  
       <ConfirmDialog
         isOpen={isConfirmationDialogOpen}
         onClose={handleCancelDelete}

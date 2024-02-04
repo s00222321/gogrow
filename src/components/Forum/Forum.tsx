@@ -15,6 +15,7 @@ import ConfirmDialog from '../Shared/ConfirmDialog';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import EditPostFormModal from './EditPostForumModal';
+import { useAuth } from '../AuthContext';
 
 // put in .env?
 const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
@@ -40,9 +41,9 @@ const Forum: React.FC = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<boolean>(false);
   const [postToDelete, setPostToDelete] = useState<string>('');
   const [showAlert, setShowAlert] = useState<boolean>(false);
-
   const [editPostData, setEditPostData] = useState<PostData | null>(null);
-  const [showEditModal, setShowEditModal] = useState<boolean>(false); // New state for edit modal
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const { loginData } = useAuth();
 
 
   const alertStyles = {
@@ -91,7 +92,7 @@ const Forum: React.FC = () => {
   };
 
   const handleNewPostSubmit = async (postData: { title: string; content: string; media: string | null; tags: string[] }) => {
-    const updatedPostData = { ...postData, username: 'sean_oconnor' };
+    const updatedPostData = { ...postData, username: loginData?.username };
 
     try {
       const toxicityScore = await performToxicityAnalysis(updatedPostData.title + ' ' + updatedPostData.content);
@@ -336,19 +337,23 @@ const Forum: React.FC = () => {
                       Read More
                     </MDBBtn>
                     <div className="d-flex">
-                      <MDBBtn
-                        color="warning"
-                        className="me-2"
-                        onClick={() => handleEditPost(post.postId)}
-                      >
-                        <FontAwesomeIcon icon={faEdit} />
-                      </MDBBtn>
-                      <MDBBtn
-                        color="danger"
-                        onClick={() => handleDeletePost(post.postId)}
-                      >
-                        <i className="fas fa-trash-alt"></i>
-                      </MDBBtn>
+                      {(loginData?.username === post.username || loginData?.username === 'admin') && (
+                        <>
+                          <MDBBtn
+                            color="warning"
+                            className="me-2"
+                            onClick={() => handleEditPost(post.postId)}
+                          >
+                            <FontAwesomeIcon icon={faEdit} />
+                          </MDBBtn>
+                          <MDBBtn
+                            color="danger"
+                            onClick={() => handleDeletePost(post.postId)}
+                          >
+                            <i className="fas fa-trash-alt"></i>
+                          </MDBBtn>
+                        </>
+                      )}
                     </div>
                   </div>
                 </MDBCardBody>
@@ -385,6 +390,6 @@ const Forum: React.FC = () => {
       )}
     </MDBContainer>
   );
-}
+};
 
 export default Forum;
