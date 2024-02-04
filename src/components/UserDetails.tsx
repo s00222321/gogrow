@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   MDBContainer,
   MDBCard,
@@ -10,7 +10,8 @@ import {
   MDBBtn,
   MDBCardTitle,
   MDBCardSubTitle,
-} from "mdb-react-ui-kit";
+} from 'mdb-react-ui-kit';
+import { useAuth } from './AuthContext';
 
 interface UserData {
   ProfilePic: string;
@@ -23,90 +24,93 @@ interface UserData {
 }
 
 const counties = [
-  "Antrim",
-  "Armagh",
-  "Carlow",
-  "Cavan",
-  "Clare",
-  "Cork",
-  "Derry",
-  "Donegal",
-  "Down",
-  "Dublin",
-  "Fermanagh",
-  "Galway",
-  "Kerry",
-  "Kildare",
-  "Kilkenny",
-  "Laois",
-  "Leitrim",
-  "Limerick",
-  "Longford",
-  "Louth",
-  "Mayo",
-  "Meath",
-  "Monaghan",
-  "Offaly",
-  "Roscommon",
-  "Sligo",
-  "Tipperary",
-  "Tyrone",
-  "Waterford",
-  "Westmeath",
-  "Wexford",
-  "Wicklow",
+  'Antrim',
+  'Armagh',
+  'Carlow',
+  'Cavan',
+  'Clare',
+  'Cork',
+  'Derry',
+  'Donegal',
+  'Down',
+  'Dublin',
+  'Fermanagh',
+  'Galway',
+  'Kerry',
+  'Kildare',
+  'Kilkenny',
+  'Laois',
+  'Leitrim',
+  'Limerick',
+  'Longford',
+  'Louth',
+  'Mayo',
+  'Meath',
+  'Monaghan',
+  'Offaly',
+  'Roscommon',
+  'Sligo',
+  'Tipperary',
+  'Tyrone',
+  'Waterford',
+  'Westmeath',
+  'Wexford',
+  'Wicklow',
 ];
 
 const UserDetails: React.FC = () => {
+  const { isAuthenticated, loginData } = useAuth();
+  console.log('isAuthenticated:', isAuthenticated);
+  console.log('loginData:', loginData);
+
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [newEmail, setNewEmail] = useState("");
-  const [newCounty, setNewCounty] = useState("");
+  const [newEmail, setNewEmail] = useState('');
+  const [newCounty, setNewCounty] = useState('');
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const apiUrl =
-          "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly";
-        const response = await fetch(apiUrl);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch user profile data");
+        if (isAuthenticated && loginData && !userData) {
+          const apiUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`;
+          const response = await fetch(apiUrl);
+  
+          if (!response.ok) {
+            throw new Error('Failed to fetch user profile data');
+          }
+  
+          const jsonData = await response.json();
+          console.log('Fetched user data:', jsonData.data);
+          setUserData(jsonData.data);
         }
-
-        const jsonData = await response.json();
-        setUserData(jsonData.data);
-
-        // Log user data
-        console.log("Fetched user data:", jsonData.data);
       } catch (error) {
-        console.error("Error fetching user profile:", error);
+        console.error('Error fetching user profile:', error);
       }
     };
-
+  
     fetchUserProfile();
-  }, []);
-
+  }, [isAuthenticated, loginData, userData]);
+  
+  
   const formatAchievementDate = (date: string): string => {
     const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     };
     return new Date(date).toLocaleDateString(undefined, options);
   };
 
   const handleEditSave = async () => {
-    console.log("Saving changes...");
+    console.log('Saving changes...');
 
     try {
-      const apiUrl =
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly";
+      const apiUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData?.username}`;
       const response = await fetch(apiUrl, {
-        method: "PUT",
+        method: 'PUT',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: newEmail,
@@ -114,45 +118,35 @@ const UserDetails: React.FC = () => {
         }),
       });
 
-      console.log("Response:", response);
+      console.log('Response:', response);
 
       if (!response.ok) {
-        throw new Error("Failed to update data");
+        throw new Error('Failed to update data');
       }
 
-      // Fetch updated user data after a successful update
-      const updatedUserData = await fetch(apiUrl).then((res) => res.json());
+      const updatedUserData = await response.json(); // Use the same response as the update
 
-      console.log("Updated User Data:", updatedUserData);
+      console.log('Updated User Data:', updatedUserData);
 
-      // Show success message
       setUpdateSuccess(true);
-      setIsEditing(false); // Exit edit mode
-
-      // Update state with the new data
+      setIsEditing(false);
       setUserData(updatedUserData.data);
 
-      // Log current state after update
-      console.log("After state update:", userData);
+      setNewEmail('');
+      setNewCounty('');
 
-      // Reset new values
-      setNewEmail("");
-      setNewCounty("");
-
-      console.log("Update successful");
+      console.log('Update successful');
     } catch (error) {
-      console.error("Error updating data:", error);
+      console.error('Error updating data:', error);
     } finally {
-      // Always exit edit mode
       setIsEditing(false);
     }
   };
 
   const enterEditMode = () => {
     setIsEditing(true);
-    // Prefill the email and county fields with existing data
-    setNewEmail(userData?.email || "");
-    setNewCounty(userData?.County || "");
+    setNewEmail(userData?.email || '');
+    setNewCounty(userData?.County || '');
   };
 
   return (
@@ -240,13 +234,13 @@ const UserDetails: React.FC = () => {
                   )}
                 </MDBCardText>
                 <MDBCardText className="mb-2">
-                <strong>Date Joined:</strong>{" "}
-                {userData.DateJoined &&
-                  new Date(userData.DateJoined).toLocaleDateString("en-US", {
-                    month: "long",
-                    year: "numeric",
-                  })}
-              </MDBCardText>
+                  <strong>Date Joined:</strong>{" "}
+                  {userData.DateJoined &&
+                    new Date(userData.DateJoined).toLocaleDateString("en-US", {
+                      month: "long",
+                      year: "numeric",
+                    })}
+                </MDBCardText>
                 <MDBCardText className="mb-2">
                   <strong>Sustainability Score:</strong>{" "}
                   {userData.SustainabilityScore}

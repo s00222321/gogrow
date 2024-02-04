@@ -8,6 +8,7 @@ import {
   MDBContainer,
   MDBBtn,
 } from "mdb-react-ui-kit";
+import { useAuth } from "./AuthContext";
 
 interface Plant {
   plant_id: number;
@@ -22,8 +23,12 @@ interface Plant {
 
 const MyGarden: React.FC = () => {
   const [gardenPlants, setGardenPlants] = useState<Plant[]>([]);
+  const { loginData } = useAuth();
+  const username = loginData?.username || '';
 
   useEffect(() => {
+    console.log('MyGarden Component - Username:', username);
+
     const fetchPlantsData = async () => {
       const response = await fetch(
         "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
@@ -33,35 +38,39 @@ const MyGarden: React.FC = () => {
     };
 
     const fetchGardenPlants = async () => {
-      const response = await fetch(
-        "https://kiozllvru1.execute-api.eu-west-1.amazonaws.com/v1/siobhan_donnelly"
-      );
-      const jsonResponse = await response.json();
-      const currentlyGrowing = jsonResponse.data?.currently_growing;
+      try {
+        const response = await fetch(
+          `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${username}`
+        );
+        const jsonResponse = await response.json();
+        const currentlyGrowing = jsonResponse.data?.currently_growing;
 
-      if (!Array.isArray(currentlyGrowing)) {
-        setGardenPlants([]);
-        return;
+        if (!Array.isArray(currentlyGrowing)) {
+          setGardenPlants([]);
+          return;
+        }
+
+        const plantsData = await fetchPlantsData();
+
+        const gardenPlantsData = currentlyGrowing
+          .map((growingPlant) => {
+            const plantData = plantsData.find(
+              (plant: { plant_id: number }) =>
+                plant.plant_id === parseInt(growingPlant.plant_id)
+            );
+            return plantData
+              ? {
+                  ...plantData,
+                  growingTime: calculateGrowingTime(growingPlant.date_added),
+                }
+              : null;
+          })
+          .filter((plant) => plant !== null);
+
+        setGardenPlants(gardenPlantsData);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
-
-      const plantsData = await fetchPlantsData();
-
-      const gardenPlantsData = currentlyGrowing
-        .map((growingPlant) => {
-          const plantData = plantsData.find(
-            (plant: { plant_id: number }) =>
-              plant.plant_id === parseInt(growingPlant.plant_id)
-          );
-          return plantData
-            ? {
-                ...plantData,
-                growingTime: calculateGrowingTime(growingPlant.date_added),
-              }
-            : null;
-        })
-        .filter((plant) => plant !== null);
-
-      setGardenPlants(gardenPlantsData);
     };
 
     const calculateGrowingTime = (dateAdded: string | number | Date) => {
@@ -74,8 +83,10 @@ const MyGarden: React.FC = () => {
         : `${(differenceInHours / 24).toFixed(0)} Days growing`;
     };
 
-    fetchGardenPlants();
-  }, []);
+    if (username) {
+      fetchGardenPlants();
+    }
+  }, [username]);
 
   const handleDeleteFromGarden = async (plant_id: number) => {
     const plantToDelete = gardenPlants.find(
@@ -92,7 +103,7 @@ const MyGarden: React.FC = () => {
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: "test", plant_id }),
+          body: JSON.stringify({ username, plant_id }),
         }
       );
 

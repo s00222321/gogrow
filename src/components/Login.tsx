@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { MDBContainer, MDBInput, MDBBtn } from "mdb-react-ui-kit";
-import { CognitoUser, AuthenticationDetails } from "amazon-cognito-identity-js";
-import UserPool from "../Cognito";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { MDBContainer, MDBInput, MDBBtn } from 'mdb-react-ui-kit';
+import { AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
+import UserPool from '../Cognito';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 
 interface LoginData {
   username: string;
@@ -11,18 +12,19 @@ interface LoginData {
 
 const Login: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginData>({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setLoginData((prevState) => ({ ...prevState, [name]: value }));
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const user = new CognitoUser({
@@ -37,18 +39,20 @@ const Login: React.FC = () => {
 
     user.authenticateUser(authDetails, {
       onSuccess: (session) => {
-        console.log("Authentication Successful", session);
-        navigate("/home");
+        console.log('Authentication Successful', session);
+        login(loginData.username); // Store the logged-in user
+        navigate('/home');
       },
       onFailure: (err) => {
-        console.error("Authentication failed", err);
+        console.error('Authentication failed', err);
       },
       newPasswordRequired: (userAttributes, requiredAttributes) => {
-        console.log("Password change required");
+        console.log('Password change required');
       },
     });
   };
 
+  
   return (
     <MDBContainer
       fluid
