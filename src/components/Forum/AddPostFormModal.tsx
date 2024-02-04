@@ -47,7 +47,6 @@ const AddPostFormModal: React.FC<AddPostFormModalProps> = ({ onSubmit, onClose, 
   };
 
   const handleTagsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // Assuming that tags are entered as a comma-separated string
     const tags = event.target.value.split(',').map(tag => tag.trim());
     setNewPostData((prevData) => ({ ...prevData, tags }));
   };
