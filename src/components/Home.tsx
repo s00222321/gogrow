@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText } from 'mdb-react-ui-kit';
+import { useAuth } from './AuthContext';
 
 interface WeatherData {
   '@name': string;
@@ -7,7 +8,6 @@ interface WeatherData {
   rain: { '#text': string; '@unit': string };
   wind: { '#text': string; '@units': string };
   soil: { '#text': string; '@units': string };
-  // Add other fields if needed
 }
 
 interface VegetableData {
@@ -22,6 +22,8 @@ interface VegetableData {
 }
 
 const HomePage: React.FC = () => {
+  const { isAuthenticated, loginData } = useAuth();
+
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [selectedVegetable, setSelectedVegetable] = useState<VegetableData | null>(null);
   const [sensorData, setSensorData] = useState<any[] | null>(null);
@@ -100,7 +102,10 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="d-flex flex-column align-items-center" style={{ minHeight: '100vh' }}>
-      <h1 className="mt-3 mb-4">Welcome Siobhan 🌱</h1>
+      <h1 className="mt-3 mb-4">
+        {isAuthenticated ? `Welcome ${loginData?.username} 🌱` : 'Welcome Guest 🌱'}
+      </h1>
+
 
       {weatherData && (
         <MDBCard className="mb-3" style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}>
