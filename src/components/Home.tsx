@@ -21,7 +21,7 @@ interface WeatherData {
 }
 
 
-const selectedCounty = "MAYO";
+const selectedCounty = "SLIGO";
 
 
 interface VegetableData {
@@ -61,7 +61,7 @@ const HomePage: React.FC = () => {
         const month = date.getMonth() + 1;
         let season;
 
-        if (month >= 3 && month <= 5) {
+        if (month >= 2 && month <= 5) {
           season = 'spring';
         } else if (month >= 6 && month <= 8) {
           season = 'summer';
@@ -129,20 +129,40 @@ const HomePage: React.FC = () => {
     className="mb-3"
     style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
   >
-    <MDBCardBody>
-      <MDBCardTitle className="mb-3">Weather in County {weatherData.county_name}</MDBCardTitle>
-      {weatherData.forecast.map((day) => (
-        <div key={day.day_num}>
-          {/* Render your weather details here for each day */}
-          <div>Date: {day.date}</div>
-          <div>Min Temp: {day.min_temp}</div>
-          <div>Max Temp: {day.max_temp}</div>
-          {/* Add other weather details as needed */}
-        </div>
-      ))}
-    </MDBCardBody>
+    <MDBCardBody style={{ background: 'linear-gradient(to bottom, #ADD8E6, #87CEFA)', border: '2px solid #006400',borderRadius: '8px',  height: '100%' }}>
+  <MDBCardTitle className="mb-3">Weather today in  {weatherData.county_name}</MDBCardTitle>
+  {weatherData.forecast.map((day) => {
+    // Parse the date string
+    const dateObj = new Date(day.date);
+    // Format the date as day-month-year
+    const formattedDate = `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
+    // Check if the day's date matches today's date
+    const isToday = dateObj.toDateString() === new Date().toDateString();
+
+if (isToday){
+  
+  return (
+    <div key={day.day_num}>
+      {/* Render your weather details here for each day */}
+          <div>Date: {formattedDate}</div>
+          <div>Min Temp: {day.min_temp}&deg;C</div>
+          <div>Max Temp: {day.max_temp}&deg;C</div>
+          <div>Weather: {day.weather}</div>
+          <div>Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
+          <div>Wind Direction: {day.wind_dir}</div>
+          <div>Rainfall from 6-18: {day.rainfall_6_18}mm</div>
+          <div>Rainfall from 18-6: {day.rainfall_18_6}mm</div>
+      {/* Add other weather details as needed */}
+    </div>
+  );
+}
+    
+  })}
+</MDBCardBody>
   </MDBCard>
 )}
+
+
 
       {selectedVegetable && (
         <MDBCard className="mb-3" style={{ width: '20rem' }}>
