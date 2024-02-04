@@ -35,16 +35,16 @@ function Navbar() {
             if (data && data.data && data.data.ProfilePic) {
               setUserProfilePic(data.data.ProfilePic);
             } else {
-              setUserProfilePic("/gogrow.svg");
+              setUserProfilePic("/defaultuser.png");
             }
           }
         } else {
-          setUserProfilePic("/gogrow.svg");
+          setUserProfilePic("/defaultuser.png");
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
         if (isMounted) {
-          setUserProfilePic("/gogrow.svg");
+          setUserProfilePic("/defaultuser.png");
         }
       }
     };
@@ -69,7 +69,7 @@ function Navbar() {
 
       console.log('After clearing user data:', userProfilePic);
 
-      setUserProfilePic("/gogrow.svg");
+      setUserProfilePic("/defaulticon.svg");
 
       console.log('After setting default pic:', userProfilePic);
 
