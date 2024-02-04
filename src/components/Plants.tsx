@@ -8,6 +8,8 @@ import {
   MDBContainer,
 } from "mdb-react-ui-kit";
 
+import { useAuth } from "./AuthContext";
+
 interface Plant {
   plant_id: number;
   name: string;
@@ -30,71 +32,80 @@ const Plants: React.FC = () => {
     CurrentlyGrowingPlant[]
   >([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
+  
+  const { loginData } = useAuth();
+  const username = loginData?.username || '';
 
   useEffect(() => {
     const fetchPlants = async () => {
-      const response = await fetch(
-        "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
-      );
-      const responseData = await response.json();
-      const data = JSON.parse(responseData.body);
-      if (Array.isArray(data)) {
-        setPlants(data);
+      try {
+        const response = await fetch(
+          "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
+        );
+        const responseData = await response.json();
+        const data = JSON.parse(responseData.body);
+        if (Array.isArray(data)) {
+          setPlants(data);
+        }
+      } catch (error) {
+        console.error("Error fetching plants data:", error);
       }
     };
 
     const fetchCurrentlyGrowing = async () => {
-      const response = await fetch(
-        "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/siobhan_donnelly"
-      );
-      const userData = await response.json();
-      if (
-        userData &&
-        userData.data &&
-        Array.isArray(userData.data.currently_growing)
-      ) {
+      try {
+        const response = await fetch(
+          `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${username}`
+        );
+        const userData = await response.json();
+        const userCurrentlyGrowing = userData.data?.currently_growing || [];
+
         setCurrentlyGrowing(
-          userData.data.currently_growing.map((item: { plant_id: string }) => ({
+          userCurrentlyGrowing.map((item: { plant_id: string }) => ({
             ...item,
             plant_id: parseInt(item.plant_id),
           }))
         );
-      } else {
-        setCurrentlyGrowing([]);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
       }
     };
 
     fetchPlants();
     fetchCurrentlyGrowing();
-  }, []);
+  }, [username]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
   const handleAddToCurrentlyGrowing = async (plant_id: number) => {
-    const response = await fetch(
-      "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "siobhan_donnelly", plant_id }),
-      }
-    );
+    try {
+      const response = await fetch(
+        "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, plant_id }),
+        }
+      );
 
-    if (response.ok) {
-      setCurrentlyGrowing((prev) => [
-        ...prev,
-        { plant_id, date_added: new Date().toISOString() },
-      ]);
-      const plant = plants.find((p) => p.plant_id === plant_id);
-      toast.success(`Added ${plant?.name} to My Garden`, {
-        position: "bottom-center",
-      });
-    } else {
-      toast.error("Failed to add plant to garden", {
-        position: "bottom-center",
-      });
+      if (response.ok) {
+        setCurrentlyGrowing((prev) => [
+          ...prev,
+          { plant_id, date_added: new Date().toISOString() },
+        ]);
+        const plant = plants.find((p) => p.plant_id === plant_id);
+        toast.success(`Added ${plant?.name} to My Garden`, {
+          position: "bottom-center",
+        });
+      } else {
+        toast.error("Failed to add plant to garden", {
+          position: "bottom-center",
+        });
+      }
+    } catch (error) {
+      console.error("Error adding plant to garden:", error);
     }
   };
 

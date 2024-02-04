@@ -15,22 +15,22 @@ export default function App() {
             <MDBIcon fab icon="facebook-f" />
           </MDBBtn>
 
-          <MDBBtn floating className="m-1" href="#!" role="button">
+          <MDBBtn floating className="m-1" href="https://twitter.com/" role="button">
             <MDBIcon fab icon="twitter" />
           </MDBBtn>
 
-          <MDBBtn floating className="m-1" href="#!" role="button">
+          <MDBBtn floating className="m-1" href="https://www.google.com/" role="button">
             <MDBIcon fab icon="google" />
           </MDBBtn>
-          <MDBBtn floating className="m-1" href="#!" role="button">
+          <MDBBtn floating className="m-1" href="https://www.instagram.com/" role="button">
             <MDBIcon fab icon="instagram" />
           </MDBBtn>
 
-          <MDBBtn floating className="m-1" href="#!" role="button">
+          <MDBBtn floating className="m-1" href="https://linkedin.com/" role="button">
             <MDBIcon fab icon="linkedin-in" />
           </MDBBtn>
 
-          <MDBBtn floating className="m-1" href="#!" role="button">
+          <MDBBtn floating className="m-1" href="https://github.com/" role="button">
             <MDBIcon fab icon="github" />
           </MDBBtn>
         </section>

@@ -11,34 +11,73 @@ import {
   MDBDropdownMenu,
   MDBDropdownItem,
 } from "mdb-react-ui-kit";
+import { useAuth } from './AuthContext';
 
 function Navbar() {
+  const { loginData, isAuthenticated, logout, clearUserData } = useAuth();
   const [userProfilePic, setUserProfilePic] = useState("/gogrow.svg");
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+
+  const isMobile = window.innerWidth < 992;
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 992);
-    };
+    const abortController = new AbortController();
+    const { signal } = abortController;
 
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
-  useEffect(() => {
     const fetchUserData = async () => {
-      const response = await fetch(
-        "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/siobhan_donnelly"
-      );
-      const data = await response.json();
-      if (data && data.data && data.data.ProfilePic) {
-        setUserProfilePic(data.data.ProfilePic);
+      try {
+        if (isAuthenticated && loginData && loginData.username) {
+          const response = await fetch(
+            `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`,
+            { signal }
+          );
+          const data = await response.json();
+          if (isMounted) {
+            if (data && data.data && data.data.ProfilePic) {
+              setUserProfilePic(data.data.ProfilePic);
+            } else {
+              setUserProfilePic("/defaultuser.png");
+            }
+          }
+        } else {
+          setUserProfilePic("/defaultuser.png");
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+        if (isMounted) {
+          setUserProfilePic("/defaultuser.png");
+        }
       }
     };
+
+    let isMounted = true;
+
     fetchUserData();
-  }, []);
+
+    return () => {
+      isMounted = false;
+      abortController.abort(); 
+    };
+  }, [loginData, isAuthenticated]);
+
+  const handleLogout = async () => {
+    try {
+      console.log('Logout button clicked');
+      console.log('Before clearing user data:', userProfilePic);
+
+      clearUserData();
+      logout();
+
+      console.log('After clearing user data:', userProfilePic);
+
+      setUserProfilePic("/defaulticon.svg");
+
+      console.log('After setting default pic:', userProfilePic);
+
+      window.location.href = "/login";
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -130,12 +169,17 @@ function Navbar() {
               </MDBNavbarLink>
             </MDBDropdownItem>
             <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/leaderboard">
+                Leaderboard
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
               <MDBNavbarLink className="dropdownlink" href="/userdetails">
                 Settings
               </MDBNavbarLink>
             </MDBDropdownItem>
             <MDBDropdownItem link>
-              <MDBNavbarLink className="dropdownlink" href="/userdetails">
+              <MDBNavbarLink className="dropdownlink" onClick={handleLogout}>
                 Logout
               </MDBNavbarLink>
             </MDBDropdownItem>

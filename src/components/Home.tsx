@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from './AuthContext';
 import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCol, MDBRow } from 'mdb-react-ui-kit';
 
 interface WeatherData {
@@ -36,6 +37,8 @@ interface VegetableData {
 }
 
 const HomePage: React.FC = () => {
+  const { isAuthenticated, loginData } = useAuth();
+
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   //const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
   const [selectedVegetable, setSelectedVegetable] = useState<VegetableData | null>(null);
@@ -121,7 +124,10 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="d-flex flex-column align-items-center" style={{ minHeight: '100vh' }}>
-      <h1 className="mt-3 mb-4">Welcome Siobhan 🌱</h1>
+      <h1 className="mt-3 mb-4">
+        {isAuthenticated ? `Welcome ${loginData?.username} 🌱` : 'Welcome Guest 🌱'}
+      </h1>
+
 
       {weatherData && (
   <>
