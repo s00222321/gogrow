@@ -40,7 +40,7 @@ const Login: React.FC = () => {
     user.authenticateUser(authDetails, {
       onSuccess: (session) => {
         console.log('Authentication Successful', session);
-        login(loginData.username); // Store the logged-in user
+        login(loginData.username);
         navigate('/home');
       },
       onFailure: (err) => {
@@ -52,7 +52,6 @@ const Login: React.FC = () => {
     });
   };
 
-  
   return (
     <MDBContainer
       fluid
@@ -83,9 +82,12 @@ const Login: React.FC = () => {
               onChange={handleChange}
             />
           </div>
-          <div className="text-center mt-4">
+          <div className="text-center mt-4 d-flex justify-content-between">
             <MDBBtn color="primary" type="submit">
               Log in
+            </MDBBtn>
+            <MDBBtn onClick={() => navigate('/register')}>
+              Register
             </MDBBtn>
           </div>
         </form>
