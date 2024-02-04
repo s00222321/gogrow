@@ -147,7 +147,7 @@ const Register: React.FC = () => {
               Register
             </MDBBtn>
             <MDBBtn onClick={() => navigate('/login')}>
-              Register
+              Log in
             </MDBBtn>
           </div>
         </form>
