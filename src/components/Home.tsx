@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCol, MDBRow } from 'mdb-react-ui-kit';
 
 interface WeatherData {
   county_name: string;
@@ -123,44 +123,97 @@ const HomePage: React.FC = () => {
     <div className="d-flex flex-column align-items-center" style={{ minHeight: '100vh' }}>
       <h1 className="mt-3 mb-4">Welcome Siobhan 🌱</h1>
 
-     {weatherData && (
-  <MDBCard
-    key={weatherData.county_name}
-    className="mb-3"
-    style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
-  >
-    <MDBCardBody style={{ background: 'linear-gradient(to bottom, #ADD8E6, #87CEFA)', border: '2px solid #006400',borderRadius: '8px',  height: '100%' }}>
-  <MDBCardTitle className="mb-3">Weather today in  {weatherData.county_name}</MDBCardTitle>
-  {weatherData.forecast.map((day) => {
-    // Parse the date string
-    const dateObj = new Date(day.date);
-    // Format the date as day-month-year
-    const formattedDate = `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
-    // Check if the day's date matches today's date
-    const isToday = dateObj.toDateString() === new Date().toDateString();
+      {weatherData && (
+  <>
+    {/* Card for today's weather */}
+    <MDBRow>
+    <MDBCol>
+    <MDBCard
+      key={weatherData.county_name}
+      className="mb-3"
+      style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+    >
+      <MDBCardBody style={{ background: 'linear-gradient(to bottom, #ADD8E6, #87CEFA)', border: '2px solid #006400', borderRadius: '8px', height: '100%' }}>
+        <MDBCardTitle className="mb-3">Weather today in {weatherData.county_name}</MDBCardTitle>
+        {weatherData.forecast.map((day) => {
+          // Parse the date string
+          const dateObj = new Date(day.date);
+          // Format the date as day-month-year
+          const formattedDate = `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
+          // Check if the day's date matches today's date
+          const isToday = dateObj.toDateString() === new Date().toDateString();
 
-if (isToday){
-  
-  return (
-    <div key={day.day_num}>
-      {/* Render your weather details here for each day */}
-          <div>Date: {formattedDate}</div>
-          <div>Min Temp: {day.min_temp}&deg;C</div>
-          <div>Max Temp: {day.max_temp}&deg;C</div>
-          <div>Weather: {day.weather}</div>
-          <div>Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
-          <div>Wind Direction: {day.wind_dir}</div>
-          <div>Rainfall from 6-18: {day.rainfall_6_18}mm</div>
-          <div>Rainfall from 18-6: {day.rainfall_18_6}mm</div>
-      {/* Add other weather details as needed */}
-    </div>
-  );
-}
+          if (isToday) {
+            return (
+              <div key={day.day_num}>
+                {/* Render your weather details here for each day */}
+                <div>Date: {formattedDate}</div>
+                <div>Min Temp: {day.min_temp}&deg;C</div>
+                <div>Max Temp: {day.max_temp}&deg;C</div>
+                <div>Weather: {day.weather}</div>
+                <div>Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
+                <div>Wind Direction: {day.wind_dir}</div>
+                <div>Rainfall from 6-18: {day.rainfall_6_18}mm</div>
+                <div>Rainfall from 18-6: {day.rainfall_18_6}mm</div>
+                {/* Add other weather details as needed */}
+              </div>
+            );
+          }
+
+          return null;
+        })}
+      </MDBCardBody>
+    </MDBCard>
+    </MDBCol>
     
-  })}
-</MDBCardBody>
-  </MDBCard>
+
+    {/* Card for tomorrow's weather (today + 1) */}
+    <MDBCol className='mb-4'>
+    <MDBCard
+      key={`tomorrow-${weatherData.county_name}`}
+      className="mb-3"
+      style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+    >
+      <MDBCardBody style={{ background: 'linear-gradient(to bottom, #ADD8E6, #87CEFA)', border: '2px solid #006400', borderRadius: '8px', height: '100%' }}>
+        <MDBCardTitle className="mb-3">Weather tomorrow in {weatherData.county_name}</MDBCardTitle>
+        {weatherData.forecast.map((day) => {
+          // Parse the date string
+          const dateObj = new Date(day.date);
+          // Get tomorrow's date
+          const tomorrow = new Date();
+          tomorrow.setDate(new Date().getDate() + 1);
+          // Check if the day's date matches tomorrow's date
+          const isTomorrow = dateObj.toDateString() === tomorrow.toDateString();
+
+          if (isTomorrow) {
+            // Format the date as day-month-year
+            const formattedDate = `${dateObj.getDate()}-${dateObj.getMonth() + 1}-${dateObj.getFullYear()}`;
+
+            return (
+              <div key={day.day_num}>
+                {/* Render your weather details here for each day */}
+                <div>Date: {formattedDate}</div>
+                <div>Min Temp: {day.min_temp}&deg;C</div>
+                <div>Max Temp: {day.max_temp}&deg;C</div>
+                <div>Weather: {day.weather}</div>
+                <div>Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
+                <div>Wind Direction: {day.wind_dir}</div>
+                <div>Rainfall from 6-18: {day.rainfall_6_18}mm</div>
+                <div>Rainfall from 18-6: {day.rainfall_18_6}mm</div>
+                {/* Add other weather details as needed */}
+              </div>
+            );
+          }
+
+          return null;
+        })}
+      </MDBCardBody>
+    </MDBCard>
+    </MDBCol>
+    </MDBRow>
+  </>
 )}
+
 
 
 
