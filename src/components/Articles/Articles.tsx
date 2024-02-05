@@ -13,6 +13,7 @@ import ConfirmDialog from '../Shared/ConfirmDialog';
 import EditArticleModal from './EditArticleModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from '../AuthContext';
 
 const API_URL = "https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1"
 
@@ -24,6 +25,7 @@ const Articles: React.FC = () => {
   const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
   const [editArticleData, setEditArticleData] = useState<any | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const { loginData } = useAuth();
 
   useEffect(() => {
     fetchArticles();
@@ -203,7 +205,9 @@ const Articles: React.FC = () => {
           />
         </div>
         <div className="mb-4">
-          <MDBBtn onClick={openModal}>Add Article - Admin</MDBBtn>
+          <MDBBtn onClick={openModal} className={loginData?.username === 'admin' ? '' : 'd-none'}>
+            Add Article - Admin
+          </MDBBtn>
         </div>
         <MDBRow>
           {articles
@@ -226,21 +230,23 @@ const Articles: React.FC = () => {
                       <MDBBtn href={`/article/${article.article_id}`} className="me-2">
                         Read More
                       </MDBBtn>
-                      <div className="d-flex">
-                        <MDBBtn
-                          color="warning"
-                          className="me-2"
-                          onClick={() => handleEditArticle(article.article_id)}
-                        >
-                          <FontAwesomeIcon icon={faEdit} />
-                        </MDBBtn>
-                        <MDBBtn
-                          color="danger"
-                          onClick={() => handleDeleteArticle(article.article_id)}
-                        >
-                          <i className="fas fa-trash-alt"></i>
-                        </MDBBtn>
-                      </div>
+                      {loginData?.username === 'admin' && (
+                        <div className="d-flex">
+                          <MDBBtn
+                            color="warning"
+                            className="me-2"
+                            onClick={() => handleEditArticle(article.article_id)}
+                          >
+                            <FontAwesomeIcon icon={faEdit} />
+                          </MDBBtn>
+                          <MDBBtn
+                            color="danger"
+                            onClick={() => handleDeleteArticle(article.article_id)}
+                          >
+                            <i className="fas fa-trash-alt"></i>
+                          </MDBBtn>
+                        </div>
+                      )}
                     </div>
                   </MDBCardBody>
                 </div>
