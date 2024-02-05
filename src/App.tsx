@@ -26,9 +26,6 @@ const App: React.FC = () => {
         <Navbar />
         <Routes>
           <Route index element={<Register />} />
-          <Route path="articles" element={<Articles />} />
-          <Route index element={<Articles />} />
-          <Route path="article/:article_id" element={<Article />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
           
@@ -73,7 +70,7 @@ const App: React.FC = () => {
               </PrivateRoute>
             }
           />
-             <Route
+          <Route
             path="forum"
             element={
               <PrivateRoute>
@@ -81,7 +78,15 @@ const App: React.FC = () => {
               </PrivateRoute>
             }
           />
-             <Route
+          <Route
+            path="articles"
+            element={
+              <PrivateRoute>
+                <Articles/>
+              </PrivateRoute>
+            }
+          />
+          <Route
             path="forum/:post_id"
             element={
               <PrivateRoute>
@@ -89,7 +94,7 @@ const App: React.FC = () => {
               </PrivateRoute>
             }
           />
-                <Route
+          <Route
             path="sensors"
             element={
               <PrivateRoute>
@@ -97,7 +102,7 @@ const App: React.FC = () => {
               </PrivateRoute>
             }
           />
-                <Route
+          <Route
             path="leaderboard"
             element={
               <PrivateRoute>
