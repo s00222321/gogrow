@@ -63,21 +63,23 @@ function Navbar() {
     try {
       console.log('Logout button clicked');
       console.log('Before clearing user data:', userProfilePic);
-
+  
+      // Clear user data and log out
       clearUserData();
       logout();
-
-      console.log('After clearing user data:', userProfilePic);
-
+  
+      // Update the state after logout
       setUserProfilePic("/defaulticon.svg");
-
+  
       console.log('After setting default pic:', userProfilePic);
-
+  
+      // Redirect to login page
       window.location.href = "/login";
     } catch (error) {
       console.error('Error during logout:', error);
     }
   };
+  
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
