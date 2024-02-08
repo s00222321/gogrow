@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
@@ -16,46 +16,104 @@ import SensorDisplay from "./components/SensorsDisplay";
 import UserDetails from "./components/UserDetails";
 import { Toaster } from "react-hot-toast";
 import Leaderboard from "./components/Leaderboard";
+import PrivateRoute from "./components/PrivateRoute"; // Update the path
+import { AuthProvider } from "./components/AuthContext";
 
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="App">
+      <AuthProvider>
         <Navbar />
         <Routes>
           <Route index element={<Register />} />
-          <Route path="articles" element={<Articles />} />
-          <Route index element={<Articles />} />
-          <Route path="article/:article_id" element={<Article />} />
           <Route path="register" element={<Register />} />
           <Route path="login" element={<Login />} />
-          <Route path="mygarden" element={<MyGarden />} />
-          <Route path="home" element={<Home />} />
-          <Route path="plants" element={<Plants />} />
-          <Route path="plant/:plant_id" element={<Plant />} />
-          <Route path="forum" element={<Forum />} />
-          <Route path="forum/:post_id" element={<ForumPost />} />
-          <Route path="sensors" element={<SensorDisplay />} />
-          <Route path="userdetails" element={<UserDetails />} />
-          <Route path="leaderboard" element={<Leaderboard />} />
+          
+          {/* Private routes */}
+          <Route
+            path="mygarden"
+            element={
+              <PrivateRoute>
+                <MyGarden />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="home"
+            element={
+              <PrivateRoute>
+                <Home />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="plants"
+            element={
+              <PrivateRoute>
+                <Plants />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="userdetails"
+            element={
+              <PrivateRoute>
+                <UserDetails />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="plant/:plant_id"
+            element={
+              <PrivateRoute>
+                <Plant />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="forum"
+            element={
+              <PrivateRoute>
+                <Forum/>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="articles"
+            element={
+              <PrivateRoute>
+                <Articles/>
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="forum/:post_id"
+            element={
+              <PrivateRoute>
+                <ForumPost />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="sensors"
+            element={
+              <PrivateRoute>
+                <SensorDisplay />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="leaderboard"
+            element={
+              <PrivateRoute>
+                <Leaderboard />
+              </PrivateRoute>
+            }
+          />
         </Routes>
-      </div>
+      </AuthProvider>
       <Toaster position="bottom-center" />
       <Footer />
-      {/* Commented out the snowflakes
-      <div className="snowflakes" aria-hidden="true">
-        <div className="snowflake">❅</div>
-        <div className="snowflake">❅</div>
-        <div className="snowflake">❆</div>
-        <div className="snowflake">❄</div>
-        <div className="snowflake">❅</div>
-        <div className="snowflake">❆</div>
-        <div className="snowflake">❄</div>
-        <div className="snowflake">❅</div>
-        <div className="snowflake">❆</div>
-        <div className="snowflake">❄</div>
-      </div>
-      */}
     </Router>
   );
 };
