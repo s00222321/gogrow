@@ -46,6 +46,7 @@ const HomePage: React.FC = () => {
   //const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
   const [selectedVegetable, setSelectedVegetable] = useState<VegetableData | null>(null);
   const [sensorData, setSensorData] = useState<any[] | null>(null);
+  const [UserCounty, setUserCounty] = useState<string | null>(null);
 
   useEffect(() => {
     console.log('MyGarden Component - Username:', username);
@@ -63,6 +64,7 @@ const HomePage: React.FC = () => {
         const jsonResponse = await response.json();
         console.log('API Response:', jsonResponse);
         const UserCounty = jsonResponse.data?.County;
+        setUserCounty(UserCounty);
         const uppercaseCounty = UserCounty ? UserCounty.toUpperCase() : '';
         console.log('User County:', UserCounty);
 
@@ -154,7 +156,7 @@ const HomePage: React.FC = () => {
       style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
     >
       <MDBCardBody style={{  border: '2px solid #808080', borderRadius: '8px', height: '100%' }}>
-        <MDBCardTitle className="mb-3">Weather today in {weatherData.county_name}</MDBCardTitle>
+        <MDBCardTitle className="mb-3">Weather today in {UserCounty}</MDBCardTitle>
         {weatherData.forecast.map((day) => {
           // Parse the date string
           const dateObj = new Date(day.date);
@@ -195,7 +197,7 @@ const HomePage: React.FC = () => {
       style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
     >
       <MDBCardBody style={{  border: '2px solid #808080', borderRadius: '8px', height: '100%' }}>
-        <MDBCardTitle className="mb-3">Weather tomorrow in {weatherData.county_name}</MDBCardTitle>
+        <MDBCardTitle className="mb-3">Weather tomorrow in {UserCounty}</MDBCardTitle>
         {weatherData.forecast.map((day) => {
           // Parse the date string
           const dateObj = new Date(day.date);
