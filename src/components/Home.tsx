@@ -24,7 +24,7 @@ interface WeatherData {
 }
 
 
-const selectedCounty = "MAYO";
+//const selectedCounty = "MAYO";
 
 
 interface VegetableData {
@@ -57,9 +57,18 @@ const HomePage: React.FC = () => {
         const weatherData = await weatherResponse.json();
         // For demonstration purposes, you might want to set a default selected county
         //setSelectedCounty(weatherData[0]['@name']);
+        const response = await fetch(
+          `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${username}`
+        );
+        const jsonResponse = await response.json();
+        console.log('API Response:', jsonResponse);
+        const UserCounty = jsonResponse.data?.County;
+        const uppercaseCounty = UserCounty ? UserCounty.toUpperCase() : '';
+        console.log('User County:', UserCounty);
+
 
         // Set weather data for the selected county
-        setWeatherData(weatherData.find((county) => county.county_name === selectedCounty));
+        setWeatherData(weatherData.find((county) => county.county_name === uppercaseCounty));
       
     
         
