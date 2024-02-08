@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
 import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCol, MDBRow } from 'mdb-react-ui-kit';
+import { WiCloudy, WiDayCloudyGusts, WiThermometer, WiThermometerExterior, WiWindDeg, WiRaindrop} from "react-icons/wi";
+import { CgCalendarDates } from "react-icons/cg";
 
 interface WeatherData {
   county_name: string;
@@ -22,7 +24,7 @@ interface WeatherData {
 }
 
 
-const selectedCounty = "SLIGO";
+//const selectedCounty = "MAYO";
 
 
 interface VegetableData {
@@ -38,13 +40,17 @@ interface VegetableData {
 
 const HomePage: React.FC = () => {
   const { isAuthenticated, loginData } = useAuth();
+  const username = loginData?.username || '';
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   //const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
   const [selectedVegetable, setSelectedVegetable] = useState<VegetableData | null>(null);
   const [sensorData, setSensorData] = useState<any[] | null>(null);
+  const [UserCounty, setUserCounty] = useState<string | null>(null);
 
   useEffect(() => {
+    console.log('MyGarden Component - Username:', username);
+    
     const fetchData = async () => {
       try {
         // Fetch weather data
@@ -52,9 +58,19 @@ const HomePage: React.FC = () => {
         const weatherData = await weatherResponse.json();
         // For demonstration purposes, you might want to set a default selected county
         //setSelectedCounty(weatherData[0]['@name']);
+        const response = await fetch(
+          `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${username}`
+        );
+        const jsonResponse = await response.json();
+        console.log('API Response:', jsonResponse);
+        const UserCounty = jsonResponse.data?.County;
+        setUserCounty(UserCounty);
+        const uppercaseCounty = UserCounty ? UserCounty.toUpperCase() : '';
+        console.log('User County:', UserCounty);
+
 
         // Set weather data for the selected county
-        setWeatherData(weatherData.find((county) => county.county_name === selectedCounty));
+        setWeatherData(weatherData.find((county) => county.county_name === uppercaseCounty));
       
     
         
@@ -139,8 +155,8 @@ const HomePage: React.FC = () => {
       className="mb-3"
       style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
     >
-      <MDBCardBody style={{ background: 'linear-gradient(to bottom, #ADD8E6, #87CEFA)', border: '2px solid #006400', borderRadius: '8px', height: '100%' }}>
-        <MDBCardTitle className="mb-3">Weather today in {weatherData.county_name}</MDBCardTitle>
+      <MDBCardBody style={{  border: '2px solid #808080', borderRadius: '8px', height: '100%' }}>
+        <MDBCardTitle className="mb-3">Weather today in {UserCounty}</MDBCardTitle>
         {weatherData.forecast.map((day) => {
           // Parse the date string
           const dateObj = new Date(day.date);
@@ -153,14 +169,14 @@ const HomePage: React.FC = () => {
             return (
               <div key={day.day_num}>
                 {/* Render your weather details here for each day */}
-                <div>Date: {formattedDate}</div>
-                <div>Min Temp: {day.min_temp}&deg;C</div>
-                <div>Max Temp: {day.max_temp}&deg;C</div>
-                <div>Weather: {day.weather}</div>
-                <div>Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
-                <div>Wind Direction: {day.wind_dir}</div>
-                <div>Rainfall from 6-18: {day.rainfall_6_18}mm</div>
-                <div>Rainfall from 18-6: {day.rainfall_18_6}mm</div>
+                <div><CgCalendarDates /> Date: {formattedDate}</div>
+                <div><WiThermometer /> Max Temp: {day.max_temp}&deg;C</div>
+                <div><WiThermometerExterior /> Min Temp: {day.min_temp}&deg;C</div>
+                <div><WiCloudy /> Weather: {day.weather.replace(/_/g, ' ')}</div>
+                <div><WiDayCloudyGusts /> Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
+                <div><WiWindDeg /> Wind Direction: {day.wind_dir}</div>
+                <div><WiRaindrop /> Rainfall from 6-18: {day.rainfall_6_18}mm</div>
+                <div><WiRaindrop /> Rainfall from 18-6: {day.rainfall_18_6}mm</div>
                 {/* Add other weather details as needed */}
               </div>
             );
@@ -180,8 +196,8 @@ const HomePage: React.FC = () => {
       className="mb-3"
       style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
     >
-      <MDBCardBody style={{ background: 'linear-gradient(to bottom, #ADD8E6, #87CEFA)', border: '2px solid #006400', borderRadius: '8px', height: '100%' }}>
-        <MDBCardTitle className="mb-3">Weather tomorrow in {weatherData.county_name}</MDBCardTitle>
+      <MDBCardBody style={{  border: '2px solid #808080', borderRadius: '8px', height: '100%' }}>
+        <MDBCardTitle className="mb-3">Weather tomorrow in {UserCounty}</MDBCardTitle>
         {weatherData.forecast.map((day) => {
           // Parse the date string
           const dateObj = new Date(day.date);
@@ -198,14 +214,14 @@ const HomePage: React.FC = () => {
             return (
               <div key={day.day_num}>
                 {/* Render your weather details here for each day */}
-                <div>Date: {formattedDate}</div>
-                <div>Min Temp: {day.min_temp}&deg;C</div>
-                <div>Max Temp: {day.max_temp}&deg;C</div>
-                <div>Weather: {day.weather}</div>
-                <div>Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
-                <div>Wind Direction: {day.wind_dir}</div>
-                <div>Rainfall from 6-18: {day.rainfall_6_18}mm</div>
-                <div>Rainfall from 18-6: {day.rainfall_18_6}mm</div>
+                <div><CgCalendarDates /> Date: {formattedDate}</div>
+                <div><WiThermometer /> Max Temp: {day.max_temp}&deg;C</div>
+                <div><WiThermometerExterior />Min Temp: {day.min_temp}&deg;C</div>
+                <div><WiCloudy /> Weather: {day.weather.replace(/_/g, ' ')}</div>
+                <div><WiDayCloudyGusts /> Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
+                <div><WiWindDeg /> Wind Direction: {day.wind_dir}</div>
+                <div><WiRaindrop /> Rainfall from 6-18: {day.rainfall_6_18}mm</div>
+                <div><WiRaindrop /> Rainfall from 18-6: {day.rainfall_18_6}mm</div>
                 {/* Add other weather details as needed */}
               </div>
             );
