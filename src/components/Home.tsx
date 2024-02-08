@@ -172,7 +172,7 @@ const HomePage: React.FC = () => {
                 <div><CgCalendarDates /> Date: {formattedDate}</div>
                 <div><WiThermometer /> Max Temp: {day.max_temp}&deg;C</div>
                 <div><WiThermometerExterior /> Min Temp: {day.min_temp}&deg;C</div>
-                <div><WiCloudy /> Weather: {day.weather}</div>
+                <div><WiCloudy /> Weather: {day.weather.replace(/_/g, ' ')}</div>
                 <div><WiDayCloudyGusts /> Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
                 <div><WiWindDeg /> Wind Direction: {day.wind_dir}</div>
                 <div><WiRaindrop /> Rainfall from 6-18: {day.rainfall_6_18}mm</div>
@@ -217,7 +217,7 @@ const HomePage: React.FC = () => {
                 <div><CgCalendarDates /> Date: {formattedDate}</div>
                 <div><WiThermometer /> Max Temp: {day.max_temp}&deg;C</div>
                 <div><WiThermometerExterior />Min Temp: {day.min_temp}&deg;C</div>
-                <div><WiCloudy /> Weather: {day.weather}</div>
+                <div><WiCloudy /> Weather: {day.weather.replace(/_/g, ' ')}</div>
                 <div><WiDayCloudyGusts /> Wind Speed: {day.wind_speed.value} {day.wind_speed.units}</div>
                 <div><WiWindDeg /> Wind Direction: {day.wind_dir}</div>
                 <div><WiRaindrop /> Rainfall from 6-18: {day.rainfall_6_18}mm</div>
