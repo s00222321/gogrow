@@ -68,6 +68,7 @@ const UserDetails: React.FC = () => {
   const [newEmail, setNewEmail] = useState('');
   const [newCounty, setNewCounty] = useState('');
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [achievementDetails, setAchievementDetails] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -75,24 +76,63 @@ const UserDetails: React.FC = () => {
         if (isAuthenticated && loginData && !userData) {
           const apiUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`;
           const response = await fetch(apiUrl);
-  
+
           if (!response.ok) {
             throw new Error('Failed to fetch user profile data');
           }
-  
+
           const jsonData = await response.json();
           console.log('Fetched user data:', jsonData.data);
           setUserData(jsonData.data);
+
+          const achievementData = jsonData.data?.Achievements;
+
+          if (achievementData) {
+            const achievementIds = Object.keys(achievementData);
+
+            const fetchAchievementDetails = async (achievementId: string) => {
+              try {
+                // WHY IS ACHIEVEMENT ID 0??
+                const achievementUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/achievements/1`;
+                const achievementResponse = await fetch(achievementUrl);
+                if (!achievementResponse.ok) {
+                  throw new Error('Failed to fetch achievement details');
+                }
+                const achievementJsonData = await achievementResponse.json();
+                console.log("CHECK" + achievementJsonData.body)
+                return JSON.parse(achievementJsonData.body);
+              } catch (error) {
+                console.error('Error fetching achievement details:', error);
+                return null;
+              }
+            };
+
+            const userAchievementData = await Promise.all(
+              achievementIds.map(async (achievementId) => {
+                const userAchievement = achievementData[achievementId];
+                const achievementDetails = await fetchAchievementDetails(achievementId);
+          
+                if (userAchievement && achievementDetails) {
+                  achievementDetails.date_achieved = userAchievement.date_achieved;
+                }
+            
+                return achievementDetails;
+              })
+            );
+
+            console.log('User Achievement Data:', userAchievementData);
+            setAchievementDetails(userAchievementData);
+          }
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
       }
     };
-  
+
     fetchUserProfile();
   }, [isAuthenticated, loginData, userData]);
-  
-  
+
+
   const formatAchievementDate = (date: string): string => {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
@@ -124,7 +164,7 @@ const UserDetails: React.FC = () => {
         throw new Error('Failed to update data');
       }
 
-      const updatedUserData = await response.json(); // Use the same response as the update
+      const updatedUserData = await response.json();
 
       console.log('Updated User Data:', updatedUserData);
 
@@ -253,27 +293,23 @@ const UserDetails: React.FC = () => {
             )}
             <MDBRow>
               <MDBCol md="12">
-                {userData.Achievements && (
+                {achievementDetails.length > 0 && (
                   <>
                     <h5>Achievements</h5>
-                    {Object.entries(userData.Achievements).map(
-                      ([achievementName, achievementDetails]) => (
-                        <MDBCard key={achievementName} className="mb-3">
-                          <MDBCardBody>
-                            <MDBCardTitle>{achievementName}</MDBCardTitle>
-                            <MDBCardSubTitle>
-                              Date Earned:{" "}
-                              {formatAchievementDate(
-                                achievementDetails.DateEarned
-                              )}
-                            </MDBCardSubTitle>
-                            <MDBCardText>
-                              Description: {achievementDetails.Description}
-                            </MDBCardText>
-                          </MDBCardBody>
-                        </MDBCard>
-                      )
-                    )}
+                    {achievementDetails.map((achievement, index) => (
+                      <MDBCard key={index} className="mb-3">
+                        <MDBCardBody>
+                          <MDBCardTitle>{achievement.title}</MDBCardTitle>
+                          <MDBCardSubTitle>
+                            Date Earned: {formatAchievementDate(achievement.date_achieved)}
+                          </MDBCardSubTitle>
+                          <MDBCardText>
+                            Description: {achievement.description}
+                          </MDBCardText>
+                          {/* Render other achievement details as needed */}
+                        </MDBCardBody>
+                      </MDBCard>
+                    ))}
                   </>
                 )}
               </MDBCol>
