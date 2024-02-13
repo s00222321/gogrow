@@ -70,7 +70,7 @@ const HomePage: React.FC = () => {
 
 
         // Set weather data for the selected county
-        setWeatherData(weatherData.find((county) => county.county_name === uppercaseCounty));
+        setWeatherData(weatherData.find((county: { county_name: any; }) => county.county_name === uppercaseCounty));
       
     
         
@@ -140,9 +140,9 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="d-flex flex-column align-items-center" style={{ minHeight: '100vh' }}>
-      <h1 className="mt-3 mb-4">
+      <h3 className="mt-3 mb-4">
         {isAuthenticated ? `Welcome ${loginData?.username} 🌱` : 'Welcome Guest 🌱'}
-      </h1>
+      </h3>
 
 
       {weatherData && (
@@ -155,7 +155,7 @@ const HomePage: React.FC = () => {
       className="mb-3"
       style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
     >
-      <MDBCardBody style={{  border: '2px solid #808080', borderRadius: '8px', height: '100%' }}>
+      <MDBCardBody style={{  border: '0px solid #808080', borderRadius: '8px', height: '100%' }}>
         <MDBCardTitle className="mb-3">Weather today in {UserCounty}</MDBCardTitle>
         {weatherData.forecast.map((day) => {
           // Parse the date string
@@ -196,7 +196,7 @@ const HomePage: React.FC = () => {
       className="mb-3"
       style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
     >
-      <MDBCardBody style={{  border: '2px solid #808080', borderRadius: '8px', height: '100%' }}>
+      <MDBCardBody style={{  border: '0px solid #808080', borderRadius: '8px', height: '100%' }}>
         <MDBCardTitle className="mb-3">Weather tomorrow in {UserCounty}</MDBCardTitle>
         {weatherData.forecast.map((day) => {
           // Parse the date string
