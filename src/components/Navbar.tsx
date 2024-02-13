@@ -147,12 +147,29 @@ function Navbar() {
         )}
 
         <MDBDropdown className="me-3">
-          <MDBDropdownToggle tag="a" href="#!" role="button">
+        <MDBDropdownToggle tag="a" href="#!" role="button">
             <MDBIcon fas icon="bell" className="me-2" />
             <span className="badge rounded-pill badge-notification bg-danger">
               1
             </span>
           </MDBDropdownToggle>
+          <MDBDropdownMenu style={{ width: '250px' }}>
+            <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/sensors">
+                Your plant needs water!
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/home">
+                Blight warning!
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/home">
+                Dry weather ahead!
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+          </MDBDropdownMenu>
         </MDBDropdown>
 
         <MDBDropdown className="me-3">
