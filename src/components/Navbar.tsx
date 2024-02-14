@@ -73,6 +73,7 @@ function Navbar() {
     fetchSoilMoistureData();
   }, []);
 
+  // Added useEffect to determine rainfall level and return true if rainfall == 0 over three days
   useEffect(() => {
     const fetchWeatherData = async () => {
       try {
@@ -113,6 +114,7 @@ function Navbar() {
     fetchWeatherData();
   }, [isAuthenticated, loginData]);
 
+  // Added useEffect to determine temperature and return true if temp <= 0 
   useEffect(() => {
     const fetchTempData = async () => {
       try {
@@ -257,7 +259,7 @@ function Navbar() {
               </MDBNavbarLink>
             </MDBDropdownItem>
             <MDBDropdownItem link>
-      {weatherNotification === true ? (
+      {weatherNotification === true ? ( 
         <MDBNavbarLink className="dropdownlink" href="/home">
           Dry weather ahead!
         </MDBNavbarLink>
