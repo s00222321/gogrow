@@ -84,22 +84,25 @@ const UserDetails: React.FC = () => {
           const jsonData = await response.json();
           console.log('Fetched user data:', jsonData.data);
           setUserData(jsonData.data);
-
-          const achievementData = jsonData.data?.Achievements;
+          
+          const achievementData = jsonData.data.Achievements;
 
           if (achievementData) {
-            const achievementIds = Object.keys(achievementData);
+            const achievementIds: any[] = [];
+            achievementData.forEach((achievement: { achievement_id: any; }) => {
+              const achievementId = achievement.achievement_id;
+              console.log('Achievement ID:', achievementId);
+              achievementIds.push(achievementId);
+            });
 
             const fetchAchievementDetails = async (achievementId: string) => {
               try {
-                // WHY IS ACHIEVEMENT ID 0??
-                const achievementUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/achievements/1`;
+                const achievementUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/achievements/${achievementId}`;
                 const achievementResponse = await fetch(achievementUrl);
                 if (!achievementResponse.ok) {
                   throw new Error('Failed to fetch achievement details');
                 }
                 const achievementJsonData = await achievementResponse.json();
-                console.log("CHECK" + achievementJsonData.body)
                 return JSON.parse(achievementJsonData.body);
               } catch (error) {
                 console.error('Error fetching achievement details:', error);
