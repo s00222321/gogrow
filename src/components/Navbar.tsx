@@ -16,12 +16,14 @@ import { useAuth } from './AuthContext';
 function Navbar() {
   const { loginData, isAuthenticated, logout, clearUserData } = useAuth();
   const [userProfilePic, setUserProfilePic] = useState("/gogrow.svg");
+  const [showWaterNotification, setShowWaterNotification] = useState(true);
 
   const isMobile = window.innerWidth < 992;
 
   useEffect(() => {
     const abortController = new AbortController();
     const { signal } = abortController;
+    let isMounted = true;
 
     const fetchUserData = async () => {
       try {
@@ -49,37 +51,43 @@ function Navbar() {
       }
     };
 
-    let isMounted = true;
-
     fetchUserData();
 
     return () => {
       isMounted = false;
-      abortController.abort(); 
+      abortController.abort();
     };
   }, [loginData, isAuthenticated]);
+
+  useEffect(() => {
+    const fetchSoilMoistureData = async () => {
+      const response = await fetch('https://loxs1vvtc3.execute-api.eu-west-1.amazonaws.com/v1/SoilMoisture');
+      const data = await response.json();
+      const readings = JSON.parse(data.body);
+      const mostRecentReading = readings[readings.length - 1];
+      setShowWaterNotification(mostRecentReading.reading_value === "0");
+    };
+
+    fetchSoilMoistureData();
+  }, []);
 
   const handleLogout = async () => {
     try {
       console.log('Logout button clicked');
       console.log('Before clearing user data:', userProfilePic);
-  
-      // Clear user data and log out
+
       clearUserData();
       logout();
-  
-      // Update the state after logout
+
       setUserProfilePic("/defaulticon.svg");
-  
+
       console.log('After setting default pic:', userProfilePic);
-  
-      // Redirect to login page
+
       window.location.href = "/login";
     } catch (error) {
       console.error('Error during logout:', error);
     }
   };
-  
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -149,10 +157,30 @@ function Navbar() {
         <MDBDropdown className="me-3">
           <MDBDropdownToggle tag="a" href="#!" role="button">
             <MDBIcon fas icon="bell" className="me-2" />
-            <span className="badge rounded-pill badge-notification bg-danger">
-              1
-            </span>
+            {showWaterNotification && ( // Add notification badge later
+              <span className="badge rounded-pill badge-notification bg-danger">
+              </span>
+            )}
           </MDBDropdownToggle>
+          <MDBDropdownMenu style={{ width: '250px' }}>
+            <MDBDropdownItem link>
+              {showWaterNotification ? (
+                <MDBNavbarLink className="dropdownlink" href="/sensors">
+                  Your plant needs water!
+                </MDBNavbarLink>
+              ) : null}
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/home">
+                Blight warning!
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/home">
+                Dry weather ahead!
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+          </MDBDropdownMenu>
         </MDBDropdown>
 
         <MDBDropdown className="me-3">

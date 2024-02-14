@@ -1,6 +1,3 @@
-// TO-DO - filter by day/hour etc?
-// TO-DO - Display more thant one sensor reading with dropdown?
-
 import { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import {
@@ -41,6 +38,8 @@ interface ChartData {
 
 export default function SensorDisplay() {
   const [chartData, setChartData] = useState<ChartData | null>(null);
+  const [waterStatus, setWaterStatus] = useState<string>('');
+  const [lastChecked, setLastChecked] = useState<string>('');
 
   const options = {
     responsive: true,
@@ -50,7 +49,7 @@ export default function SensorDisplay() {
       },
       title: {
         display: true,
-        text: 'SoilMoisture',
+        text: 'Soil Moisture',
       },
     },
   };
@@ -69,11 +68,16 @@ export default function SensorDisplay() {
       });
       const dataValues = parsedData.map((entry: { reading_value: string }) => parseFloat(entry.reading_value));
 
+      const latestReading = dataValues[dataValues.length - 1];
+      const latestTimestamp = labels[labels.length - 1];
+      setWaterStatus(latestReading === 0 ? '⚠️ The plant has no water' : '💦 The plant has water');
+      setLastChecked(`Last checked: ${latestTimestamp}`);
+
       setChartData({
         labels,
         datasets: [
           {
-            label: 'SoilMoisture',
+            label: 'Soil Moisture',
             data: dataValues,
             borderColor: 'rgb(122,180,71)',
             backgroundColor: 'rgb(122,180,71)',
@@ -94,6 +98,11 @@ export default function SensorDisplay() {
     <MDBContainer className="py-5">
       <div className="text-center mb-4">
         <span className="h3">Sensor Readings</span>
+        {waterStatus && (
+          <div className="h5 mt-3">
+            {waterStatus} - <span>{lastChecked}</span>
+          </div>
+        )}
       </div>
       <MDBCard className="mb-4">
         <MDBCardBody>
