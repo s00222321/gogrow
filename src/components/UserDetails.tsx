@@ -84,14 +84,13 @@ const UserDetails: React.FC = () => {
           const jsonData = await response.json();
           console.log('Fetched user data:', jsonData.data);
           setUserData(jsonData.data);
-          
+
           const achievementData = jsonData.data.Achievements;
 
           if (achievementData) {
             const achievementIds: any[] = [];
             achievementData.forEach((achievement: { achievement_id: any; }) => {
               const achievementId = achievement.achievement_id;
-              console.log('Achievement ID:', achievementId);
               achievementIds.push(achievementId);
             });
 
@@ -113,12 +112,13 @@ const UserDetails: React.FC = () => {
             const userAchievementData = await Promise.all(
               achievementIds.map(async (achievementId) => {
                 const userAchievement = achievementData[achievementId];
+                console.log(achievementData)
                 const achievementDetails = await fetchAchievementDetails(achievementId);
-          
+
                 if (userAchievement && achievementDetails) {
                   achievementDetails.date_achieved = userAchievement.date_achieved;
-                }
-            
+                } 
+
                 return achievementDetails;
               })
             );
@@ -299,20 +299,29 @@ const UserDetails: React.FC = () => {
                 {achievementDetails.length > 0 && (
                   <>
                     <h5>Achievements</h5>
-                    {achievementDetails.map((achievement, index) => (
-                      <MDBCard key={index} className="mb-3">
-                        <MDBCardBody>
-                          <MDBCardTitle>{achievement.title}</MDBCardTitle>
-                          <MDBCardSubTitle>
-                            Date Earned: {formatAchievementDate(achievement.date_achieved)}
-                          </MDBCardSubTitle>
-                          <MDBCardText>
-                            Description: {achievement.description}
-                          </MDBCardText>
-                          {/* Render other achievement details as needed */}
-                        </MDBCardBody>
-                      </MDBCard>
-                    ))}
+                    <MDBRow>
+                      {achievementDetails.map((achievement, index) => (
+                        <MDBCol key={index} md="4" className="mb-3">
+                          <MDBCard>
+                            <MDBCardImage
+                              src={achievement.icon}
+                              alt="Achievement Icon"
+                              fluid
+                              style={{ maxWidth: '100%', maxHeight: '100px', margin: 'auto' }}
+                            />
+                            <MDBCardBody>
+                              <MDBCardTitle>{achievement.title}</MDBCardTitle>
+                              <MDBCardSubTitle>
+                                {formatAchievementDate(achievement.date_achieved)}
+                              </MDBCardSubTitle>
+                              <MDBCardText>
+                                {achievement.description}
+                              </MDBCardText>
+                            </MDBCardBody>
+                          </MDBCard>
+                        </MDBCol>
+                      ))}
+                    </MDBRow>
                   </>
                 )}
               </MDBCol>
