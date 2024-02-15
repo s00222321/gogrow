@@ -136,7 +136,7 @@ const HomePage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
+  }, [username]);
 
   return (
     <div className="d-flex flex-column align-items-center" style={{ minHeight: '100vh' }}>
