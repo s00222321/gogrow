@@ -111,14 +111,11 @@ const UserDetails: React.FC = () => {
 
             const userAchievementData = await Promise.all(
               achievementIds.map(async (achievementId) => {
-                const userAchievement = achievementData[achievementId];
-                console.log(achievementData)
+                const userAchievement = achievementData.find((entry: { achievement_id: any; }) => entry.achievement_id === achievementId);
                 const achievementDetails = await fetchAchievementDetails(achievementId);
-
                 if (userAchievement && achievementDetails) {
                   achievementDetails.date_achieved = userAchievement.date_achieved;
                 } 
-
                 return achievementDetails;
               })
             );
