@@ -14,13 +14,13 @@ export default defineConfig({
         theme_color: '#43a047',
         icons: [
           {
-            src: '/public/gogrow512.png',
+            src: 'public/gogrow192.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable',
           },
           {
-            src: '/public/gogrow192.png',
+            src: 'public/gogrow192.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable',
@@ -34,7 +34,7 @@ export default defineConfig({
             url: '/login',
             icons: [
               { 
-                src: '/public/gogrow192.png',
+                src: 'public/gogrow192.png',
                 sizes: '192x192', 
                 type: 'image/png'
               }
