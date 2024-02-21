@@ -88,7 +88,7 @@ const Login: React.FC = () => {
             <MDBBtn color="primary" type="submit">
               Log in
             </MDBBtn>
-            <MDBBtn onClick={() => navigate('/register')}>
+            <MDBBtn color='light' onClick={() => navigate('/register')}>
               Register
             </MDBBtn>
           </div>

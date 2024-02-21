@@ -177,7 +177,7 @@ style={{ color: formData.county === "" ? "#6c757d" : "#495057" }}
             <MDBBtn color="primary" type="submit">
               Register
             </MDBBtn>
-            <MDBBtn onClick={() => navigate('/login')}>
+            <MDBBtn color='light' onClick={() => navigate('/login')}>
               Log in
             </MDBBtn>
           </div>
