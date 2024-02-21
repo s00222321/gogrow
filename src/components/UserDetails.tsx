@@ -10,6 +10,13 @@ import {
   MDBBtn,
   MDBCardTitle,
   MDBCardSubTitle,
+  MDBModal,
+  MDBModalHeader,
+  MDBModalBody,
+  MDBModalDialog,
+  MDBModalContent,
+  MDBModalTitle,
+  MDBModalFooter,
 } from 'mdb-react-ui-kit';
 import { useAuth } from './AuthContext';
 
@@ -60,8 +67,8 @@ const counties = [
 
 const UserDetails: React.FC = () => {
   const { isAuthenticated, loginData } = useAuth();
-  console.log('isAuthenticated:', isAuthenticated);
-  console.log('loginData:', loginData);
+  // console.log('isAuthenticated:', isAuthenticated);
+  // console.log('loginData:', loginData);
 
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -69,6 +76,8 @@ const UserDetails: React.FC = () => {
   const [newCounty, setNewCounty] = useState('');
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [achievementDetails, setAchievementDetails] = useState<any[]>([]);
+  const [selectedAchievement, setSelectedAchievement] = useState<any | null>(null);
+  const [isAchievementModalOpen, setAchievementModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -87,7 +96,7 @@ const UserDetails: React.FC = () => {
 
           const achievementData = jsonData.data.Achievements;
 
-          if (achievementData) {
+          if (achievementData.length > 0) {
             const achievementIds: any[] = [];
             achievementData.forEach((achievement: { achievement_id: any; }) => {
               const achievementId = achievement.achievement_id;
@@ -115,12 +124,10 @@ const UserDetails: React.FC = () => {
                 const achievementDetails = await fetchAchievementDetails(achievementId);
                 if (userAchievement && achievementDetails) {
                   achievementDetails.date_achieved = userAchievement.date_achieved;
-                } 
+                }
                 return achievementDetails;
               })
             );
-
-            console.log('User Achievement Data:', userAchievementData);
             setAchievementDetails(userAchievementData);
           }
         }
@@ -136,7 +143,7 @@ const UserDetails: React.FC = () => {
   const formatAchievementDate = (date: string): string => {
     const options: Intl.DateTimeFormatOptions = {
       year: 'numeric',
-      month: 'long',
+      month: 'numeric',
       day: 'numeric',
     };
     return new Date(date).toLocaleDateString(undefined, options);
@@ -188,6 +195,18 @@ const UserDetails: React.FC = () => {
     setNewEmail(userData?.email || '');
     setNewCounty(userData?.County || '');
   };
+
+  const handleAchievementClick = (achievement: any) => {
+    setSelectedAchievement(achievement);
+    setAchievementModalOpen(true);
+  };
+
+  const closeAchievementModal = () => {
+    setAchievementModalOpen(false);
+      setSelectedAchievement(null);
+  };
+  
+
 
   return (
     <MDBContainer className="py-5">
@@ -292,37 +311,60 @@ const UserDetails: React.FC = () => {
               <p className="text-success">Update successful!</p>
             )}
             <MDBRow>
-              <MDBCol md="12">
-                {achievementDetails.length > 0 && (
-                  <>
-                    <h5>Achievements</h5>
-                    <MDBRow>
-                      {achievementDetails.map((achievement, index) => (
-                        <MDBCol key={index} md="4" className="mb-3">
-                          <MDBCard>
-                            <MDBCardImage
-                              src={achievement.icon}
-                              alt="Achievement Icon"
-                              fluid
-                              style={{ maxWidth: '100%', maxHeight: '100px', margin: 'auto' }}
-                            />
-                            <MDBCardBody>
-                              <MDBCardTitle>{achievement.title}</MDBCardTitle>
-                              <MDBCardSubTitle>
-                                {formatAchievementDate(achievement.date_achieved)}
-                              </MDBCardSubTitle>
-                              <MDBCardText>
-                                {achievement.description}
-                              </MDBCardText>
-                            </MDBCardBody>
-                          </MDBCard>
-                        </MDBCol>
-                      ))}
-                    </MDBRow>
-                  </>
-                )}
-              </MDBCol>
-            </MDBRow>
+            <MDBCol md="12">
+              {achievementDetails.length > 0 ? (
+                <>
+                  <h5>Achievements</h5>
+                  <MDBRow xs={2} md={4} className="g-4">
+                    {achievementDetails.map((achievement, index) => (
+                      <MDBCol key={index} className="mb-3">
+                        <MDBCard
+                          onClick={() => handleAchievementClick(achievement)}
+                          style={{ height: '100%' }} // Set a fixed height
+                        >
+                          <MDBCardImage
+                            src={achievement.icon}
+                            alt="Achievement Icon"
+                            fluid
+                            style={{ maxWidth: '100%', maxHeight: '100%', margin: 'auto', padding: '10px' }}
+                          />
+                          <MDBCardBody>
+                            <MDBCardTitle>{achievement.title}</MDBCardTitle>
+                            <MDBCardSubTitle>
+                              {formatAchievementDate(achievement.date_achieved)}
+                            </MDBCardSubTitle>
+                          </MDBCardBody>
+                        </MDBCard>
+                      </MDBCol>
+                    ))}
+                  </MDBRow>
+                </>
+              ) : (
+                <p>No achievements yet</p>
+              )}
+            </MDBCol>
+          </MDBRow>
+            {selectedAchievement && (
+              <MDBModal open={isAchievementModalOpen} setopen={closeAchievementModal} tabIndex='-1'>
+                <MDBModalDialog>
+                  <MDBModalContent>
+                    <MDBModalHeader>
+                      <MDBModalTitle>{selectedAchievement.title}</MDBModalTitle>
+                      <MDBBtn className='btn-close' color='none' onClick={closeAchievementModal}></MDBBtn>
+                    </MDBModalHeader>
+                    <MDBModalBody>
+                      <p>Date Achieved: {formatAchievementDate(selectedAchievement.date_achieved)}</p>
+                      <p>{selectedAchievement.description}</p>
+                    </MDBModalBody>
+                    <MDBModalFooter>
+                      <MDBBtn color='secondary' onClick={closeAchievementModal}>
+                        Close
+                      </MDBBtn>
+                    </MDBModalFooter>
+                  </MDBModalContent>
+                </MDBModalDialog>
+              </MDBModal>
+            )}
           </MDBCardBody>
         </MDBCard>
       ) : (
