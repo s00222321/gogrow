@@ -315,10 +315,10 @@ const HomePage: React.FC = () => {
           <MDBCol className='mb-4'>
             <MDBCard className="mb-3"
       style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}>
-            <MDBCardTitle className="mb-3">Suggested Article: {randomArticle.title}</MDBCardTitle>
+            <MDBCardTitle className="text-center mt-3 mb-3">Suggested Article</MDBCardTitle>
               <MDBCardImage src={randomArticle.image} alt={randomArticle.title} position="top" />
               <MDBCardBody>
-                <MDBCardTitle>{randomArticle.title}</MDBCardTitle>
+                <MDBCardTitle className="text-center mt-3 mb-3">{randomArticle.title}</MDBCardTitle>
                 <MDBCardText>{randomArticle.content.slice(0, 100)}...</MDBCardText>
               </MDBCardBody>
             </MDBCard>
