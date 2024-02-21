@@ -4,6 +4,7 @@ import { AuthenticationDetails, CognitoUser } from 'amazon-cognito-identity-js';
 import UserPool from '../Cognito';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { toast } from 'react-hot-toast';
 
 interface LoginData {
   username: string;
@@ -45,6 +46,7 @@ const Login: React.FC = () => {
       },
       onFailure: (err) => {
         console.error('Authentication failed', err);
+        toast.error("Incorrect username or password");
       },
       newPasswordRequired: (userAttributes, requiredAttributes) => {
         console.log('Password change required');
