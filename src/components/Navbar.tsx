@@ -16,12 +16,16 @@ import { useAuth } from './AuthContext';
 function Navbar() {
   const { loginData, isAuthenticated, logout, clearUserData } = useAuth();
   const [userProfilePic, setUserProfilePic] = useState("/gogrow.svg");
+  const [showWaterNotification, setShowWaterNotification] = useState(true);
+  const [weatherNotification, setWeatherNotification] = useState(true);
+  const [tempNotification, setTempNotification] = useState(true);
 
   const isMobile = window.innerWidth < 992;
 
   useEffect(() => {
     const abortController = new AbortController();
     const { signal } = abortController;
+    let isMounted = true;
 
     const fetchUserData = async () => {
       try {
@@ -49,37 +53,124 @@ function Navbar() {
       }
     };
 
-    let isMounted = true;
-
     fetchUserData();
 
     return () => {
       isMounted = false;
-      abortController.abort(); 
+      abortController.abort();
     };
   }, [loginData, isAuthenticated]);
+
+  useEffect(() => {
+    const fetchSoilMoistureData = async () => {
+      const response = await fetch('https://loxs1vvtc3.execute-api.eu-west-1.amazonaws.com/v1/SoilMoisture');
+      const data = await response.json();
+      const readings = JSON.parse(data.body);
+      const mostRecentReading = readings[readings.length - 1];
+      setShowWaterNotification(mostRecentReading.reading_value === "0");
+    };
+
+    fetchSoilMoistureData();
+  }, []);
+
+  // Added useEffect to determine rainfall level and return true if rainfall == 0 over three days
+  useEffect(() => {
+    const fetchWeatherData = async () => {
+      try {
+        if (isAuthenticated && loginData && loginData.username) {
+          const response = await fetch(
+            `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`
+          );
+          const jsonResponse = await response.json();
+          const userCounty = jsonResponse.data?.County;
+          const uppercaseCounty = userCounty ? userCounty.toUpperCase() : '';
+
+          const weatherResponse = await fetch(
+            'https://2vbpsc6e1k.execute-api.eu-west-1.amazonaws.com/production/getWeatherData'
+          );
+          const weatherData = await weatherResponse.json();
+
+          const userCountyWeather = weatherData.find(
+            (county) => county.county_name === uppercaseCounty
+          );
+
+          if (userCountyWeather) {
+            const noRainfallForThreeDays = userCountyWeather.forecast
+              .slice(0, 3)
+              .every((day) => day.rain === 0);
+
+            if (noRainfallForThreeDays) {
+              setWeatherNotification(true);
+            } else {
+              setWeatherNotification(false);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      }
+    };
+
+    fetchWeatherData();
+  }, [isAuthenticated, loginData]);
+
+  // Added useEffect to determine temperature and return true if temp <= 0 
+  useEffect(() => {
+    const fetchTempData = async () => {
+      try {
+        if (isAuthenticated && loginData && loginData.username) {
+          const response = await fetch(
+            `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`
+          );
+          const jsonResponse = await response.json();
+          const userCounty = jsonResponse.data?.County;
+          const uppercaseCounty = userCounty ? userCounty.toUpperCase() : '';
+  
+          const weatherResponse = await fetch(
+            'https://2vbpsc6e1k.execute-api.eu-west-1.amazonaws.com/production/getWeatherData'
+          );
+          const weatherData = await weatherResponse.json();
+  
+          const userCountyWeather = weatherData.find(
+            (county) => county.county_name === uppercaseCounty
+          );
+  
+          if (userCountyWeather) {
+            const lowTemperature = userCountyWeather.forecast
+              .some((day) => parseFloat(day.min_temp) < 0 || parseFloat(day.max_temp) < 0);
+  
+            if(lowTemperature){
+                setTempNotification(true);
+             }
+             else setTempNotification(false);
+          }
+          
+        }
+      } catch (error) {
+        console.error('Error fetching weather data:', error);
+      }
+    };
+  
+    fetchTempData();
+  }, [isAuthenticated, loginData]);
 
   const handleLogout = async () => {
     try {
       console.log('Logout button clicked');
       console.log('Before clearing user data:', userProfilePic);
-  
-      // Clear user data and log out
+
       clearUserData();
       logout();
-  
-      // Update the state after logout
+
       setUserProfilePic("/defaulticon.svg");
-  
+
       console.log('After setting default pic:', userProfilePic);
-  
-      // Redirect to login page
+
       window.location.href = "/login";
     } catch (error) {
       console.error('Error during logout:', error);
     }
   };
-  
 
   return (
     <MDBNavbar expand="lg" light bgColor="light">
@@ -149,10 +240,39 @@ function Navbar() {
         <MDBDropdown className="me-3">
           <MDBDropdownToggle tag="a" href="#!" role="button">
             <MDBIcon fas icon="bell" className="me-2" />
-            <span className="badge rounded-pill badge-notification bg-danger">
-              1
-            </span>
+            {showWaterNotification && ( // Add notification badge later
+              <span className="badge rounded-pill badge-notification bg-danger">
+              </span>
+            )}
           </MDBDropdownToggle>
+          <MDBDropdownMenu style={{ width: '250px' }}>
+            <MDBDropdownItem link>
+              {showWaterNotification ? (
+                <MDBNavbarLink className="dropdownlink" href="/sensors">
+                  Your plant needs water!
+                </MDBNavbarLink>
+              ) : null}
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
+              <MDBNavbarLink className="dropdownlink" href="/home">
+                Blight warning!
+              </MDBNavbarLink>
+            </MDBDropdownItem>
+            <MDBDropdownItem link>
+      {weatherNotification === true ? ( 
+        <MDBNavbarLink className="dropdownlink" href="/home">
+          Dry weather ahead!
+        </MDBNavbarLink>
+      ) : null}
+    </MDBDropdownItem>
+    <MDBDropdownItem link>
+      {tempNotification === true ? (
+        <MDBNavbarLink className="dropdownlink" href="/home">
+          Frost Warning!
+        </MDBNavbarLink>
+      ) : null}
+    </MDBDropdownItem>
+          </MDBDropdownMenu>
         </MDBDropdown>
 
         <MDBDropdown className="me-3">
