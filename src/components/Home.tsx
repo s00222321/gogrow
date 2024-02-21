@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCol, MDBRow, MDBContainer, MDBCarousel, MDBCarouselItem } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCol, MDBRow, MDBContainer, MDBCarousel, MDBCarouselItem, MDBCardImage } from 'mdb-react-ui-kit';
 import { WiCloudy, WiDayCloudyGusts, WiThermometer, WiThermometerExterior, WiWindDeg, WiRaindrop} from "react-icons/wi";
 import { CgCalendarDates } from "react-icons/cg";
 
@@ -38,6 +38,15 @@ interface VegetableData {
   growtime: string;
 }
 
+interface ArticleData {
+  article_id: string;
+  title: string;
+  author: string;
+  publication_date: string;
+  content: string;
+  image: string;
+}
+
 const HomePage: React.FC = () => {
   const { isAuthenticated, loginData } = useAuth();
   const username = loginData?.username || '';
@@ -47,6 +56,9 @@ const HomePage: React.FC = () => {
   const [vegetables, setVegetables] = useState<VegetableData[]>([]);
   const [sensorData, setSensorData] = useState<any[] | null>(null);
   const [UserCounty, setUserCounty] = useState<string | null>(null);
+
+  const [randomArticleId, setRandomArticleId] = useState<number | null>(null);
+  const [randomArticle, setRandomArticle] = useState<ArticleData | null>(null);
 
   useEffect(() => {
     console.log('MyGarden Component - Username:', username);
@@ -129,6 +141,33 @@ const HomePage: React.FC = () => {
 
     fetchData();
   }, [username]);
+
+  useEffect(() => {
+    const fetchRandomArticleId = async () => {
+      const totalArticles = 7; // Total number of articles in the database
+      const randomId = Math.floor(Math.random() * totalArticles) + 1;
+      setRandomArticleId(randomId);
+    };
+
+    fetchRandomArticleId();
+  }, []);
+
+  useEffect(() => {
+    const fetchRandomArticle = async () => {
+      try {
+        if (randomArticleId !== null) {
+          const response = await fetch(`https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1/${randomArticleId}`);
+          const responseData = await response.json();
+          const data = JSON.parse(responseData.body);
+          setRandomArticle(data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchRandomArticle();
+  }, [randomArticleId]);
 
   return (
     <MDBContainer fluid className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
@@ -268,6 +307,23 @@ const HomePage: React.FC = () => {
             {/* You can add more details as needed */}
           </MDBCardBody>
         </MDBCard>
+      )}
+
+{/* Display the random article preview card */}
+{randomArticle && (
+        <MDBRow className="justify-content-center">
+          <MDBCol className='mb-4'>
+            <MDBCard className="mb-3"
+      style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}>
+            <MDBCardTitle className="mb-3">Suggested Article: {randomArticle.title}</MDBCardTitle>
+              <MDBCardImage src={randomArticle.image} alt={randomArticle.title} position="top" />
+              <MDBCardBody>
+                <MDBCardTitle>{randomArticle.title}</MDBCardTitle>
+                <MDBCardText>{randomArticle.content.slice(0, 100)}...</MDBCardText>
+              </MDBCardBody>
+            </MDBCard>
+          </MDBCol>
+        </MDBRow>
       )}
 
 
