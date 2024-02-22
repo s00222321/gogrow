@@ -3,6 +3,7 @@ import { MDBContainer, MDBInput, MDBBtn } from "mdb-react-ui-kit";
 import UserPool from "../Cognito";
 import { CognitoUserAttribute } from "amazon-cognito-identity-js";
 import { useNavigate } from "react-router-dom";
+import toast from 'react-hot-toast';
 
 interface FormData {
   username: string;
@@ -28,8 +29,34 @@ const Register: React.FC = () => {
     setFormData((prevState) => ({ ...prevState, [name]: value }));
   };
 
+  const validateForm = () => {
+    if (!formData.username) {
+      toast.error("Username is required.");
+      return false;
+    }
+    if (!formData.email) {
+      toast.error("Email is required.");
+      return false;
+    }
+    if (!formData.password) {
+      toast.error("Password is required.");
+      return false;
+    }
+    if (!formData.county) {
+      toast.error("County is required.");
+      return false;
+    }
+    if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(formData.password)) {
+      toast.error("Password must be at least 6 characters long and include at least 1 number.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!validateForm()) return;
 
     const emailAttribute = new CognitoUserAttribute({
       Name: "email",
@@ -49,9 +76,15 @@ const Register: React.FC = () => {
       (err, data) => {
         if (err) {
           console.error("Error during registration:", err);
+          if (err.message.includes("UsernameExistsException")) {
+            toast.error("Username already exists.");
+          } else {
+            toast.error("Error during registration: " + err.message);
+          }
         } else {
           console.log("Registration successful:", data);
           navigate("/login");
+          toast.success("Registration successful!");
         }
       }
     );
@@ -103,11 +136,9 @@ const Register: React.FC = () => {
               name="county"
               value={formData.county}
               onChange={handleChange}
-              style={{ color: formData.county === "" ? "#6c757d" : "#495057" }}
+style={{ color: formData.county === "" ? "#6c757d" : "#495057" }}
             >
-              <option value="" disabled>
-                Select County
-              </option>
+              <option value="" disabled>Select County</option>
               <option value="Antrim">Antrim</option>
               <option value="Armagh">Armagh</option>
               <option value="Carlow">Carlow</option>
@@ -146,7 +177,7 @@ const Register: React.FC = () => {
             <MDBBtn color="primary" type="submit">
               Register
             </MDBBtn>
-            <MDBBtn onClick={() => navigate('/login')}>
+            <MDBBtn color='light' onClick={() => navigate('/login')}>
               Log in
             </MDBBtn>
           </div>
