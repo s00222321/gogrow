@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from './AuthContext';
-import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCol, MDBRow } from 'mdb-react-ui-kit';
+import { MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCol, MDBRow, MDBContainer, MDBCarousel, MDBCarouselItem, MDBCardImage } from 'mdb-react-ui-kit';
 import { WiCloudy, WiDayCloudyGusts, WiThermometer, WiThermometerExterior, WiWindDeg, WiRaindrop} from "react-icons/wi";
 import { CgCalendarDates } from "react-icons/cg";
 
@@ -38,15 +38,27 @@ interface VegetableData {
   growtime: string;
 }
 
+interface ArticleData {
+  article_id: string;
+  title: string;
+  author: string;
+  publication_date: string;
+  content: string;
+  image: string;
+}
+
 const HomePage: React.FC = () => {
   const { isAuthenticated, loginData } = useAuth();
   const username = loginData?.username || '';
 
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   //const [selectedCounty, setSelectedCounty] = useState<string | null>(null);
-  const [selectedVegetable, setSelectedVegetable] = useState<VegetableData | null>(null);
+  const [vegetables, setVegetables] = useState<VegetableData[]>([]);
   const [sensorData, setSensorData] = useState<any[] | null>(null);
   const [UserCounty, setUserCounty] = useState<string | null>(null);
+
+  const [randomArticleId, setRandomArticleId] = useState<number | null>(null);
+  const [randomArticle, setRandomArticle] = useState<ArticleData | null>(null);
 
   useEffect(() => {
     console.log('MyGarden Component - Username:', username);
@@ -97,15 +109,7 @@ const HomePage: React.FC = () => {
         // Check if the response data has a 'body' property
         if (responseData.body) {
           const plantData = JSON.parse(responseData.body);
-
-          let randomIndex, randomPlant;
-          if (plantData.length > 1) {
-            randomIndex = Math.floor(Math.random() * plantData.length);
-            randomPlant = plantData[randomIndex];
-          } else {
-            randomPlant = plantData[0];
-          }
-          setSelectedVegetable(randomPlant);
+          setVegetables(plantData);
         } else {
           console.error('Error: Response data does not contain a body property');
         }
@@ -138,8 +142,35 @@ const HomePage: React.FC = () => {
     fetchData();
   }, [username]);
 
+  useEffect(() => {
+    const fetchRandomArticleId = async () => {
+      const totalArticles = 7; // Total number of articles in the database
+      const randomId = Math.floor(Math.random() * totalArticles) + 1;
+      setRandomArticleId(randomId);
+    };
+
+    fetchRandomArticleId();
+  }, []);
+
+  useEffect(() => {
+    const fetchRandomArticle = async () => {
+      try {
+        if (randomArticleId !== null) {
+          const response = await fetch(`https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1/${randomArticleId}`);
+          const responseData = await response.json();
+          const data = JSON.parse(responseData.body);
+          setRandomArticle(data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchRandomArticle();
+  }, [randomArticleId]);
+
   return (
-    <div className="d-flex flex-column align-items-center" style={{ minHeight: '100vh' }}>
+    <MDBContainer fluid className="d-flex flex-column justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
       <h3 className="mt-3 mb-4">
         {isAuthenticated ? `Welcome ${loginData?.username} 🌱` : 'Welcome Guest 🌱'}
       </h3>
@@ -148,8 +179,8 @@ const HomePage: React.FC = () => {
       {weatherData && (
   <>
     {/* Card for today's weather */}
-    <MDBRow>
-    <MDBCol>
+    <MDBRow className="justify-content-center text-center">
+    <MDBCol className='mb-4'>
     <MDBCard
       key={weatherData.county_name}
       className="mb-3"
@@ -236,22 +267,35 @@ const HomePage: React.FC = () => {
   </>
 )}
 
+{vegetables && vegetables.length > 0 && (
+  <MDBCarousel showIndicators showControls fade>
+    {vegetables.map((vegetable, index) => (
+      <MDBCarouselItem key={index} itemId={index + 1}>
+        <MDBCol>
+          <MDBCard className="mb-3" style={{ width: '20rem' }}>
+            <img
+              src={vegetable.plants}
+              alt={vegetable.name}
+              style={{ width: '100%', borderTopLeftRadius: '8px', borderTopRightRadius: '8px' }}
+            />
+            <MDBCardBody>
+              <MDBCardTitle className="text-center mt-3 mb-3">Recommended Seasonal Veg</MDBCardTitle>
+              <MDBCardText className="text-center">
+                <strong>{vegetable.name}</strong>
+              </MDBCardText>
+              <MDBCardText className="text-center">Season: {vegetable.season}</MDBCardText>
+              <MDBCardText className="text-center">Grow Time: {vegetable.growtime}</MDBCardText>
+            </MDBCardBody>
+          </MDBCard>
+        </MDBCol>
+      </MDBCarouselItem>
+    ))}
+  </MDBCarousel>
+)}
 
 
 
-      {selectedVegetable && (
-        <MDBCard className="mb-3" style={{ width: '20rem' }}>
-          <img src={selectedVegetable.plants} alt={selectedVegetable.name} style={{ width: '100%', borderTopLeftRadius: '8px', borderTopRightRadius: '8px' }} />
-          <MDBCardBody>
-            <MDBCardTitle className="text-center mt-3 mb-3">Recommended Seasonal Veg</MDBCardTitle>
-            <MDBCardText className="text-center">
-              <strong>{selectedVegetable.name}</strong>
-            </MDBCardText>
-            <MDBCardText className="text-center">Season: {selectedVegetable.season}</MDBCardText>
-            <MDBCardText className="text-center">Grow Time: {selectedVegetable.growtime}</MDBCardText>
-          </MDBCardBody>
-        </MDBCard>
-      )}
+    
 
 {sensorData && (
         <MDBCard className="mb-3" style={{ width: '20rem' }}>
@@ -264,7 +308,26 @@ const HomePage: React.FC = () => {
           </MDBCardBody>
         </MDBCard>
       )}
-    </div>
+
+{/* Display the random article preview card */}
+{randomArticle && (
+        <MDBRow className="justify-content-center">
+          <MDBCol className='mb-4'>
+            <MDBCard className="mb-3"
+      style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}>
+            <MDBCardTitle className="text-center mt-3 mb-3">Suggested Article</MDBCardTitle>
+              <MDBCardImage src={randomArticle.image} alt={randomArticle.title} position="top" />
+              <MDBCardBody>
+                <MDBCardTitle className="text-center mt-3 mb-3">{randomArticle.title}</MDBCardTitle>
+                <MDBCardText>{randomArticle.content.slice(0, 100)}...</MDBCardText>
+              </MDBCardBody>
+            </MDBCard>
+          </MDBCol>
+        </MDBRow>
+      )}
+
+
+    </MDBContainer>
   );
 };
 
