@@ -25,10 +25,27 @@ const Articles: React.FC = () => {
   const [articleToDelete, setArticleToDelete] = useState<string | null>(null);
   const [editArticleData, setEditArticleData] = useState<any | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(6);
   const { loginData } = useAuth();
 
   useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 990) {
+        setItemsPerPage(9);
+      } else {
+        setItemsPerPage(4);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
     fetchArticles();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const fetchArticles = async () => {
@@ -48,6 +65,7 @@ const Articles: React.FC = () => {
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(1);
   };
 
   const trimContent = (content: string, maxLength: number = 100) => {
@@ -180,6 +198,18 @@ const Articles: React.FC = () => {
     }
   };
 
+  const filteredArticles = articles.filter((article) =>
+    article.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentArticles = filteredArticles.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <MDBContainer
       fluid
@@ -210,14 +240,9 @@ const Articles: React.FC = () => {
           </MDBBtn>
         </div>
         <MDBRow>
-          {articles
-            .filter((article) =>
-              article.title &&
-              article.title.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map((article) => (
-              <MDBCol md="6" lg="4" key={article.article_id}>
-                <div className="card mb-4">
+        {currentArticles.map((article) => (
+            <MDBCol md="6" lg="4" key={article.article_id}>
+              <div className="card mb-4">
                   <MDBCardImage
                     src={article.image}
                     position="top"
@@ -253,6 +278,23 @@ const Articles: React.FC = () => {
               </MDBCol>
             ))}
         </MDBRow>
+        <div className="d-flex justify-content-center mt-4">
+          <nav>
+            <ul className="pagination">
+              {Array.from({ length: Math.ceil(currentArticles.length / itemsPerPage) }).map((_, index) => (
+                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                  <a
+                    href="#!"
+                    className="page-link"
+                    onClick={() => paginate(index + 1)}
+                  >
+                    {index + 1}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
       <AddArticleModal
         onSubmit={handleAddArticle}
