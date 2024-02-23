@@ -236,7 +236,7 @@ const Articles: React.FC = () => {
         </div>
         <div className="mb-4">
           <MDBBtn onClick={openModal} className={loginData?.username === 'admin' ? '' : 'd-none'}>
-            Add Article - Admin
+            Add Article
           </MDBBtn>
         </div>
         <MDBRow>
@@ -281,7 +281,7 @@ const Articles: React.FC = () => {
         <div className="d-flex justify-content-center mt-4">
           <nav>
             <ul className="pagination">
-              {Array.from({ length: Math.ceil(currentArticles.length / itemsPerPage) }).map((_, index) => (
+              {Array.from({ length: Math.ceil(filteredArticles.length / itemsPerPage) }).map((_, index) => (
                 <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
                   <a
                     href="#!"

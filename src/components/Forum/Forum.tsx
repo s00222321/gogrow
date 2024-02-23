@@ -1,4 +1,3 @@
-// Forum.tsx
 import React, { useEffect, useState } from 'react';
 import { formatDate } from '../../utils';
 import {
@@ -43,6 +42,8 @@ const Forum: React.FC = () => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
   const [editPostData, setEditPostData] = useState<PostData | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(6);
   const { loginData } = useAuth();
 
 
@@ -55,7 +56,22 @@ const Forum: React.FC = () => {
   };
 
   useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 990) {
+        setItemsPerPage(6);
+      } else {
+        setItemsPerPage(4);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
     fetchData();
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, []);
 
   const fetchData = async () => {
@@ -211,7 +227,7 @@ const Forum: React.FC = () => {
 
       if (response.ok) {
         console.log(`Post with ID ${postToDelete} deleted successfully.`);
-        setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postToDelete)); // update state
+        setPosts((prevPosts) => prevPosts.filter((post) => post.postId !== postToDelete));
       } else {
         console.error(`Failed to delete post with ID ${postToDelete}. Status: ${response.status}`);
       }
@@ -225,7 +241,7 @@ const Forum: React.FC = () => {
   const handleEditPost = (postId: string) => {
     const postToEdit = posts.find((post) => post.postId === postId);
     setEditPostData(postToEdit || null);
-    setShowEditModal(true); // Open the edit modal
+    setShowEditModal(true);
   };
 
   const handleEditPostSubmit = async (updatedData: {
@@ -277,6 +293,18 @@ const Forum: React.FC = () => {
     }
   };
 
+  const filteredPosts = posts.filter((post) =>
+    post.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <MDBContainer className="py-5">
       <div className="text-center mb-4">
@@ -297,69 +325,82 @@ const Forum: React.FC = () => {
         <MDBBtn className="mb-2" onClick={handleNewPostClick}>
           <i className="fas fa-plus me-2"></i>New Post
         </MDBBtn>
-
+  
         <AddPostFormModal
           onSubmit={handleNewPostSubmit}
           onClose={handleNewPostClose}
           showModal={showNewPostModal}
         />
-
-        {posts
-          .filter((post) =>
-            post.title.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-          .map((post) => (
-            <div
-              key={post.postId}
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              <MDBCard className="mb-4">
-                <MDBCardBody>
-                  <MDBCardText>
-                    {post.userProfilePic && (
-                      <img
-                        src={post.userProfilePic}
-                        alt={`${post.username}'s Avatar`}
-                        className="rounded-circle me-2"
-                        style={{ width: '30px', height: '30px' }}
-                      />
+  
+        {currentPosts.map((post) => (
+          <div
+            key={post.postId}
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            <MDBCard className="mb-4">
+              <MDBCardBody>
+                <MDBCardText>
+                  {post.userProfilePic && (
+                    <img
+                      src={post.userProfilePic}
+                      alt={`${post.username}'s Avatar`}
+                      className="rounded-circle me-2"
+                      style={{ width: '30px', height: '30px' }}
+                    />
+                  )}
+                  {post.username}
+                </MDBCardText>
+                <MDBCardTitle>{post.title}</MDBCardTitle>
+                <MDBCardText>{post.content}</MDBCardText>
+                <MDBCardText>
+                  <strong>Posted: </strong> {formatDate(post.createdAt)}
+                </MDBCardText>
+                <div className="d-flex justify-content-between align-items-center mt-3">
+                  {/* Read More Button */}
+                  <MDBBtn href={`/forum/${post.postId}`} className="me-2">
+                    Read More
+                  </MDBBtn>
+                  <div className="d-flex">
+                    {(loginData?.username === post.username || loginData?.username === 'admin') && (
+                      <>
+                        <MDBBtn
+                          color="warning"
+                          className="me-2"
+                          onClick={() => handleEditPost(post.postId)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
+                        </MDBBtn>
+                        <MDBBtn
+                          color="danger"
+                          onClick={() => handleDeletePost(post.postId)}
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </MDBBtn>
+                      </>
                     )}
-                    {post.username}
-                  </MDBCardText>
-                  <MDBCardTitle>{post.title}</MDBCardTitle>
-                  <MDBCardText>{post.content}</MDBCardText>
-                  <MDBCardText>
-                    <strong>Posted: </strong> {formatDate(post.createdAt)}
-                  </MDBCardText>
-                  <div className="d-flex justify-content-between align-items-center mt-3">
-                    {/* Read More Button */}
-                    <MDBBtn href={`/forum/${post.postId}`} className="me-2">
-                      Read More
-                    </MDBBtn>
-                    <div className="d-flex">
-                      {(loginData?.username === post.username || loginData?.username === 'admin') && (
-                        <>
-                          <MDBBtn
-                            color="warning"
-                            className="me-2"
-                            onClick={() => handleEditPost(post.postId)}
-                          >
-                            <FontAwesomeIcon icon={faEdit} />
-                          </MDBBtn>
-                          <MDBBtn
-                            color="danger"
-                            onClick={() => handleDeletePost(post.postId)}
-                          >
-                            <i className="fas fa-trash-alt"></i>
-                          </MDBBtn>
-                        </>
-                      )}
-                    </div>
                   </div>
-                </MDBCardBody>
-              </MDBCard>
-            </div>
-          ))}
+                </div>
+              </MDBCardBody>
+            </MDBCard>
+          </div>
+        ))}
+        <div className="d-flex justify-content-center mt-4">
+          <nav>
+            <ul className="pagination">
+              {Array.from({ length: Math.ceil(filteredPosts.length / itemsPerPage) }).map((_, index) => (
+                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                  <a
+                    href="#!"
+                    className="page-link"
+                    onClick={() => paginate(index + 1)}
+                  >
+                    {index + 1}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </MDBCol>
       <ConfirmDialog
         isOpen={showDeleteConfirm}
@@ -390,6 +431,7 @@ const Forum: React.FC = () => {
       )}
     </MDBContainer>
   );
+  
 };
 
 export default Forum;
