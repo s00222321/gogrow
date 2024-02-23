@@ -28,15 +28,26 @@ interface CurrentlyGrowingPlant {
 
 const Plants: React.FC = () => {
   const [plants, setPlants] = useState<Plant[]>([]);
-  const [currentlyGrowing, setCurrentlyGrowing] = useState<
-    CurrentlyGrowingPlant[]
-  >([]);
+  const [currentlyGrowing, setCurrentlyGrowing] = useState<CurrentlyGrowingPlant[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(6);
+
   const { loginData } = useAuth();
   const username = loginData?.username || '';
 
   useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1200) {
+        setItemsPerPage(9);
+      } else {
+        setItemsPerPage(6);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    
     const fetchPlants = async () => {
       try {
         const response = await fetch(
@@ -73,10 +84,14 @@ const Plants: React.FC = () => {
 
     fetchPlants();
     fetchCurrentlyGrowing();
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
   }, [username]);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    setCurrentPage(1);
   };
 
   const handleAddToCurrentlyGrowing = async (plant_id: number) => {
@@ -113,6 +128,14 @@ const Plants: React.FC = () => {
     plant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentPlants = filteredPlants.slice(indexOfFirstItem, indexOfLastItem);
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <MDBContainer
       fluid
@@ -135,7 +158,7 @@ const Plants: React.FC = () => {
           />
         </div>
         <MDBRow className="g-4">
-          {filteredPlants.map((plant) => (
+          {currentPlants.map((plant) => (
             <MDBCol xl="4" lg="6" key={plant.plant_id}>
               <MDBCard>
                 <MDBCardBody>
@@ -192,9 +215,26 @@ const Plants: React.FC = () => {
             </MDBCol>
           ))}
         </MDBRow>
+        <div className="d-flex justify-content-center mt-4">
+          <nav>
+            <ul className="pagination">
+              {Array.from({ length: Math.ceil(filteredPlants.length / itemsPerPage) }).map((_, index) => (
+                <li key={index} className={`page-item ${currentPage === index + 1 ? 'active' : ''}`}>
+                  <a
+                    href="#!"
+                    className="page-link"
+                    onClick={() => paginate(index + 1)}
+                  >
+                    {index + 1}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
     </MDBContainer>
   );
-};
+}
 
 export default Plants;
