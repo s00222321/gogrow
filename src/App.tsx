@@ -1,10 +1,9 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import Articles from "./components/Articles/Articles";
-import Article from "./components/Articles/Article";
 import Plants from "./components/Plants";
 import Plant from "./components/Plant";
 import Forum from "./components/Forum/Forum";

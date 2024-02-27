@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   MDBNavbar,
   MDBNavbarBrand,
@@ -91,13 +91,13 @@ function Navbar() {
           const weatherData = await weatherResponse.json();
 
           const userCountyWeather = weatherData.find(
-            (county) => county.county_name === uppercaseCounty
+            (county: { county_name: any; }) => county.county_name === uppercaseCounty
           );
 
           if (userCountyWeather) {
             const noRainfallForThreeDays = userCountyWeather.forecast
               .slice(0, 3)
-              .every((day) => day.rain === 0);
+              .every((day: { rain: number; }) => day.rain === 0);
 
             if (noRainfallForThreeDays) {
               setWeatherNotification(true);
@@ -132,12 +132,12 @@ function Navbar() {
           const weatherData = await weatherResponse.json();
   
           const userCountyWeather = weatherData.find(
-            (county) => county.county_name === uppercaseCounty
+            (county: { county_name: any; }) => county.county_name === uppercaseCounty
           );
   
           if (userCountyWeather) {
             const lowTemperature = userCountyWeather.forecast
-              .some((day) => parseFloat(day.min_temp) < 0 || parseFloat(day.max_temp) < 0);
+              .some((day: { min_temp: string; max_temp: string; }) => parseFloat(day.min_temp) < 0 || parseFloat(day.max_temp) < 0);
   
             if(lowTemperature){
                 setTempNotification(true);
