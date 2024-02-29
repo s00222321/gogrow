@@ -252,13 +252,6 @@ function Navbar() {
                   Your plant needs water!
                 </MDBNavbarLink>
               ) : null}
-            </MDBDropdownItem>
-            <MDBDropdownItem link>
-              <MDBNavbarLink className="dropdownlink" href="/home">
-                Blight warning!
-              </MDBNavbarLink>
-            </MDBDropdownItem>
-            <MDBDropdownItem link>
       {weatherNotification === true ? ( 
         <MDBNavbarLink className="dropdownlink" href="/home">
           Dry weather ahead!
@@ -293,11 +286,6 @@ function Navbar() {
             <MDBDropdownItem link>
               <MDBNavbarLink className="dropdownlink" href="/leaderboard">
                 Leaderboard
-              </MDBNavbarLink>
-            </MDBDropdownItem>
-            <MDBDropdownItem link>
-              <MDBNavbarLink className="dropdownlink" href="/userdetails">
-                Settings
               </MDBNavbarLink>
             </MDBDropdownItem>
             <MDBDropdownItem link>
