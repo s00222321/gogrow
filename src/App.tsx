@@ -17,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 import Leaderboard from "./components/Leaderboard";
 import PrivateRoute from "./components/PrivateRoute"; // Update the path
 import { AuthProvider } from "./components/AuthContext";
+import Article from "./components/Articles/Article";
 
 const App: React.FC = () => {
   return (
@@ -85,6 +86,10 @@ const App: React.FC = () => {
               </PrivateRoute>
             }
           />
+          <Route path="article/:article_id"
+           element={
+           <Article />
+           } />
           <Route
             path="forum/:post_id"
             element={
