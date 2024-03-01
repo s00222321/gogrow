@@ -15,7 +15,7 @@ import SensorDisplay from "./components/SensorsDisplay";
 import UserDetails from "./components/UserDetails";
 import { Toaster } from "react-hot-toast";
 import Leaderboard from "./components/Leaderboard";
-import PrivateRoute from "./components/PrivateRoute"; // Update the path
+import PrivateRoute from "./components/PrivateRoute";
 import { AuthProvider } from "./components/AuthContext";
 import Article from "./components/Articles/Article";
 

@@ -12,6 +12,7 @@ import {
   MDBDropdownItem,
 } from "mdb-react-ui-kit";
 import { useAuth } from './AuthContext';
+import { USER_API, SENSOR_API, WEATHER_API } from '../apis';
 
 function Navbar() {
   const { loginData, isAuthenticated, logout, clearUserData } = useAuth();
@@ -42,7 +43,7 @@ function Navbar() {
       try {
         if (isAuthenticated && loginData && loginData.username) {
           const response = await fetch(
-            `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`,
+            `${USER_API}/users/${loginData.username}`,
             { signal }
           );
           const data = await response.json();
@@ -74,7 +75,7 @@ function Navbar() {
 
   useEffect(() => {
     const fetchSoilMoistureData = async () => {
-      const response = await fetch('https://loxs1vvtc3.execute-api.eu-west-1.amazonaws.com/v1/SoilMoisture');
+      const response = await fetch(`${SENSOR_API}/SoilMoisture`);
       const data = await response.json();
       const readings = JSON.parse(data.body);
       const mostRecentReading = readings[readings.length - 1];
@@ -90,15 +91,13 @@ function Navbar() {
       try {
         if (isAuthenticated && loginData && loginData.username) {
           const response = await fetch(
-            `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`
+            `${USER_API}/users/${loginData.username}`
           );
           const jsonResponse = await response.json();
           const userCounty = jsonResponse.data?.County;
           const uppercaseCounty = userCounty ? userCounty.toUpperCase() : '';
 
-          const weatherResponse = await fetch(
-            'https://2vbpsc6e1k.execute-api.eu-west-1.amazonaws.com/production/getWeatherData'
-          );
+          const weatherResponse = await fetch(WEATHER_API);
           const weatherData = await weatherResponse.json();
 
           const userCountyWeather = weatherData.find(
@@ -131,15 +130,13 @@ function Navbar() {
       try {
         if (isAuthenticated && loginData && loginData.username) {
           const response = await fetch(
-            `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`
+            `${USER_API}/users/${loginData.username}`
           );
           const jsonResponse = await response.json();
           const userCounty = jsonResponse.data?.County;
           const uppercaseCounty = userCounty ? userCounty.toUpperCase() : '';
 
-          const weatherResponse = await fetch(
-            'https://2vbpsc6e1k.execute-api.eu-west-1.amazonaws.com/production/getWeatherData'
-          );
+          const weatherResponse = await fetch(WEATHER_API);
           const weatherData = await weatherResponse.json();
 
           const userCountyWeather = weatherData.find(

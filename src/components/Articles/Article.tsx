@@ -11,6 +11,7 @@ import {
   MDBBtn,
 } from "mdb-react-ui-kit";
 import { useNavigate, useParams } from "react-router-dom";
+import { ARTICLE_API } from '../../apis'
 
 interface ArticleData {
   article_id: string;
@@ -31,7 +32,7 @@ const Article: React.FC = () => {
     const fetchArticle = async () => {
       try {
         const response = await fetch(
-          `https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1/${article_id}`
+          `${ARTICLE_API}/${article_id}`
         );
         const responseData = await response.json();
         const data = JSON.parse(responseData.body);
@@ -67,10 +68,10 @@ const Article: React.FC = () => {
                   <strong>Author:</strong> {article.author}
                 </MDBCardText>
                 <div className="text-center mt-4 d-flex justify-content-left">
-                <MDBBtn color='primary' onClick={() => navigate('/articles')}>
-                  Go back
-                </MDBBtn>
-              </div>
+                  <MDBBtn color='primary' onClick={() => navigate('/articles')}>
+                    Go back
+                  </MDBBtn>
+                </div>
               </MDBCardBody>
             </MDBCol>
           </MDBRow>

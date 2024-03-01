@@ -19,6 +19,7 @@ import {
   MDBModalFooter,
 } from 'mdb-react-ui-kit';
 import { useAuth } from './AuthContext';
+import {USER_API} from '../apis';
 
 interface UserData {
   ProfilePic: string;
@@ -67,9 +68,6 @@ const counties = [
 
 const UserDetails: React.FC = () => {
   const { isAuthenticated, loginData } = useAuth();
-  // console.log('isAuthenticated:', isAuthenticated);
-  // console.log('loginData:', loginData);
-
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [newEmail, setNewEmail] = useState('');
@@ -83,7 +81,7 @@ const UserDetails: React.FC = () => {
     const fetchUserProfile = async () => {
       try {
         if (isAuthenticated && loginData && !userData) {
-          const apiUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData.username}`;
+          const apiUrl = `${USER_API}/users/${loginData.username}`;
           const response = await fetch(apiUrl);
 
           if (!response.ok) {
@@ -105,7 +103,7 @@ const UserDetails: React.FC = () => {
 
             const fetchAchievementDetails = async (achievementId: string) => {
               try {
-                const achievementUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/achievements/${achievementId}`;
+                const achievementUrl = `${USER_API}/achievements/${achievementId}`;
                 const achievementResponse = await fetch(achievementUrl);
                 if (!achievementResponse.ok) {
                   throw new Error('Failed to fetch achievement details');
@@ -153,7 +151,7 @@ const UserDetails: React.FC = () => {
     console.log('Saving changes...');
 
     try {
-      const apiUrl = `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${loginData?.username}`;
+      const apiUrl = `${USER_API}/users/${loginData?.username}`;
       const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {

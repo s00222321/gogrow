@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { MDBCard, MDBCardBody, MDBCardTitle } from 'mdb-react-ui-kit';
+import { USER_API } from '../apis';
 
 interface LeaderboardData {
   Username: string;
@@ -7,15 +8,13 @@ interface LeaderboardData {
   ProfilePic: string;
 }
 
-const API_URL = "https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/leaderboard"
-
 const Leaderboard: React.FC = () => {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardData[] | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(API_URL);
+        const response = await fetch(`${USER_API}/leaderboard`);
         const data = await response.json();
 
         const parsedData = JSON.parse(data.body);
@@ -26,7 +25,7 @@ const Leaderboard: React.FC = () => {
         console.error('Error fetching data:', error);
       }
     };
-  
+
     fetchData();
   }, []);
 
