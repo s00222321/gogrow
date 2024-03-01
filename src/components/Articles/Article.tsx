@@ -8,8 +8,9 @@ import {
   MDBRow,
   MDBCol,
   MDBCardImage,
+  MDBBtn,
 } from "mdb-react-ui-kit";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface ArticleData {
   article_id: string;
@@ -23,6 +24,8 @@ interface ArticleData {
 const Article: React.FC = () => {
   const { article_id } = useParams<{ article_id: string }>();
   const [article, setArticle] = useState<ArticleData | null>(null);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -63,6 +66,11 @@ const Article: React.FC = () => {
                 <MDBCardText>
                   <strong>Author:</strong> {article.author}
                 </MDBCardText>
+                <div className="text-center mt-4 d-flex justify-content-left">
+                <MDBBtn color='primary' onClick={() => navigate('/articles')}>
+                  Go back
+                </MDBBtn>
+              </div>
               </MDBCardBody>
             </MDBCol>
           </MDBRow>

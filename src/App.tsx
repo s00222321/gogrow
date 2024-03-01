@@ -1,10 +1,9 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Navbar from "./components/Navbar";
 import Articles from "./components/Articles/Articles";
-import Article from "./components/Articles/Article";
 import Plants from "./components/Plants";
 import Plant from "./components/Plant";
 import Forum from "./components/Forum/Forum";
@@ -18,6 +17,7 @@ import { Toaster } from "react-hot-toast";
 import Leaderboard from "./components/Leaderboard";
 import PrivateRoute from "./components/PrivateRoute"; // Update the path
 import { AuthProvider } from "./components/AuthContext";
+import Article from "./components/Articles/Article";
 
 const App: React.FC = () => {
   return (
@@ -86,6 +86,10 @@ const App: React.FC = () => {
               </PrivateRoute>
             }
           />
+          <Route path="article/:article_id"
+           element={
+           <Article />
+           } />
           <Route
             path="forum/:post_id"
             element={

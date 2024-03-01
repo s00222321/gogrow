@@ -8,8 +8,9 @@ import {
   MDBRow,
   MDBCol,
   MDBCardImage,
+  MDBBtn,
 } from 'mdb-react-ui-kit';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 interface PlantData {
   plant_id: string;
@@ -25,7 +26,7 @@ interface PlantData {
 const Plant: React.FC = () => {
   const { plant_id } = useParams<{ plant_id: string }>();
   const [plant, setPlant] = useState<PlantData | null>(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchPlant = async () => {
       try {
@@ -68,6 +69,11 @@ const Plant: React.FC = () => {
                 <MDBCardText>
                   <strong>Growth Time:</strong> {plant.growtime}
                 </MDBCardText>
+                <div className="text-center mt-4 d-flex justify-content-left">
+                <MDBBtn color='primary' onClick={() => navigate('/plants')}>
+                  Go back
+                </MDBBtn>
+              </div>
               </MDBCardBody>
             </MDBCol>
           </MDBRow>

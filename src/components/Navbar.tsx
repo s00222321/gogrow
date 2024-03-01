@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   MDBNavbar,
   MDBNavbarBrand,
@@ -19,8 +19,19 @@ function Navbar() {
   const [showWaterNotification, setShowWaterNotification] = useState(true);
   const [weatherNotification, setWeatherNotification] = useState(true);
   const [tempNotification, setTempNotification] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
-  const isMobile = window.innerWidth < 992;
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth < 992);
+    }
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
 
   useEffect(() => {
     const abortController = new AbortController();
@@ -91,13 +102,13 @@ function Navbar() {
           const weatherData = await weatherResponse.json();
 
           const userCountyWeather = weatherData.find(
-            (county) => county.county_name === uppercaseCounty
+            (county: { county_name: any; }) => county.county_name === uppercaseCounty
           );
 
           if (userCountyWeather) {
             const noRainfallForThreeDays = userCountyWeather.forecast
               .slice(0, 3)
-              .every((day) => day.rain === 0);
+              .every((day: { rain: number; }) => day.rain === 0);
 
             if (noRainfallForThreeDays) {
               setWeatherNotification(true);
@@ -125,32 +136,32 @@ function Navbar() {
           const jsonResponse = await response.json();
           const userCounty = jsonResponse.data?.County;
           const uppercaseCounty = userCounty ? userCounty.toUpperCase() : '';
-  
+
           const weatherResponse = await fetch(
             'https://2vbpsc6e1k.execute-api.eu-west-1.amazonaws.com/production/getWeatherData'
           );
           const weatherData = await weatherResponse.json();
-  
+
           const userCountyWeather = weatherData.find(
-            (county) => county.county_name === uppercaseCounty
+            (county: { county_name: any; }) => county.county_name === uppercaseCounty
           );
-  
+
           if (userCountyWeather) {
             const lowTemperature = userCountyWeather.forecast
-              .some((day) => parseFloat(day.min_temp) < 0 || parseFloat(day.max_temp) < 0);
-  
-            if(lowTemperature){
-                setTempNotification(true);
-             }
-             else setTempNotification(false);
+              .some((day: { min_temp: string; max_temp: string; }) => parseFloat(day.min_temp) < 0 || parseFloat(day.max_temp) < 0);
+
+            if (lowTemperature) {
+              setTempNotification(true);
+            }
+            else setTempNotification(false);
           }
-          
+
         }
       } catch (error) {
         console.error('Error fetching weather data:', error);
       }
     };
-  
+
     fetchTempData();
   }, [isAuthenticated, loginData]);
 
@@ -252,26 +263,19 @@ function Navbar() {
                   Your plant needs water!
                 </MDBNavbarLink>
               ) : null}
+              {weatherNotification === true ? (
+                <MDBNavbarLink className="dropdownlink" href="/home">
+                  Dry weather ahead!
+                </MDBNavbarLink>
+              ) : null}
             </MDBDropdownItem>
             <MDBDropdownItem link>
-              <MDBNavbarLink className="dropdownlink" href="/home">
-                Blight warning!
-              </MDBNavbarLink>
+              {tempNotification === true ? (
+                <MDBNavbarLink className="dropdownlink" href="/home">
+                  Frost Warning!
+                </MDBNavbarLink>
+              ) : null}
             </MDBDropdownItem>
-            <MDBDropdownItem link>
-      {weatherNotification === true ? ( 
-        <MDBNavbarLink className="dropdownlink" href="/home">
-          Dry weather ahead!
-        </MDBNavbarLink>
-      ) : null}
-    </MDBDropdownItem>
-    <MDBDropdownItem link>
-      {tempNotification === true ? (
-        <MDBNavbarLink className="dropdownlink" href="/home">
-          Frost Warning!
-        </MDBNavbarLink>
-      ) : null}
-    </MDBDropdownItem>
           </MDBDropdownMenu>
         </MDBDropdown>
 
@@ -293,11 +297,6 @@ function Navbar() {
             <MDBDropdownItem link>
               <MDBNavbarLink className="dropdownlink" href="/leaderboard">
                 Leaderboard
-              </MDBNavbarLink>
-            </MDBDropdownItem>
-            <MDBDropdownItem link>
-              <MDBNavbarLink className="dropdownlink" href="/userdetails">
-                Settings
               </MDBNavbarLink>
             </MDBDropdownItem>
             <MDBDropdownItem link>
