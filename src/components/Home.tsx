@@ -292,16 +292,16 @@ const HomePage: React.FC = () => {
           <MDBCol className="mb-4">
             <Link to={`/plant/${vegetables[currentPlantIndex].plant_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
               <MDBCard className="mb-3" style={{ width: '20rem' }}>
-                <MDBCardTitle className="text-center mt-3 mb-3">Plants in Season</MDBCardTitle>
                 <img
                   src={vegetables[currentPlantIndex].plants}
                   alt={vegetables[currentPlantIndex].name}
                   style={{ width: '100%', borderTopLeftRadius: '8px', borderTopRightRadius: '8px' }}
                 />
                 <MDBCardBody>
-                  <MDBCardTitle className="text-center mt-3 mb-3">{vegetables[currentPlantIndex].name}</MDBCardTitle>
+                  <MDBCardTitle className="text-center fw-bold">Plants in Season</MDBCardTitle>
+                  <MDBCardTitle className="text-center fw-bold">{vegetables[currentPlantIndex].name}</MDBCardTitle>
                   <MDBCardText className="text-center">Season: {vegetables[currentPlantIndex].season}</MDBCardText>
-                  <MDBCardText className="text-center">Grow Time: {vegetables[currentPlantIndex].growtime}</MDBCardText>
+                  <MDBCardText className="text-center mb-3">Grow Time: {vegetables[currentPlantIndex].growtime}</MDBCardText>
                 </MDBCardBody>
               </MDBCard>
             </Link>
@@ -311,10 +311,10 @@ const HomePage: React.FC = () => {
             <MDBCol className="mb-4">
               <Link to={`/article/${navigationArticle.article_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <MDBCard className="mb-3" style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}>
-                  <MDBCardTitle className="text-center mt-3 mb-3">Tutorial Article</MDBCardTitle>
                   <MDBCardImage src={navigationArticle.image} alt={navigationArticle.title} position="top" />
                   <MDBCardBody>
-                    <MDBCardTitle className="text-center mt-3 mb-3">{navigationArticle.title}</MDBCardTitle>
+                  <MDBCardTitle className="text-center fw-bold">Tutorial Article</MDBCardTitle>
+                    <MDBCardText className="text-center fw-bold">{navigationArticle.title}</MDBCardText>
                     <MDBCardText>{navigationArticle.content.slice(0, 100)}...</MDBCardText>
                   </MDBCardBody>
                 </MDBCard>
@@ -332,7 +332,7 @@ const HomePage: React.FC = () => {
             style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
           >
             <MDBCardBody style={{ border: '0px solid #808080', borderRadius: '8px', height: '100%' }}>
-              <MDBCardTitle className="mb-3">✨ More Questions? ✨</MDBCardTitle>
+              <MDBCardTitle className="mb-3 fw-bold">✨ More Questions? ✨</MDBCardTitle>
               <a href="https://chat.openai.com/g/g-lufaLKPNR-green-thumb-guide" target="_blank" rel="noopener noreferrer">Ask The Green Thumb Guide</a>
               <div style={{ marginTop: '10px' }}>
                 Use our custom GPT to get tailored answers to your garden!*
