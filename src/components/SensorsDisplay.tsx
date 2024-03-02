@@ -10,11 +10,12 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { 
-  MDBCard, 
-  MDBCardBody, 
-  MDBContainer 
+import {
+  MDBCard,
+  MDBCardBody,
+  MDBContainer
 } from 'mdb-react-ui-kit';
+import { SENSOR_API } from '../apis';
 
 ChartJS.register(
   CategoryScale,
@@ -56,7 +57,7 @@ export default function SensorDisplay() {
 
   async function fetchData() {
     try {
-      const response = await fetch('https://loxs1vvtc3.execute-api.eu-west-1.amazonaws.com/v1/SoilMoisture');
+      const response = await fetch(`${SENSOR_API}/SoilMoisture`);
       const responseData = await response.json();
 
       const parsedData = JSON.parse(responseData.body);
@@ -106,7 +107,7 @@ export default function SensorDisplay() {
       </div>
       <MDBCard className="mb-4">
         <MDBCardBody>
-        {chartData && <Line options={options} data={chartData} />}
+          {chartData && <Line options={options} data={chartData} />}
         </MDBCardBody>
       </MDBCard>
     </MDBContainer>

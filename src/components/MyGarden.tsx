@@ -9,6 +9,7 @@ import {
   MDBBtn,
 } from "mdb-react-ui-kit";
 import { useAuth } from "./AuthContext";
+import { PLANT_API, USER_API, MYGARDEN_API } from '../apis';
 
 interface Plant {
   plant_id: number;
@@ -30,9 +31,7 @@ const MyGarden: React.FC = () => {
     console.log('MyGarden Component - Username:', username);
 
     const fetchPlantsData = async () => {
-      const response = await fetch(
-        "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
-      );
+      const response = await fetch(PLANT_API);
       const jsonResponse = await response.json();
       return JSON.parse(jsonResponse.body);
     };
@@ -40,7 +39,7 @@ const MyGarden: React.FC = () => {
     const fetchGardenPlants = async () => {
       try {
         const response = await fetch(
-          `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${username}`
+          `${USER_API}/users/${username}`
         );
         const jsonResponse = await response.json();
         const currentlyGrowing = jsonResponse.data?.currently_growing;
@@ -60,9 +59,9 @@ const MyGarden: React.FC = () => {
             );
             return plantData
               ? {
-                  ...plantData,
-                  growingTime: calculateGrowingTime(growingPlant.date_added),
-                }
+                ...plantData,
+                growingTime: calculateGrowingTime(growingPlant.date_added),
+              }
               : null;
           })
           .filter((plant) => plant !== null);
@@ -99,7 +98,7 @@ const MyGarden: React.FC = () => {
 
     try {
       const response = await fetch(
-        "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
+        `${MYGARDEN_API}/currentlygrowing`,
         {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },

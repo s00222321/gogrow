@@ -13,14 +13,14 @@ import {
 
 interface EditPostFormModalProps {
   post: {
-    postId: string; // Include post ID in the post object
+    postId: string;
     title: string;
     content: string;
     media: string | null;
     tags: string[];
   };
   onSubmit: (postData: {
-    postId: string; // Include post ID in the updated data
+    postId: string;
     title: string;
     content: string;
     media: string | null;

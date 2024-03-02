@@ -1,5 +1,3 @@
-// AuthContext.tsx
-
 import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import UserPool from '../Cognito';
 
@@ -9,7 +7,7 @@ interface AuthContextProps {
   logout: () => void;
   loginData: { username: string | null } | null;
   clearUserData: () => void;
-  isLoading: boolean; // Add isLoading property
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);

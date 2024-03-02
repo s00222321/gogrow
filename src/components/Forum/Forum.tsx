@@ -15,11 +15,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import EditPostFormModal from './EditPostForumModal';
 import { useAuth } from '../AuthContext';
-
-// put in .env?
-const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
-const MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/moderator';
-const IMAGE_MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/imagemoderation';
+import { FORUM_API, MODERATOR_URL, IMAGE_MODERATOR_URL } from '../../apis';
 
 interface PostData {
   postId: string;
@@ -76,7 +72,7 @@ const Forum: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(`${FORUM_API}/posts`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -119,7 +115,7 @@ const Forum: React.FC = () => {
       }
 
       if (toxicityScore < 0.4 && imageModerationStatus === 'Approved') {
-        const response = await fetch(API_URL, {
+        const response = await fetch(`${FORUM_API}/posts`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -218,7 +214,7 @@ const Forum: React.FC = () => {
 
   const confirmDelete = async () => {
     try {
-      const response = await fetch(`${API_URL}/${postToDelete}`, {
+      const response = await fetch(`${FORUM_API}/posts/${postToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -260,7 +256,7 @@ const Forum: React.FC = () => {
       }
 
       if (toxicityScore < 0.4 && imageModerationStatus === 'Approved') {
-        const response = await fetch(`${API_URL}`, {
+        const response = await fetch(`${FORUM_API}/posts`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -325,13 +321,13 @@ const Forum: React.FC = () => {
         <MDBBtn className="mb-2" onClick={handleNewPostClick}>
           <i className="fas fa-plus me-2"></i>New Post
         </MDBBtn>
-  
+
         <AddPostFormModal
           onSubmit={handleNewPostSubmit}
           onClose={handleNewPostClose}
           showModal={showNewPostModal}
         />
-  
+
         {currentPosts.map((post) => (
           <div
             key={post.postId}
@@ -431,7 +427,7 @@ const Forum: React.FC = () => {
       )}
     </MDBContainer>
   );
-  
+
 };
 
 export default Forum;

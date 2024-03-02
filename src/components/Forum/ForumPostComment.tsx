@@ -8,6 +8,7 @@ import {
 } from "mdb-react-ui-kit";
 import ConfirmDialog from '../Shared/ConfirmDialog';
 import { useAuth } from '../AuthContext';
+import { FORUM_API } from '../../apis'
 
 interface CommentData {
   commentId: string;
@@ -16,8 +17,6 @@ interface CommentData {
   postedAt: string;
   userProfilePic: string;
 }
-
-const API_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts';
 
 interface ForumPostCommentProps {
   post_id: string;
@@ -34,7 +33,7 @@ const ForumPostComment: React.FC<ForumPostCommentProps> = ({ post_id, reloadComm
     const fetchComments = async () => {
       try {
         if (!post_id) return;
-        const response = await fetch(`${API_URL}/${post_id}/comments`);
+        const response = await fetch(`${FORUM_API}/posts/${post_id}/comments`);
         const commentsData = await response.json();
 
         const parsedComments = JSON.parse(commentsData.body).comments;
@@ -61,7 +60,7 @@ const ForumPostComment: React.FC<ForumPostCommentProps> = ({ post_id, reloadComm
     setIsConfirmationDialogOpen(false);
 
     try {
-      const response = await fetch(`${API_URL}/${post_id}/comments/${commentToDelete}`, {
+      const response = await fetch(`${FORUM_API}/posts/${post_id}/comments/${commentToDelete}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -121,7 +120,7 @@ const ForumPostComment: React.FC<ForumPostCommentProps> = ({ post_id, reloadComm
       ) : (
         <p>No comments available</p>
       )}
-  
+
       <ConfirmDialog
         isOpen={isConfirmationDialogOpen}
         onClose={handleCancelDelete}
