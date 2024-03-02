@@ -67,6 +67,8 @@ function Navbar() {
 
     fetchUserData();
 
+
+
     return () => {
       isMounted = false;
       abortController.abort();
@@ -180,6 +182,15 @@ function Navbar() {
     }
   };
 
+  const [notificationCount, setNotificationCount] = useState(0);
+
+  useEffect(() => {
+    // Calculate the total number of active notifications
+    const totalNotifications = [showWaterNotification, weatherNotification, tempNotification].filter(Boolean).length;
+
+    setNotificationCount(totalNotifications);
+  }, [showWaterNotification, weatherNotification, tempNotification]);
+
   return (
     <MDBNavbar expand="lg" light bgColor="light">
       <div className="container-fluid d-flex align-items-center">
@@ -250,6 +261,7 @@ function Navbar() {
             <MDBIcon fas icon="bell" className="me-2" />
             {showWaterNotification && ( // Add notification badge later
               <span className="badge rounded-pill badge-notification bg-danger">
+              {notificationCount}
               </span>
             )}
           </MDBDropdownToggle>
