@@ -1,0 +1,9 @@
+export const WEATHER_API = 'https://2vbpsc6e1k.execute-api.eu-west-1.amazonaws.com/production/getWeatherData';
+export const USER_API = 'https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1';
+export const PLANT_API = 'https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1';
+export const SENSOR_API = 'https://loxs1vvtc3.execute-api.eu-west-1.amazonaws.com/v1';
+export const ARTICLE_API = 'https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1';
+export const FORUM_API = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1';
+export const MYGARDEN_API = 'https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1';
+export const MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/moderator';
+export const IMAGE_MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/imagemoderation';

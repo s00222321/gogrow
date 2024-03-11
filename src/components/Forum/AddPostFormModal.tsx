@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { 
-  MDBBtn, 
-  MDBModal, 
-  MDBModalDialog, 
-  MDBModalContent, 
-  MDBModalHeader, 
-  MDBModalTitle, 
-  MDBModalBody, 
-  MDBModalFooter 
+import {
+  MDBBtn,
+  MDBModal,
+  MDBModalDialog,
+  MDBModalContent,
+  MDBModalHeader,
+  MDBModalTitle,
+  MDBModalBody,
+  MDBModalFooter
 } from 'mdb-react-ui-kit';
 
 interface AddPostFormModalProps {
@@ -53,12 +53,7 @@ const AddPostFormModal: React.FC<AddPostFormModalProps> = ({ onSubmit, onClose, 
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-  
-    // Set the username to "sean_oconnor" before calling the onSubmit function will have to be changed
-    // const updatedPostData = { ...newPostData, username: 'sean_oconnor' };
-
     const updatedPostData = { ...newPostData };
-  
     onSubmit(updatedPostData);
     setNewPostData({ title: '', content: '', media: null, tags: [] });
     onClose();

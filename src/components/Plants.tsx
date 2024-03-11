@@ -7,8 +7,8 @@ import {
   MDBCardBody,
   MDBContainer,
 } from "mdb-react-ui-kit";
-
 import { useAuth } from "./AuthContext";
+import { PLANT_API, USER_API, MYGARDEN_API } from '../apis';
 
 interface Plant {
   plant_id: number;
@@ -47,12 +47,10 @@ const Plants: React.FC = () => {
 
     handleResize();
     window.addEventListener('resize', handleResize);
-    
+
     const fetchPlants = async () => {
       try {
-        const response = await fetch(
-          "https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1"
-        );
+        const response = await fetch(PLANT_API);
         const responseData = await response.json();
         const data = JSON.parse(responseData.body);
         if (Array.isArray(data)) {
@@ -66,7 +64,7 @@ const Plants: React.FC = () => {
     const fetchCurrentlyGrowing = async () => {
       try {
         const response = await fetch(
-          `https://0fykzk1eg7.execute-api.eu-west-1.amazonaws.com/v1/users/${username}`
+          `${USER_API}/users/${username}`
         );
         const userData = await response.json();
         const userCurrentlyGrowing = userData.data?.currently_growing || [];
@@ -97,7 +95,7 @@ const Plants: React.FC = () => {
   const handleAddToCurrentlyGrowing = async (plant_id: number) => {
     try {
       const response = await fetch(
-        "https://ghslhsfcrh.execute-api.eu-west-1.amazonaws.com/v1/currentlygrowing",
+        `${MYGARDEN_API}/currentlygrowing`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -8,8 +8,10 @@ import {
   MDBRow,
   MDBCol,
   MDBCardImage,
+  MDBBtn,
 } from 'mdb-react-ui-kit';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { PLANT_API } from '../apis';
 
 interface PlantData {
   plant_id: string;
@@ -17,20 +19,20 @@ interface PlantData {
   latin_name: string;
   description: string;
   season: string;
-  plants: string; // URL to the plant image
-  planticons: string; // URL to the plant icon
+  plants: string;
+  planticons: string;
   growtime: string;
 }
 
 const Plant: React.FC = () => {
   const { plant_id } = useParams<{ plant_id: string }>();
   const [plant, setPlant] = useState<PlantData | null>(null);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchPlant = async () => {
       try {
         const response = await fetch(
-          `https://bmhnryodyk.execute-api.eu-west-1.amazonaws.com/v1/${plant_id}`
+          `${PLANT_API}/${plant_id}`
         );
         const responseData = await response.json();
         const data = JSON.parse(responseData.body);
@@ -68,6 +70,11 @@ const Plant: React.FC = () => {
                 <MDBCardText>
                   <strong>Growth Time:</strong> {plant.growtime}
                 </MDBCardText>
+                <div className="text-center mt-4 d-flex justify-content-left">
+                  <MDBBtn color='primary' onClick={() => navigate('/plants')}>
+                    Go back
+                  </MDBBtn>
+                </div>
               </MDBCardBody>
             </MDBCol>
           </MDBRow>

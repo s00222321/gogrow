@@ -14,8 +14,7 @@ import EditArticleModal from './EditArticleModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../AuthContext';
-
-const API_URL = "https://yxk4xluq16.execute-api.eu-west-1.amazonaws.com/v1"
+import { ARTICLE_API } from '../../apis'
 
 const Articles: React.FC = () => {
   const [articles, setArticles] = useState<any[]>([]);
@@ -50,7 +49,7 @@ const Articles: React.FC = () => {
 
   const fetchArticles = async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch(ARTICLE_API);
       const responseData = await response.json();
       const data = JSON.parse(responseData.body);
       if (Array.isArray(data)) {
@@ -87,7 +86,7 @@ const Articles: React.FC = () => {
   }) => {
     try {
       const response = await fetch(
-        API_URL,
+        ARTICLE_API,
         {
           method: "POST",
           headers: {
@@ -130,7 +129,7 @@ const Articles: React.FC = () => {
   const confirmDelete = async () => {
     try {
       const response = await fetch(
-        `${API_URL}/${articleToDelete}`,
+        `${ARTICLE_API}/${articleToDelete}`,
         {
           method: 'DELETE',
           headers: {
@@ -168,7 +167,7 @@ const Articles: React.FC = () => {
   }) => {
     try {
       console.log(JSON.stringify(updatedData))
-      const response = await fetch(API_URL, {
+      const response = await fetch(ARTICLE_API, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -240,43 +239,43 @@ const Articles: React.FC = () => {
           </MDBBtn>
         </div>
         <MDBRow>
-        {currentArticles.map((article) => (
+          {currentArticles.map((article) => (
             <MDBCol md="6" lg="4" key={article.article_id}>
               <div className="card mb-4">
-                  <MDBCardImage
-                    src={article.image}
-                    position="top"
-                    alt={article.title}
-                  />
-                  <MDBCardBody className="d-flex flex-column">
-                    <MDBCardTitle>{article.title}</MDBCardTitle>
-                    <p>{trimContent(article.content)}</p>
-                    <div className="d-flex justify-content-between align-items-center mt-3">
-                      <MDBBtn href={`/article/${article.article_id}`} className="me-2">
-                        Read More
-                      </MDBBtn>
-                      {loginData?.username === 'admin' && (
-                        <div className="d-flex">
-                          <MDBBtn
-                            color="warning"
-                            className="me-2"
-                            onClick={() => handleEditArticle(article.article_id)}
-                          >
-                            <FontAwesomeIcon icon={faEdit} />
-                          </MDBBtn>
-                          <MDBBtn
-                            color="danger"
-                            onClick={() => handleDeleteArticle(article.article_id)}
-                          >
-                            <i className="fas fa-trash-alt"></i>
-                          </MDBBtn>
-                        </div>
-                      )}
-                    </div>
-                  </MDBCardBody>
-                </div>
-              </MDBCol>
-            ))}
+                <MDBCardImage
+                  src={article.image}
+                  position="top"
+                  alt={article.title}
+                />
+                <MDBCardBody className="d-flex flex-column">
+                  <MDBCardTitle>{article.title}</MDBCardTitle>
+                  <p>{trimContent(article.content)}</p>
+                  <div className="d-flex justify-content-between align-items-center mt-3">
+                    <MDBBtn href={`/article/${article.article_id}`} className="me-2">
+                      Read More
+                    </MDBBtn>
+                    {loginData?.username === 'admin' && (
+                      <div className="d-flex">
+                        <MDBBtn
+                          color="warning"
+                          className="me-2"
+                          onClick={() => handleEditArticle(article.article_id)}
+                        >
+                          <FontAwesomeIcon icon={faEdit} />
+                        </MDBBtn>
+                        <MDBBtn
+                          color="danger"
+                          onClick={() => handleDeleteArticle(article.article_id)}
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </MDBBtn>
+                      </div>
+                    )}
+                  </div>
+                </MDBCardBody>
+              </div>
+            </MDBCol>
+          ))}
         </MDBRow>
         <div className="d-flex justify-content-center mt-4">
           <nav>

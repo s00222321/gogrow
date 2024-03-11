@@ -48,7 +48,7 @@ const Login: React.FC = () => {
         console.error('Authentication failed', err);
         toast.error("Incorrect username or password");
       },
-      newPasswordRequired: (userAttributes, requiredAttributes) => {
+      newPasswordRequired: (_userAttributes) => {
         console.log('Password change required');
       },
     });

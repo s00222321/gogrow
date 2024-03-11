@@ -14,8 +14,7 @@ import {
   MDBBtn
 } from "mdb-react-ui-kit";
 import { useAuth } from '../AuthContext';
-
-const MODERATOR_URL = 'https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/moderator';
+import { FORUM_API, MODERATOR_URL } from '../../apis';
 
 interface PostData {
   postId: string;
@@ -48,7 +47,7 @@ const ForumPost: React.FC = () => {
     const fetchPost = async () => {
       try {
         const response = await fetch(
-          `https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts/${post_id}`
+          `${FORUM_API}/posts/${post_id}`
         );
         const responseData = await response.json();
         const data = JSON.parse(responseData.body);
@@ -64,18 +63,18 @@ const ForumPost: React.FC = () => {
 
   const handleCommentSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-  
+
     const postId = post_id;
     const username = loginData?.username;
-  
+
     try {
       const toxicityScore = await performToxicityAnalysis(comment);
-  
+
       console.log('Toxicity Score:', toxicityScore);
-  
+
       if (toxicityScore < 0.5) {
         const response = await fetch(
-          `https://sdonwjg5b9.execute-api.eu-west-1.amazonaws.com/v1/posts/${postId}/comments`,
+          `${FORUM_API}/posts/${postId}/comments`,
           {
             method: 'POST',
             headers: {
@@ -88,7 +87,7 @@ const ForumPost: React.FC = () => {
             }),
           }
         );
-  
+
         if (!response.ok) {
           console.error(`HTTP error! Status: ${response.status}`);
         } else {
@@ -107,30 +106,30 @@ const ForumPost: React.FC = () => {
 
   const performToxicityAnalysis = async (toCheck: string) => {
     const payload = {
-        text: toCheck
+      text: toCheck
     };
-  
+
     try {
-        const response = await fetch(MODERATOR_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ body: JSON.stringify(payload) }),
-        });
-  
-        if (!response.ok) {
-            throw new Error(`Toxicity analysis failed. Status: ${response.status}`);
-        }
-  
-        const data = await response.json();
-        const responseBody = JSON.parse(data.body);
-        const toxicityScore = parseFloat(responseBody.ToxicityScore);
-        return toxicityScore;
-        
+      const response = await fetch(MODERATOR_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ body: JSON.stringify(payload) }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Toxicity analysis failed. Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      const responseBody = JSON.parse(data.body);
+      const toxicityScore = parseFloat(responseBody.ToxicityScore);
+      return toxicityScore;
+
     } catch (error) {
-        console.error('Error performing toxicity analysis:', error);
-        throw error;
+      console.error('Error performing toxicity analysis:', error);
+      throw error;
     }
   };
 
