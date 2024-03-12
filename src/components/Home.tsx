@@ -185,7 +185,7 @@ const HomePage: React.FC = () => {
           <MDBCol className='mb-4'>
             <MDBCard
               className="mb-3"
-              style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+              style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', margin: 'auto'}}
             >
               <MDBCardBody style={{ border: '0px solid #808080', borderRadius: '8px', height: '100%' }}>
                 <MDBCardTitle className="mb-3">Soil Moisture Status</MDBCardTitle>
@@ -199,7 +199,7 @@ const HomePage: React.FC = () => {
           <MDBCol className='mb-4'>
           <MDBCard
             className="mb-3"
-            style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+            style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', margin: 'auto'}}
           >
             <MDBCardBody style={{ border: '0px solid #808080', borderRadius: '8px', height: '100%' }}>
               <MDBCardTitle className="mb-3">Your progress 🤩</MDBCardTitle>
@@ -217,7 +217,7 @@ const HomePage: React.FC = () => {
               <MDBCard
                 key={weatherData.county_name}
                 className="mb-3"
-                style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+                style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', margin: 'auto' }}
               >
                 <MDBCardBody style={{ border: '0px solid #808080', borderRadius: '8px', height: '100%' }}>
                   <MDBCardTitle className="mb-3">Weather today in {UserCounty}</MDBCardTitle>
@@ -251,7 +251,7 @@ const HomePage: React.FC = () => {
               <MDBCard
                 key={`tomorrow-${weatherData.county_name}`}
                 className="mb-3"
-                style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}
+                style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', margin: 'auto' }}
               >
                 <MDBCardBody style={{ border: '0px solid #808080', borderRadius: '8px', height: '100%' }}>
                   <MDBCardTitle className="mb-3">Weather tomorrow in {UserCounty}</MDBCardTitle>
@@ -291,7 +291,7 @@ const HomePage: React.FC = () => {
         <MDBRow className="mx-auto text-center">
           <MDBCol className="mb-4">
             <Link to={`/plant/${vegetables[currentPlantIndex].plant_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <MDBCard className="mb-3" style={{ width: '20rem' }}>
+              <MDBCard className="mb-3" style={{ width: '20rem', margin: 'auto' }}>
                 <img
                   src={vegetables[currentPlantIndex].plants}
                   alt={vegetables[currentPlantIndex].name}
@@ -310,7 +310,7 @@ const HomePage: React.FC = () => {
           {navigationArticle && (
             <MDBCol className="mb-4">
               <Link to={`/article/${navigationArticle.article_id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <MDBCard className="mb-3" style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)' }}>
+                <MDBCard className="mb-3" style={{ width: '20rem', borderRadius: '8px', boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', margin: 'auto' }}>
                   <MDBCardImage src={navigationArticle.image} alt={navigationArticle.title} position="top" />
                   <MDBCardBody>
                   <MDBCardTitle className="text-center fw-bold">Tutorial Article</MDBCardTitle>
